@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  --font-family-base: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --color-white: #ffffff;
+  --color-page: #f8faff;
+  --color-text: #070f2f;
+  --color-text-soft: #5b6277;
+  --color-border: #e4e7f0;
+  --color-primary: #7b35e8;
+  --color-primary-dark: #7930d9;
+  --color-green: #16a86f;
+  --color-blue: #1f71f2;
+  --color-pink: #f23885;
+  --color-orange: #ff8300;
+  --color-purple: #8b39ed;
+
+  --shadow-soft: 0 14px 38px rgba(18, 24, 56, 0.08);
+  --shadow-medium: 0 18px 45px rgba(20, 25, 64, 0.08);
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--color-text);
+  background: var(--color-page);
+  font-family: var(--font-family-base);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}

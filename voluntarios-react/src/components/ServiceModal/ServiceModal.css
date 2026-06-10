@@ -1,0 +1,119 @@
+.service-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(6, 10, 32, 0.55);
+  backdrop-filter: blur(8px);
+}
+
+.service-modal__content {
+  width: min(720px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  padding: 28px;
+  border-radius: 24px;
+  background: var(--color-white);
+  box-shadow: 0 28px 80px rgba(6, 10, 32, 0.35);
+}
+
+.service-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.service-modal__header span {
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.service-modal__header h2 {
+  margin: 6px 0 0;
+  letter-spacing: -0.045em;
+}
+
+.service-modal__header button {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #e1e5f0;
+  border-radius: 50%;
+  background: var(--color-white);
+  color: var(--color-text);
+  display: inline-grid;
+  place-items: center;
+}
+
+.service-modal__form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.service-modal__form-grid label {
+  display: grid;
+  gap: 8px;
+  font-weight: 800;
+  color: #202943;
+}
+
+.service-modal__full-field {
+  grid-column: 1 / -1;
+}
+
+.service-modal__form-grid input,
+.service-modal__form-grid select,
+.service-modal__form-grid textarea {
+  width: 100%;
+  border: 1px solid #dfe4ef;
+  border-radius: var(--radius-sm);
+  padding: 14px 15px;
+  outline: 0;
+  background: var(--color-white);
+  color: #071033;
+}
+
+.service-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.service-modal__cancel,
+.service-modal__save {
+  min-height: 50px;
+  border-radius: var(--radius-sm);
+  padding: 0 24px;
+  font-weight: 900;
+}
+
+.service-modal__cancel {
+  border: 1px solid #dfe4ef;
+  background: var(--color-white);
+  color: #071033;
+}
+
+.service-modal__save {
+  border: 0;
+  color: var(--color-white);
+  background: linear-gradient(135deg, #8140f6, var(--color-primary-dark));
+  box-shadow: 0 14px 28px rgba(103, 48, 214, 0.25);
+}
+
+@media (max-width: 760px) {
+  .service-modal__form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .service-modal__actions {
+    flex-direction: column-reverse;
+  }
+}
