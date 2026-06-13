@@ -9,14 +9,17 @@ export default function Hero({ onOpenServiceModal }) {
     <section className="hero" id="top">
       <div className="hero__text">
         <h1>
-          Conectando pessoas <br />
-          que querem <span>ajudar</span> com <br />
-          quem <span>precisa</span>
-        </h1>
-        <p>
-          Encontre ou ofereça serviços voluntários na sua comunidade. Juntos,
-          podemos transformar vidas!
-        </p>
+  Conectando pessoas <br />
+  que <span style={{ color: "#2563eb" }}>querem</span>{" "}
+  <span>ajudar</span>{" "}
+  <span style={{ color: "#f97316" }}>com</span> <br />
+  quem <span style={{ color: "#16a34a" }}>precisa</span>
+</h1>
+
+<p>
+  Encontre ou ofereça serviços voluntários na sua comunidade. Juntos, podemos
+  transformar vidas!
+</p>
 
         <div
           className="hero__buttons"

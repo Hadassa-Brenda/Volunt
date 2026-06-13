@@ -1,9 +1,9 @@
-import { ChevronDown, Moon, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 import "./Header.css";
 import { colors } from "../../styles/colors";
 
-export default function Header({ onOpenServiceModal }) {
+export default function Header({ onOpenServiceModal, onOpenLogin }) {
   return (
     <header className="header">
       <a className="header__brand" href="#top" aria-label="Voluntá+ início">
@@ -15,15 +15,19 @@ export default function Header({ onOpenServiceModal }) {
         <a className="header__nav-link header__nav-link--active" href="#top">
           Início
         </a>
+
         <a className="header__nav-link" href="#explorar">
           Explorar
         </a>
+
         <a className="header__nav-link" href="#categorias">
           Categorias
         </a>
+
         <a className="header__nav-link" href="#como-funciona">
           Como funciona
         </a>
+
         <a className="header__nav-link" href="#sobre">
           Sobre
         </a>
@@ -34,6 +38,7 @@ export default function Header({ onOpenServiceModal }) {
           className="header__primary-button"
           type="button"
           onClick={onOpenServiceModal}
+          style={{ fontSize: "14px" }}
         >
           <Plus size={18} />
           Cadastrar serviço
@@ -41,14 +46,15 @@ export default function Header({ onOpenServiceModal }) {
 
         <button
           className="header__primary-button"
-          onclick={() => {}}
           type="button"
+          onClick={onOpenLogin}
           style={{
             background: colors.colorPrimaryDark,
             color: colors.colorPage,
+            fontSize: "14px",
           }}
         >
-          <text>Entrar</text>
+          Entrar
         </button>
       </div>
     </header>

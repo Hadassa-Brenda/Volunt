@@ -37,7 +37,6 @@ export default function ServiceModal({ initialForm, onClose, onSubmit }) {
         <div className="service-modal__form-grid">
           <label
             className="service-modal__full-field"
-            style={{ fontSize: "14px" }}
           >
             Nome do serviço
             <input
@@ -45,7 +44,6 @@ export default function ServiceModal({ initialForm, onClose, onSubmit }) {
               value={form.title}
               onChange={(event) => updateField("title", event.target.value)}
               placeholder="Ex: Aula gratuita de violão"
-              style={{ fontSize: "12px" }}
             />
           </label>
 

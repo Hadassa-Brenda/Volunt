@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 
 import {
-  CategoryList,
   Header,
   Hero,
   HowItWorks,
@@ -10,24 +9,33 @@ import {
   ServiceModal,
   ServicesSection,
 } from "../components";
+
+import Footer from "../components/Footer/Footer";
+import LoginPage from "../pages/LoginPages/LoginPage";
+
 import { DEFAULT_SERVICE_FORM } from "../constants/serviceOptions";
 import { servicesSeed } from "../data/services";
 import { createService } from "../utils/createService";
 import { filterServices } from "../utils/filterServices";
+
 import "./App.css";
 
 export default function App() {
+  const [page, setPage] = useState("home");
+
   const [services, setServices] = useState(servicesSeed);
+
   const [filters, setFilters] = useState({
     search: "",
     category: "Todas",
     modality: "Todos",
   });
+
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
 
   const filteredServices = useMemo(
     () => filterServices(services, filters),
-    [services, filters],
+    [services, filters]
   );
 
   function handleFilterChange(field, value) {
@@ -44,9 +52,16 @@ export default function App() {
     setIsServiceModalOpen(false);
   }
 
+  if (page === "login") {
+    return <LoginPage onBackHome={() => setPage("home")} />;
+  }
+
   return (
     <main className="app-shell">
-      <Header onOpenServiceModal={() => setIsServiceModalOpen(true)} />
+      <Header
+        onOpenServiceModal={() => setIsServiceModalOpen(true)}
+        onOpenLogin={() => setPage("login")}
+      />
 
       <Hero onOpenServiceModal={() => setIsServiceModalOpen(true)} />
 
@@ -55,10 +70,14 @@ export default function App() {
       <section className="app-content-grid">
         <ServicesSection services={filteredServices} />
       </section>
+
       <div className="home-info-row" style={{ gap: "10px" }}>
-        <HowItWorks style={{ padding: "10px" }} />
+        <HowItWorks />
         <ImpactAside onOpenServiceModal={() => setIsServiceModalOpen(true)} />
       </div>
+
+      <Footer />
+
       {isServiceModalOpen && (
         <ServiceModal
           initialForm={DEFAULT_SERVICE_FORM}
