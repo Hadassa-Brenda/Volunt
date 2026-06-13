@@ -1,9 +1,9 @@
-import { Heart, Lock, Mail, Search } from "lucide-react";
+import { ArrowLeft, Heart, Lock, Mail, Search } from "lucide-react";
 import { useState } from "react";
 
 import "../LoginPages/LoginPages.css";
 
-export default function LoginPage() {
+export default function LoginPage({ onBackHome }) {
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -25,10 +25,37 @@ export default function LoginPage() {
   return (
     <main className="login-page">
       <section className="login-page__left">
+        <button
+          className="login-page__back-button"
+          type="button"
+          onClick={onBackHome}
+          style={{
+            width: "fit-content",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px",
+            marginBottom: "32px",
+            border: "1px solid #dfe4ef",
+            borderRadius: "999px",
+            padding: "10px 16px",
+            background: "#ffffff",
+            color: "#081035",
+            fontSize: "14px",
+            fontWeight: 800,
+            cursor: "pointer",
+            boxShadow: "0 12px 28px rgba(15, 20, 55, 0.08)",
+          }}
+        >
+          <ArrowLeft size={18} />
+          Voltar
+        </button>
+
         <a className="login-page__logo" href="#top">
           <div>
             <Heart size={22} fill="currentColor" />
           </div>
+
           <span>Voluntários</span>
         </a>
 
@@ -48,6 +75,7 @@ export default function LoginPage() {
 
         <div className="login-page__info-card">
           <Search size={22} />
+
           <div>
             <strong>Conecte-se com propósito</strong>
             <span>Encontre e ofereça ajuda de forma simples.</span>
@@ -65,8 +93,10 @@ export default function LoginPage() {
 
           <label className="login-card__field">
             E-mail
+
             <div>
               <Mail size={18} />
+
               <input
                 required
                 type="email"
@@ -79,8 +109,10 @@ export default function LoginPage() {
 
           <label className="login-card__field">
             Senha
+
             <div>
               <Lock size={18} />
+
               <input
                 required
                 type="password"
