@@ -1,5 +1,5 @@
-import ServiceCard from '../ServiceCard/ServiceCard';
-import './ServicesSection.css';
+import ServiceCard from "../ServiceCard/ServiceCard";
+import "./ServicesSection.css";
 
 export default function ServicesSection({ services }) {
   return (

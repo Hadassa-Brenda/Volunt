@@ -1,6 +1,7 @@
-import { ChevronDown, Moon, Plus } from 'lucide-react';
+import { ChevronDown, Moon, Plus } from "lucide-react";
 
-import './Header.css';
+import "./Header.css";
+import { colors } from "../../styles/colors";
 
 export default function Header({ onOpenServiceModal }) {
   return (
@@ -29,20 +30,26 @@ export default function Header({ onOpenServiceModal }) {
       </nav>
 
       <div className="header__actions">
-        <button className="header__icon-button" type="button" aria-label="Alternar tema">
-          <Moon size={18} />
-        </button>
-
-        <button className="header__primary-button" type="button" onClick={onOpenServiceModal}>
+        <button
+          className="header__primary-button"
+          type="button"
+          onClick={onOpenServiceModal}
+        >
           <Plus size={18} />
           Cadastrar serviço
         </button>
 
-        <div className="header__profile">
-          <span className="header__avatar">M</span>
-          <strong>Maria Silva</strong>
-          <ChevronDown size={16} />
-        </div>
+        <button
+          className="header__primary-button"
+          onclick={() => {}}
+          type="button"
+          style={{
+            background: colors.colorPrimaryDark,
+            color: colors.colorPage,
+          }}
+        >
+          <text>Entrar</text>
+        </button>
       </div>
     </header>
   );

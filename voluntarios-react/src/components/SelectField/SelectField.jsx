@@ -1,19 +1,58 @@
-import './SelectField.css';
+import * as React from "react";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 
-export default function SelectField({ icon: Icon, label, value, options, onChange }) {
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+
+const MenuProps = {
+  slotProps: {
+    paper: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 220,
+      },
+    },
+  },
+};
+
+export default function MultipleSelect({ label, options }) {
+  const [value, setValue] = React.useState([]);
+
+  const handleChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+
+    setValue(typeof value === "string" ? value.split(",") : value);
+  };
+
   return (
-    <label className="select-field">
-      {Icon && <Icon className="select-field__icon" size={20} />}
-      <span className="select-field__content">
-        <small>{label}</small>
-        <select value={value} onChange={(event) => onChange(event.target.value)}>
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </span>
-    </label>
+    <FormControl size="small" sx={{ width: 240 }}>
+      <InputLabel id="demo-multiple-name-label">{label}</InputLabel>
+
+      <Select
+        labelId="demo-multiple-name-label"
+        id="demo-multiple-name"
+        multiple
+        value={value}
+        onChange={handleChange}
+        input={<OutlinedInput label={label} />}
+        MenuProps={MenuProps}
+        sx={{
+          height: 40,
+          fontSize: 14,
+        }}
+      >
+        {options.map((option) => (
+          <MenuItem key={option} value={option}>
+            {option}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 }

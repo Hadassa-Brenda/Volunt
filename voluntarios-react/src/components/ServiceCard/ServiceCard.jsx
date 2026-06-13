@@ -1,10 +1,10 @@
-import { ExternalLink, Heart, MapPin, MessageCircle } from 'lucide-react';
+import { ExternalLink, Heart, MapPin, MessageCircle } from "lucide-react";
 
-import './ServiceCard.css';
+import "./ServiceCard.css";
 
 export default function ServiceCard({ service }) {
   const locationLabel =
-    service.modality === 'Online' ? 'Online' : `${service.neighborhood}, BH`;
+    service.modality === "Online" ? "Online" : `${service.neighborhood}, BH`;
 
   return (
     <article className="service-card">
@@ -14,7 +14,7 @@ export default function ServiceCard({ service }) {
       >
         <span
           className={`service-card__badge ${
-            service.modality === 'Online' ? 'service-card__badge--online' : ''
+            service.modality === "Online" ? "service-card__badge--online" : ""
           }`}
         >
           {service.modality}
@@ -36,10 +36,16 @@ export default function ServiceCard({ service }) {
         </div>
 
         <div className="service-card__contacts">
-          <a href="https://wa.me/5531999999999" aria-label="Entrar em contato pelo WhatsApp">
+          <a
+            href="https://wa.me/5531999999999"
+            aria-label="Entrar em contato pelo WhatsApp"
+          >
             <MessageCircle size={18} />
           </a>
-          <a href="https://instagram.com" aria-label="Abrir Instagram do serviço">
+          <a
+            href="https://instagram.com"
+            aria-label="Abrir Instagram do serviço"
+          >
             <ExternalLink size={17} />
           </a>
         </div>

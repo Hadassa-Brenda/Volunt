@@ -1,8 +1,16 @@
 .app-shell {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 78% 20%, rgba(136, 113, 255, 0.18), transparent 24rem),
-    radial-gradient(circle at 95% 26%, rgba(255, 151, 194, 0.18), transparent 18rem),
+    radial-gradient(
+      circle at 78% 20%,
+      rgba(136, 113, 255, 0.18),
+      transparent 24rem
+    ),
+    radial-gradient(
+      circle at 95% 26%,
+      rgba(255, 151, 194, 0.18),
+      transparent 18rem
+    ),
     linear-gradient(180deg, var(--color-white) 0%, #fbfcff 66%, #f5f8ff 100%);
 }
 
@@ -12,6 +20,44 @@
   display: grid;
   grid-template-columns: 1fr 430px;
   gap: 56px;
+}
+
+.home-info-row {
+  width: min(1280px, calc(100% - 80px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Remove margens/larguras internas que podem atrapalhar */
+.home-info-row .how-it-works,
+.home-info-row .impact-aside {
+  width: 100%;
+  margin: 0;
+}
+
+.home-info-row {
+  width: min(1280px, calc(100% - 80px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 32px;
+  align-items: start;
+}
+
+.home-info-row .how-it-works,
+.home-info-row .impact-aside {
+  width: 100%;
+  margin: 0;
+}
+
+@media (max-width: 980px) {
+  .home-info-row {
+    width: min(100% - 36px, 1280px);
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 1180px) {

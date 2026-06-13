@@ -1,21 +1,21 @@
-import { Code2, Heart, Search } from 'lucide-react';
+import { Code2, Heart, Search } from "lucide-react";
 
-import './HowItWorks.css';
+import "./HowItWorks.css";
 
 const STEPS = [
   {
-    title: 'Encontre',
-    description: 'Busque serviços por categoria, localização e tipo.',
+    title: "Encontre",
+    description: "Busque serviços por categoria, localização e tipo.",
     icon: Search,
   },
   {
-    title: 'Ofereça',
-    description: 'Cadastre iniciativas voluntárias da sua comunidade.',
+    title: "Ofereça",
+    description: "Cadastre iniciativas voluntárias da sua comunidade.",
     icon: Heart,
   },
   {
-    title: 'Conecte',
-    description: 'Entre em contato pelo WhatsApp, Instagram ou link oficial.',
+    title: "Conecte",
+    description: "Entre em contato pelo WhatsApp, Instagram ou link oficial.",
     icon: Code2,
   },
 ];

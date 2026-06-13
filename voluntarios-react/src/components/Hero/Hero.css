@@ -33,9 +33,13 @@
 .hero__buttons {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-direction: row;
   gap: 22px;
   margin-top: 34px;
+}
+
+.hero__button--primary:hover {
+  background: #758480;
 }
 
 .hero__button {
@@ -47,6 +51,10 @@
   align-items: center;
   gap: 12px;
   font-weight: 800;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .hero__button--primary {

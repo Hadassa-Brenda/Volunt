@@ -1,12 +1,12 @@
-import { Check, Heart } from 'lucide-react';
+import { Check, Heart } from "lucide-react";
 
-import './ImpactAside.css';
+import "./ImpactAside.css";
 
 const PARTICIPATION_REASONS = [
-  'Ajude quem precisa na sua comunidade',
-  'Desenvolva novas habilidades',
-  'Conheça pessoas incríveis',
-  'Faça a diferença de verdade',
+  "Ajude quem precisa na sua comunidade",
+  "Desenvolva novas habilidades",
+  "Conheça pessoas incríveis",
+  "Faça a diferença de verdade",
 ];
 
 export default function ImpactAside({ onOpenServiceModal }) {
@@ -24,7 +24,11 @@ export default function ImpactAside({ onOpenServiceModal }) {
         <div className="impact-aside__person">
           <span className="impact-aside__head" />
           <span className="impact-aside__body" />
-          <Heart className="impact-aside__heart" size={44} fill="currentColor" />
+          <Heart
+            className="impact-aside__heart"
+            size={44}
+            fill="currentColor"
+          />
         </div>
       </div>
 

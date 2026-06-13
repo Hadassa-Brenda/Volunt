@@ -1,27 +1,18 @@
-import { MapPin, Search, SlidersHorizontal, Tag } from 'lucide-react';
+import { MapPin, SlidersHorizontal, Tag } from "lucide-react";
 
-import { CATEGORY_FILTER_OPTIONS } from '../../constants/categories';
-import { LOCATION_OPTIONS, MODALITY_OPTIONS } from '../../constants/serviceOptions';
-import SelectField from '../SelectField/SelectField';
-import './SearchPanel.css';
+import { CATEGORY_FILTER_OPTIONS } from "../../constants/categories";
+import { MODALITY_OPTIONS } from "../../constants/serviceOptions";
+import SelectField from "../SelectField/SelectField";
+import "./SearchPanel.css";
 
 export default function SearchPanel({ filters, onFilterChange }) {
   return (
     <section className="search-panel" id="explorar">
-      <label className="search-panel__input">
-        <Search size={20} />
-        <input
-          value={filters.search}
-          onChange={(event) => onFilterChange('search', event.target.value)}
-          placeholder="Buscar serviços, ex: aula de violão, reforço..."
-        />
-      </label>
-
       <SelectField
         icon={MapPin}
         label="Localização"
         value="Belo Horizonte, MG"
-        options={LOCATION_OPTIONS}
+        options={CATEGORY_FILTER_OPTIONS}
         onChange={() => {}}
       />
 
@@ -30,21 +21,27 @@ export default function SearchPanel({ filters, onFilterChange }) {
         label="Categoria"
         value={filters.category}
         options={CATEGORY_FILTER_OPTIONS}
-        onChange={(value) => onFilterChange('category', value)}
+        onChange={(value) => onFilterChange("category", value)}
       />
 
       <SelectField
         label="Tipo"
         value={filters.modality}
         options={MODALITY_OPTIONS}
-        onChange={(value) => onFilterChange('modality', value)}
+        onChange={(value) => onFilterChange("modality", value)}
       />
 
       <button className="search-panel__search-button" type="button">
-        Buscar
+        <span style={{ fontWeight: "bold", color: "white", fontSize: "12px" }}>
+          Buscar
+        </span>
       </button>
 
-      <button className="search-panel__advanced-button" type="button">
+      <button
+        className="search-panel__advanced-button"
+        type="button"
+        style={{ fontSize: "12px" }}
+      >
         <SlidersHorizontal size={18} />
         Filtros avançados
       </button>

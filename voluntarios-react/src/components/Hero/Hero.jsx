@@ -1,8 +1,8 @@
-import { Heart, Search, Users } from 'lucide-react';
+import { Heart, Search, Users } from "lucide-react";
 
-import { heroImages } from '../../assets/heroImages';
-import { HERO_CONTENT } from '../../constants/content';
-import './Hero.css';
+import { heroImages } from "../../assets/heroImages";
+import { HERO_CONTENT } from "../../constants/content";
+import "./Hero.css";
 
 export default function Hero({ onOpenServiceModal }) {
   return (
@@ -18,14 +18,17 @@ export default function Hero({ onOpenServiceModal }) {
           podemos transformar vidas!
         </p>
 
-        <div className="hero__buttons">
+        <div
+          className="hero__buttons"
+          style={{ gap: "10px", paddingBottom: "20px" }}
+        >
           <a className="hero__button hero__button--primary" href="#explorar">
             <Search size={18} />
             {HERO_CONTENT.findHelpButton}
           </a>
 
           <button
-            className="hero__button hero__button--secondary"
+            className="hero__button hero__button--primary"
             type="button"
             onClick={onOpenServiceModal}
           >
@@ -57,14 +60,6 @@ export default function Hero({ onOpenServiceModal }) {
           className="hero__small-photo hero__small-photo--guitar"
           style={{ backgroundImage: `url(${heroImages.guitar})` }}
         />
-
-        <div className="hero__stats-bubble">
-          <div>
-            <Users size={20} />
-          </div>
-          <strong>+2.500</strong>
-          <span>serviços cadastrados</span>
-        </div>
 
         <div className="hero__spark hero__spark--one">✦</div>
         <div className="hero__spark hero__spark--two">✧</div>

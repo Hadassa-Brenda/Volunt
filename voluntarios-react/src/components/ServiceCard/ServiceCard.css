@@ -4,6 +4,7 @@
   background: var(--color-white);
   overflow: hidden;
   min-height: 440px;
+  min-width: 280px;
   box-shadow: var(--shadow-soft);
 }
 

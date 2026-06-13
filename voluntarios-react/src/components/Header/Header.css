@@ -59,7 +59,7 @@
 }
 
 .header__nav-link--active::after {
-  content: '';
+  content: "";
   height: 3px;
   border-radius: 999px;
   background: var(--color-primary);

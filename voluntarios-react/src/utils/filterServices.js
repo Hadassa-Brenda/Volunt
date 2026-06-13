@@ -10,17 +10,17 @@ export function filterServices(services, filters) {
       service.neighborhood,
       service.modality,
     ]
-      .join(' ')
+      .join(" ")
       .toLowerCase();
 
     const matchesSearch =
       !normalizedSearch || searchableContent.includes(normalizedSearch);
 
     const matchesCategory =
-      filters.category === 'Todas' || service.category === filters.category;
+      filters.category === "Todas" || service.category === filters.category;
 
     const matchesModality =
-      filters.modality === 'Todos' || service.modality === filters.modality;
+      filters.modality === "Todos" || service.modality === filters.modality;
 
     return matchesSearch && matchesCategory && matchesModality;
   });
