@@ -1,4 +1,12 @@
-import { ArrowLeft, HeartHandshake, Save } from "lucide-react";
+import {
+  ArrowLeft,
+  HeartHandshake,
+  Info,
+  Save,
+  ShieldCheck,
+  Sparkles,
+  UsersRound,
+} from "lucide-react";
 import { useState } from "react";
 import {
   SERVICE_CATEGORIES,
@@ -11,6 +19,19 @@ import {
   validateServiceForm,
 } from "./ServiceCreatePageValidator";
 import "./ServiceCreatePage.css";
+import "react-phone-number-input/style.css";
+import WhatsappInput from "../../components/InputWhatssap/InputWhatssap";
+
+const pageImages = {
+  volunteer:
+    "https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=900&q=80",
+  tutor:
+    "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=900&q=80",
+  clean:
+    "https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?auto=format&fit=crop&w=900&q=80",
+  community:
+    "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&fit=crop&w=900&q=80",
+};
 
 const INITIAL_FORM = {
   title: "",
@@ -19,6 +40,7 @@ const INITIAL_FORM = {
   city: "",
   neighborhood: "",
   description: "",
+  whatsappCountry: "BR",
   whatsapp: "",
   instagram: "",
   website: "",
@@ -42,9 +64,11 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
   const [touchedFields, setTouchedFields] = useState({});
 
   function updateField(field, value) {
+    const nextValue = value || "";
+
     const nextForm = {
       ...form,
-      [field]: value,
+      [field]: nextValue,
     };
 
     setForm(nextForm);
@@ -54,7 +78,7 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
       [field]: true,
     }));
 
-    const fieldError = validateServiceField(field, value);
+    const fieldError = validateServiceField(field, nextValue);
 
     setErrors((currentErrors) => {
       const nextErrors = {
@@ -70,18 +94,47 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
     });
   }
 
+  function updateWhatsappCountry(country) {
+    const nextForm = {
+      ...form,
+      whatsappCountry: country,
+      whatsapp: "",
+    };
+
+    setForm(nextForm);
+
+    setTouchedFields((currentTouchedFields) => ({
+      ...currentTouchedFields,
+      whatsapp: false,
+    }));
+
+    setErrors((currentErrors) => ({
+      ...currentErrors,
+      whatsapp: "",
+      contact: validateContactRequired(nextForm),
+    }));
+  }
+
   function handleBlur(field) {
     setTouchedFields((currentTouchedFields) => ({
       ...currentTouchedFields,
       [field]: true,
     }));
 
-    const fieldError = validateServiceField(field, form[field]);
+    const fieldError = validateServiceField(field, form[field] || "");
 
-    setErrors((currentErrors) => ({
-      ...currentErrors,
-      [field]: fieldError,
-    }));
+    setErrors((currentErrors) => {
+      const nextErrors = {
+        ...currentErrors,
+        [field]: fieldError,
+      };
+
+      if (CONTACT_FIELDS.includes(field)) {
+        nextErrors.contact = validateContactRequired(form);
+      }
+
+      return nextErrors;
+    });
   }
 
   function handleSubmit(event) {
@@ -135,7 +188,11 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
 
   return (
     <main className="service-create-page">
-      <div className="service-create-page__container">
+      <div className="service-create-page__shape service-create-page__shape--purple" />
+      <div className="service-create-page__shape service-create-page__shape--pink" />
+      <div className="service-create-page__shape service-create-page__shape--blue" />
+
+      <header className="service-create-page__topbar">
         <button
           className="service-create-page__back-button"
           type="button"
@@ -145,20 +202,44 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
           Voltar
         </button>
 
-        <section className="service-create-page__hero">
-          <div className="service-create-page__icon">
-            <HeartHandshake size={32} />
+        <a className="header__brand" href="#top" aria-label="Voluntá+ início">
+          <span className="header__brand-icon">♡</span>
+          <strong>Voluntá+</strong>
+        </a>
+      </header>
+
+      <section className="service-create-page__heading">
+        <h1>Cadastrar serviço voluntário</h1>
+
+        <p>
+          Cadastre um serviço gratuito ou voluntário para ajudar e transformar a
+          vida de pessoas na sua comunidade.
+        </p>
+
+        <div className="service-create-page__heading-line" />
+      </section>
+
+      <section className="service-create-page__stage">
+        <div className="service-create-page__left-visual">
+          <div className="service-create-page__photo service-create-page__photo--large">
+            <img src={pageImages.volunteer} alt="Ação voluntária" />
           </div>
 
-          <span>Cadastro voluntário</span>
+          <div className="service-create-page__impact-card">
+            <div>
+              <UsersRound size={22} />
+            </div>
 
-          <h1>Cadastrar serviço voluntário</h1>
+            <p>
+              <strong>Sua ação</strong>
+              gera impacto real onde mais importa.
+            </p>
+          </div>
 
-          <p>
-            Preencha as informações abaixo para cadastrar um serviço gratuito ou
-            voluntário para a comunidade.
-          </p>
-        </section>
+          <div className="service-create-page__photo service-create-page__photo--small">
+            <img src={pageImages.tutor} alt="Aula voluntária" />
+          </div>
+        </div>
 
         <form
           className="service-create-form"
@@ -166,11 +247,6 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
           noValidate
         >
           <section className="service-create-form__section">
-            <div>
-              <span>Informações principais</span>
-              <h2>Dados do serviço</h2>
-            </div>
-
             <div className="service-create-form__grid">
               <label className="service-create-form__full-field">
                 Nome do serviço <strong>*</strong>
@@ -178,7 +254,7 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
                   value={form.title}
                   onChange={(event) => updateField("title", event.target.value)}
                   onBlur={() => handleBlur("title")}
-                  placeholder="Ex: Aula gratuita de violão"
+                  placeholder="Ex: Reforço escolar voluntário"
                   aria-invalid={Boolean(shouldShowError("title"))}
                   aria-describedby="title-error"
                 />
@@ -227,7 +303,7 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
                   aria-describedby="modality-error"
                 >
                   <option value="" disabled>
-                    Selecione o tipo
+                    Selecione o tipo de atendimento
                   </option>
 
                   {SERVICE_MODALITIES.map((modality) => (
@@ -275,17 +351,22 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
 
               <label className="service-create-form__full-field">
                 Descrição <strong>*</strong>
-                <textarea
-                  value={form.description}
-                  onChange={(event) =>
-                    updateField("description", event.target.value)
-                  }
-                  onBlur={() => handleBlur("description")}
-                  placeholder="Explique como o serviço funciona, quem pode participar e como entrar em contato."
-                  rows="5"
-                  aria-invalid={Boolean(shouldShowError("description"))}
-                  aria-describedby="description-error"
-                />
+                <div className="service-create-form__textarea-wrapper">
+                  <textarea
+                    value={form.description}
+                    maxLength={1000}
+                    onChange={(event) =>
+                      updateField("description", event.target.value)
+                    }
+                    onBlur={() => handleBlur("description")}
+                    placeholder="Descreva seu serviço, como funciona, para quem é destinado e quais são os benefícios."
+                    rows="5"
+                    aria-invalid={Boolean(shouldShowError("description"))}
+                    aria-describedby="description-error"
+                  />
+
+                  <span>{form.description.length}/1000</span>
+                </div>
                 <FieldError
                   id="description-error"
                   message={shouldShowError("description")}
@@ -295,30 +376,26 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
           </section>
 
           <section className="service-create-form__section">
-            <div>
-              <span>Contato</span>
-              <h2>Canais de atendimento</h2>
+            <div className="service-create-form__contact-header">
+              <p>
+                <Info size={16} />
+                Informe pelo menos um meio de contato para que as pessoas possam
+                falar com você. <strong>*</strong>
+              </p>
             </div>
-
-            <p className="service-create-form__helper">
-              Preencha pelo menos um dos campos abaixo: WhatsApp, Instagram ou
-              site. <strong>*</strong>
-            </p>
 
             <FieldError id="contact-error" message={errors.contact} />
 
-            <div className="service-create-form__grid">
+            <div className="service-create-form__grid service-create-form__grid--contacts">
               <label>
                 WhatsApp
-                <input
-                  value={form.whatsapp}
-                  onChange={(event) =>
-                    updateField("whatsapp", event.target.value)
-                  }
+                <WhatsappInput
+                  country={form.whatsappCountry}
+                  phone={form.whatsapp}
+                  error={shouldShowError("whatsapp")}
+                  onCountryChange={updateWhatsappCountry}
+                  onPhoneChange={(phone) => updateField("whatsapp", phone)}
                   onBlur={() => handleBlur("whatsapp")}
-                  placeholder="Ex: (31) 99999-9999"
-                  aria-invalid={Boolean(shouldShowError("whatsapp"))}
-                  aria-describedby="whatsapp-error"
                 />
                 <FieldError
                   id="whatsapp-error"
@@ -344,7 +421,7 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
                 />
               </label>
 
-              <label className="service-create-form__full-field">
+              <label>
                 Site ou outro link
                 <input
                   value={form.website}
@@ -352,7 +429,7 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
                     updateField("website", event.target.value)
                   }
                   onBlur={() => handleBlur("website")}
-                  placeholder="Ex: https://meuprojeto.com.br"
+                  placeholder="Ex: www.exemplo.org.br"
                   aria-invalid={Boolean(shouldShowError("website"))}
                   aria-describedby="website-error"
                 />
@@ -378,8 +455,38 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
               Salvar serviço
             </button>
           </div>
+
+          <div className="service-create-form__safe-message">
+            <ShieldCheck size={17} />
+            Suas informações estão seguras conosco.
+          </div>
         </form>
-      </div>
+
+        <div className="service-create-page__right-visual">
+          <div className="service-create-page__floating-icon">
+            <HeartHandshake size={30} />
+          </div>
+
+          <div className="service-create-page__photo service-create-page__photo--medium">
+            <img src={pageImages.clean} alt="Voluntários em ação" />
+          </div>
+
+          <div className="service-create-page__donate-card">
+            <div>
+              <Sparkles size={22} />
+            </div>
+
+            <p>
+              <strong>Doe seu tempo.</strong>
+              Multiplique esperança e transforme histórias.
+            </p>
+          </div>
+
+          <div className="service-create-page__photo service-create-page__photo--bottom">
+            <img src={pageImages.community} alt="Apoio comunitário" />
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

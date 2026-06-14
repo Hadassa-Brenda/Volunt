@@ -1,4 +1,4 @@
-import { heroImages } from "../assets/heroImages";
+import { heroImages } from "../assets/imgs/heroImages";
 
 export function createService(serviceForm) {
   return {

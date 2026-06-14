@@ -1,6 +1,6 @@
 import { Heart, Search, Users } from "lucide-react";
 
-import { heroImages } from "../../assets/heroImages";
+import { heroImages } from "../../assets/imgs/heroImages";
 import { HERO_CONTENT } from "../../constants/content";
 import "./Hero.css";
 
@@ -9,17 +9,17 @@ export default function Hero({ onOpenServiceModal }) {
     <section className="hero" id="top">
       <div className="hero__text">
         <h1>
-  Conectando pessoas <br />
-  que <span style={{ color: "#2563eb" }}>querem</span>{" "}
-  <span>ajudar</span>{" "}
-  <span style={{ color: "#f97316" }}>com</span> <br />
-  quem <span style={{ color: "#16a34a" }}>precisa</span>
-</h1>
+          Conectando pessoas <br />
+          que <span style={{ color: "#2563eb" }}>querem</span>{" "}
+          <span>ajudar</span> <span style={{ color: "#f97316" }}>com</span>{" "}
+          <br />
+          quem <span style={{ color: "#16a34a" }}>precisa</span>
+        </h1>
 
-<p>
-  Encontre ou ofereça serviços voluntários na sua comunidade. Juntos, podemos
-  transformar vidas!
-</p>
+        <p>
+          Encontre ou ofereça serviços voluntários na sua comunidade. Juntos,
+          podemos transformar vidas!
+        </p>
 
         <div
           className="hero__buttons"

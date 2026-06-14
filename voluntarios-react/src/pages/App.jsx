@@ -37,7 +37,7 @@ export default function App() {
 
   const filteredServices = useMemo(
     () => filterServices(services, filters),
-    [services, filters]
+    [services, filters],
   );
 
   function handleFilterChange(field, value) {
@@ -57,7 +57,7 @@ export default function App() {
   if (page === "login") {
     return <LoginPage onBackHome={() => setPage("home")} />;
   } else if (page === "Create") {
-    return <ServiceCreatePage onBackHome={() => setPage("home")} />;  
+    return <ServiceCreatePage onBackHome={() => setPage("home")} />;
   }
 
   return (

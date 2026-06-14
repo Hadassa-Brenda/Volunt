@@ -7,14 +7,12 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer__content">
         <div className="footer__brand">
-          <h2 style={{color: "#f1f1f1"}}>Voluntários</h2>
-          <p>
-            Conectando pessoas que querem ajudar com quem precisa de ajuda.
-          </p>
+          <h2 style={{ color: "#f1f1f1" }}>Voluntários</h2>
+          <p>Conectando pessoas que querem ajudar com quem precisa de ajuda.</p>
         </div>
 
         <div className="footer__column">
-          <h3 style={{color: "#f1f1f1"}}>Navegação</h3>
+          <h3 style={{ color: "#f1f1f1" }}>Navegação</h3>
           <a href="#top">Início</a>
           <a href="#explorar">Explorar serviços</a>
           <a href="#como-funciona">Como funciona</a>
@@ -22,7 +20,7 @@ export default function Footer() {
         </div>
 
         <div className="footer__column">
-          <h3 style={{color: "#f1f1f1"}}>Contato</h3>
+          <h3 style={{ color: "#f1f1f1" }}>Contato</h3>
 
           <span>
             <MapPin size={16} />

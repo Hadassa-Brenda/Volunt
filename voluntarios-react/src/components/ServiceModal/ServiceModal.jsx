@@ -35,9 +35,7 @@ export default function ServiceModal({ initialForm, onClose, onSubmit }) {
         </div>
 
         <div className="service-modal__form-grid">
-          <label
-            className="service-modal__full-field"
-          >
+          <label className="service-modal__full-field">
             Nome do serviço
             <input
               required

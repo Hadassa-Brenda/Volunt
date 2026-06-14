@@ -51,12 +51,9 @@ export default function LoginPage({ onBackHome }) {
           Voltar
         </button>
 
-        <a className="login-page__logo" href="#top">
-          <div>
-            <Heart size={22} fill="currentColor" />
-          </div>
-
-          <span>Voluntários</span>
+        <a className="header__brand" href="#top" aria-label="Voluntá+ início">
+          <span className="header__brand-icon">♡</span>
+          <strong>Voluntá+</strong>
         </a>
 
         <div className="login-page__text">
@@ -93,7 +90,6 @@ export default function LoginPage({ onBackHome }) {
 
           <label className="login-card__field">
             E-mail
-
             <div>
               <Mail size={18} />
 
@@ -109,7 +105,6 @@ export default function LoginPage({ onBackHome }) {
 
           <label className="login-card__field">
             Senha
-
             <div>
               <Lock size={18} />
 

@@ -7,37 +7,82 @@ const MIN_LENGTH = {
 
 const CONTACT_FIELDS = ["whatsapp", "instagram", "website"];
 
+function getSafeString(value) {
+  return String(value || "");
+}
+
 function getOnlyNumbers(value) {
-  return value.replace(/\D/g, "");
+  return getSafeString(value).replace(/\D/g, "");
+}
+
+function hasRepeatedNumbersOnly(numbers) {
+  return /^(\d)\1+$/.test(numbers);
 }
 
 function isValidUrl(value) {
-  if (!value) return true;
+  const safeValue = getSafeString(value).trim();
+
+  if (!safeValue) return true;
 
   try {
-    const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
+    const urlWithProtocol =
+      safeValue.startsWith("http://") || safeValue.startsWith("https://")
+        ? safeValue
+        : `https://${safeValue}`;
+
+    const url = new URL(urlWithProtocol);
+
+    return Boolean(url.hostname.includes("."));
   } catch {
     return false;
   }
 }
 
 function isValidInstagram(value) {
-  if (!value) return true;
+  const safeValue = getSafeString(value).trim();
 
-  return /^@?[a-zA-Z0-9._]{2,30}$/.test(value);
+  if (!safeValue) return true;
+
+  return /^@?[a-zA-Z0-9._]{2,30}$/.test(safeValue);
 }
 
 function isValidWhatsapp(value) {
-  if (!value) return true;
-
   const numbers = getOnlyNumbers(value);
 
-  return numbers.length >= 10 && numbers.length <= 11;
+  if (!numbers) return true;
+
+  const numbersWithoutCountryCode = numbers.startsWith("55")
+    ? numbers.slice(2)
+    : numbers;
+
+  const hasValidLength =
+    numbersWithoutCountryCode.length === 10 ||
+    numbersWithoutCountryCode.length === 11;
+
+  if (!hasValidLength) {
+    return false;
+  }
+
+  const ddd = numbersWithoutCountryCode.slice(0, 2);
+  const phoneNumber = numbersWithoutCountryCode.slice(2);
+
+  if (ddd.length !== 2) {
+    return false;
+  }
+
+  if (Number(ddd) < 11 || Number(ddd) > 99) {
+    return false;
+  }
+
+  if (hasRepeatedNumbersOnly(phoneNumber)) {
+    return false;
+  }
+
+  return true;
 }
 
 export function validateServiceField(field, value) {
-  const trimmedValue = value.trim();
+  const trimmedValue = getSafeString(value).trim();
 
   switch (field) {
     case "title":
@@ -78,7 +123,7 @@ export function validateServiceField(field, value) {
 
     case "whatsapp":
       if (!isValidWhatsapp(trimmedValue)) {
-        return "Informe um WhatsApp válido com DDD. Ex: (31) 99999-9999.";
+        return "Informe um WhatsApp válido com DDD. Ex: +55 (31) 98988-8283.";
       }
       return "";
 
@@ -90,7 +135,7 @@ export function validateServiceField(field, value) {
 
     case "website":
       if (!isValidUrl(trimmedValue)) {
-        return "Informe um link válido. Ex: https://meusite.com";
+        return "Informe um link válido. Ex: meusite.com ou https://meusite.com";
       }
       return "";
 
@@ -100,7 +145,9 @@ export function validateServiceField(field, value) {
 }
 
 export function validateContactRequired(form) {
-  const hasAnyContact = CONTACT_FIELDS.some((field) => form[field].trim());
+  const hasAnyContact = CONTACT_FIELDS.some((field) =>
+    getSafeString(form[field]).trim(),
+  );
 
   if (!hasAnyContact) {
     return "Informe pelo menos um contato: WhatsApp, Instagram ou site.";
@@ -131,14 +178,14 @@ export function validateServiceForm(form) {
 
 export function sanitizeServiceForm(form) {
   return {
-    title: form.title.trim(),
-    category: form.category.trim(),
-    modality: form.modality.trim(),
-    city: form.city.trim(),
-    neighborhood: form.neighborhood.trim(),
-    description: form.description.trim(),
-    whatsapp: form.whatsapp.trim(),
-    instagram: form.instagram.trim(),
-    website: form.website.trim(),
+    title: getSafeString(form.title).trim(),
+    category: getSafeString(form.category).trim(),
+    modality: getSafeString(form.modality).trim(),
+    city: getSafeString(form.city).trim(),
+    neighborhood: getSafeString(form.neighborhood).trim(),
+    description: getSafeString(form.description).trim(),
+    whatsapp: getSafeString(form.whatsapp).trim(),
+    instagram: getSafeString(form.instagram).trim(),
+    website: getSafeString(form.website).trim(),
   };
 }

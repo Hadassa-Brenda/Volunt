@@ -53,7 +53,9 @@
 
 .footer__column a {
   width: fit-content;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .footer__column a:hover {
