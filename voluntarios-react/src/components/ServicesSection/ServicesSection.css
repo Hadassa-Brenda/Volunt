@@ -7,7 +7,7 @@
 
 .services-section__title h2 {
   margin: 0;
-  color: #071033;
+  color: var(--color-text);
   letter-spacing: -0.035em;
   font-size: 22px;
   font-weight: 900;
@@ -25,7 +25,7 @@
 }
 
 .services-section__empty {
-  border: 1px dashed #dfe4ef;
+  border: 1px dashed var(--color-border);
   border-radius: var(--radius-lg);
   padding: 34px;
   background: var(--color-white);

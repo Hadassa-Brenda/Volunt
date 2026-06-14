@@ -5,8 +5,8 @@
   justify-content: space-between;
   gap: 22px;
   padding: 0 58px;
-  background: rgba(255, 255, 255, 0.92);
-  border-bottom: 1px solid #e8eaf2;
+  background: var(--color-page);
+  border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
   z-index: 20;
@@ -21,7 +21,7 @@
   font-size: 28px;
   font-weight: 900;
   letter-spacing: -0.05em;
-  color: #09113a;
+  color: var(--color-text);
 }
 
 .header__brand-icon {

@@ -4,10 +4,10 @@
   align-items: center;
   gap: 12px;
   padding: 0 16px;
-  border: 1px solid #dde2ee;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   background: var(--color-white);
-  color: #606a80;
+  color: var(--color-text-soft);
 }
 
 .select-field__icon {
@@ -21,7 +21,7 @@
 }
 
 .select-field__content small {
-  color: #737c92;
+  color: var(--color-text-soft);
   font-size: 12px;
 }
 
@@ -30,5 +30,5 @@
   border: 0;
   outline: 0;
   background: transparent;
-  color: #0b1336;
+  color: var(--color-text);
 }

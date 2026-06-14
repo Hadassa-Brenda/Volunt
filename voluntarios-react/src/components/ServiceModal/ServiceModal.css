@@ -5,7 +5,7 @@
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(6, 10, 32, 0.55);
+  background: var(--color-text-light);
   backdrop-filter: blur(8px);
 }
 .service-modal__content {
@@ -15,7 +15,7 @@
   padding: 28px;
   border-radius: 24px;
   background: var(--color-white);
-  box-shadow: 0 28px 80px rgba(6, 10, 32, 0.35);
+  box-shadow: 0 28px 80px var(--color-text-light);
   font-size: 14px;
 }
 .service-modal__header {
@@ -42,7 +42,7 @@
 .service-modal__header button {
   width: 42px;
   height: 42px;
-  border: 1px solid #e1e5f0;
+  border: 1px solid var(--color-border);
   border-radius: 50%;
   background: var(--color-white);
   color: var(--color-text);
@@ -60,19 +60,19 @@
   display: grid;
   gap: 8px;
   font-weight: 800;
-  color: #202943;
+  color: var(--color-text);
 }
 
 .service-modal__form-grid input,
 .service-modal__form-grid select,
 .service-modal__form-grid textarea {
   width: 100%;
-  border: 1px solid #dfe4ef;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   padding: 14px 15px;
   outline: 0;
   background: var(--color-white);
-  color: #071033;
+  color: var(--color-text);
   font-size: 12px;
 }
 
@@ -98,16 +98,16 @@
 }
 
 .service-modal__cancel {
-  border: 1px solid #dfe4ef;
+  border: 1px solid var(--color-border);
   background: var(--color-white);
-  color: #071033;
+  color: var(--color-text);
 }
 
 .service-modal__save {
   border: 0;
   color: var(--color-white);
-  background: linear-gradient(135deg, #8140f6, var(--color-primary-dark));
-  box-shadow: 0 14px 28px rgba(103, 48, 214, 0.25);
+  background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary-dark));
+  box-shadow: 0 14px 28px var(--color-text-light);
 }
 
 @media (max-width: 760px) {
