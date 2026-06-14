@@ -1,7 +1,5 @@
 import { Plus } from "lucide-react";
-
 import "./Header.css";
-import { colors } from "../../styles/colors";
 
 export default function Header({ onCreateUser, onOpenLogin }) {
   return (
@@ -38,21 +36,15 @@ export default function Header({ onCreateUser, onOpenLogin }) {
           className="header__primary-button"
           type="button"
           onClick={onCreateUser}
-          style={{ fontSize: "14px" }}
         >
           <Plus size={18} />
-          Cadastrar serviço
+          Cadastrar-se
         </button>
 
         <button
           className="header__primary-button"
           type="button"
           onClick={onOpenLogin}
-          style={{
-            background: colors.colorPrimaryDark,
-            color: colors.colorPage,
-            fontSize: "14px",
-          }}
         >
           Entrar
         </button>

@@ -48,6 +48,16 @@
   background: #edfdf6;
 }
 
+.category-select-label {
+  color: var(--color-text-dark);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.category-select-label.Mui-focused {
+  color: var(--color-blue-focus);
+}
+
 .category-list__icon--pink {
   color: var(--color-pink);
   background: #fff0f7;

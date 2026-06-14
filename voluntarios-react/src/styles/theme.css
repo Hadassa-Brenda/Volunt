@@ -1,0 +1,19 @@
+:root {
+  --color-white: #ffffff;
+  --color-page: #f8faff;
+  --color-text: #070f2f;
+  --color-text-soft: #5b6277;
+  --color-border: #e4e7f0;
+  --color-primary: #7b35e8;
+  --color-primary-dark: #7930d9;
+  --color-green: #16a86f;
+  --color-blue: #1f71f2;
+  --color-pink: #f23885;
+  --color-orange: #ff8300;
+  --color-purple: #8b39ed;
+  --color-gray: #9ca3af;
+  --color-blue-focus: #2563eb;
+  --color-text-dark: #374151;
+  --color-text-light: #081035;
+  --color-danger: #dc2626;
+}

@@ -1,0 +1,95 @@
+.select-generic {
+  width: 100%;
+  min-width: 220px;
+}
+
+.select-generic__label.MuiInputLabel-root {
+  color: var(--color-text-dark);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.select-generic__label.Mui-focused {
+  color: var(--color-blue-focus);
+}
+
+.select-generic--error .select-generic__label.MuiInputLabel-root {
+  color: var(--color-danger);
+}
+
+.select-generic__select.MuiOutlinedInput-root {
+  border-radius: 10px;
+  background-color: var(--color-white);
+  color: var(--color-text);
+  font-size: 14px;
+}
+
+.select-generic__select .MuiSelect-select {
+  padding: 12px 14px;
+}
+
+.select-generic__select .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-border);
+}
+
+.select-generic__select:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-gray);
+}
+
+.select-generic__select.Mui-focused {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.select-generic__select.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-blue-focus);
+  border-width: 1px;
+}
+
+.select-generic--error
+  .select-generic__select
+  .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-danger);
+}
+
+.select-generic--error
+  .select-generic__select:hover
+  .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-danger);
+}
+
+.select-generic--error .select-generic__select.Mui-focused {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.select-generic--error
+  .select-generic__select.Mui-focused
+  .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-danger);
+}
+
+.select-generic__helper-text.MuiFormHelperText-root {
+  margin-left: 0;
+  font-size: 12.5px;
+  font-weight: 650;
+}
+
+.select-generic--error .select-generic__helper-text.MuiFormHelperText-root {
+  color: var(--color-danger);
+}
+
+.select-generic__menu-item.MuiMenuItem-root {
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.select-generic__menu-item.Mui-selected {
+  background-color: rgba(123, 53, 232, 0.1);
+}
+
+.select-generic__menu-item.Mui-selected:hover {
+  background-color: rgba(123, 53, 232, 0.16);
+}
+
+.select-generic--disabled {
+  opacity: 0.75;
+}

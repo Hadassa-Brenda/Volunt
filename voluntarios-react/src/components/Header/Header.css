@@ -80,7 +80,7 @@
 .header__icon-button {
   width: 44px;
   height: 44px;
-  border: 1px solid #e1e5f0;
+  border: 1px solid (--color-border);
   border-radius: 50%;
   background: var(--color-white);
   color: var(--color-text);
@@ -99,6 +99,8 @@
   color: var(--color-white);
   font-weight: 800;
   font-size: 15px;
+  background: var(--color-primary);
+  color: var( --color-page);
   background: linear-gradient(135deg, #8140f6, var(--color-primary-dark));
   box-shadow: 0 14px 28px rgba(103, 48, 214, 0.25);
 }
