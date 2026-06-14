@@ -12,8 +12,6 @@ import {
 
 import Footer from "../components/Footer/Footer";
 import LoginPage from "../pages/LoginPages/LoginPage";
-import ServiceCreatePage from "./ServiceCreatePage/ServiceCreatePage";
-
 import { DEFAULT_SERVICE_FORM } from "../constants/serviceOptions";
 import { servicesSeed } from "../data/services";
 import { createService } from "../utils/createService";
@@ -21,6 +19,7 @@ import { createService } from "../utils/createService";
 import { filterServices } from "../utils/filterServices";
 
 import "./App.css";
+import UserRegisterPage from "../pages/UserRegisterPage/UserRegisterPage";
 
 export default function App() {
   const [page, setPage] = useState("home");
@@ -57,13 +56,13 @@ export default function App() {
   if (page === "login") {
     return <LoginPage onBackHome={() => setPage("home")} />;
   } else if (page === "Create") {
-    return <ServiceCreatePage onBackHome={() => setPage("home")} />;
+    return <UserRegisterPage onBackHome={() => setPage("home")} />;
   }
 
   return (
     <main className="app-shell">
       <Header
-        onOpenCreateService={() => setPage("Create")}
+        onCreateUser={() => setPage("Create")}
         onOpenLogin={() => setPage("login")}
       />
 
