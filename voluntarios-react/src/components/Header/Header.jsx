@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import "./Header.css";
 import { colors } from "../../styles/colors";
 
-export default function Header({ onOpenServiceModal, onOpenLogin }) {
+export default function Header({ onOpenCreateService, onOpenLogin }) {
   return (
     <header className="header">
       <a className="header__brand" href="#top" aria-label="Voluntá+ início">
@@ -37,7 +37,7 @@ export default function Header({ onOpenServiceModal, onOpenLogin }) {
         <button
           className="header__primary-button"
           type="button"
-          onClick={onOpenServiceModal}
+          onClick={onOpenCreateService}
           style={{ fontSize: "14px" }}
         >
           <Plus size={18} />

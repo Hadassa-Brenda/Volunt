@@ -12,10 +12,12 @@ import {
 
 import Footer from "../components/Footer/Footer";
 import LoginPage from "../pages/LoginPages/LoginPage";
+import ServiceCreatePage from "./ServiceCreatePage/ServiceCreatePage";
 
 import { DEFAULT_SERVICE_FORM } from "../constants/serviceOptions";
 import { servicesSeed } from "../data/services";
 import { createService } from "../utils/createService";
+
 import { filterServices } from "../utils/filterServices";
 
 import "./App.css";
@@ -54,12 +56,14 @@ export default function App() {
 
   if (page === "login") {
     return <LoginPage onBackHome={() => setPage("home")} />;
+  } else if (page === "Create") {
+    return <ServiceCreatePage onBackHome={() => setPage("home")} />;  
   }
 
   return (
     <main className="app-shell">
       <Header
-        onOpenServiceModal={() => setIsServiceModalOpen(true)}
+        onOpenCreateService={() => setPage("Create")}
         onOpenLogin={() => setPage("login")}
       />
 

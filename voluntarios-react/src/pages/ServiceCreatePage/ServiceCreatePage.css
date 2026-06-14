@@ -1,0 +1,275 @@
+.service-create-page {
+  min-height: 100vh;
+  background: #f6f8fb;
+  padding: 32px 20px;
+}
+
+.service-create-page__container {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.service-create-page__back-button {
+  border: none;
+  background: transparent;
+  color: #344054;
+  font-size: 15px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+.service-create-page__hero {
+  background: linear-gradient(135deg, #ffffff, #eef8f3);
+  border: 1px solid #d9efe4;
+  border-radius: 28px;
+  padding: 36px;
+  margin-bottom: 24px;
+}
+
+.service-create-page__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: #dcfce7;
+  color: #16803c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.service-create-page__hero span {
+  color: #16803c;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.service-create-page__hero h1 {
+  margin: 8px 0 12px;
+  font-size: 36px;
+  color: #101828;
+}
+
+.service-create-page__hero p {
+  max-width: 720px;
+  color: #667085;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.service-create-form {
+  background: #ffffff;
+  border-radius: 28px;
+  border: 1px solid #eaecf0;
+  box-shadow: 0 20px 60px rgba(16, 24, 40, 0.08);
+  padding: 32px;
+}
+
+.service-create-form__section {
+  margin-bottom: 32px;
+}
+
+.service-create-form__section > div:first-child {
+  margin-bottom: 20px;
+}
+
+.service-create-form__section span {
+  color: #16803c;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.service-create-form__section h2 {
+  margin: 6px 0 0;
+  color: #101828;
+  font-size: 24px;
+}
+
+.service-create-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.service-create-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #344054;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.service-create-form__full-field {
+  grid-column: 1 / -1;
+}
+
+.service-create-form input,
+.service-create-form select,
+.service-create-form textarea {
+  width: 100%;
+  border: 1px solid #d0d5dd;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 15px;
+  color: #101828;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.service-create-form textarea {
+  resize: vertical;
+  min-height: 130px;
+}
+
+.service-create-form input:focus,
+.service-create-form select:focus,
+.service-create-form textarea:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+}
+
+.service-create-form__warning {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 16px;
+  border-radius: 16px;
+  font-size: 15px;
+  margin-bottom: 28px;
+}
+
+.service-create-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.service-create-form__actions button {
+  border: none;
+  border-radius: 14px;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.service-create-form__cancel {
+  background: #f2f4f7;
+  color: #344054;
+}
+
+.service-create-form__save {
+  background: #16a34a;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.service-create-form__save:hover {
+  background: #15803d;
+}
+
+.service-create-form__cancel:hover {
+  background: #e4e7ec;
+}
+
+@media (max-width: 768px) {
+  .service-create-page {
+    padding: 20px 14px;
+  }
+
+  .service-create-page__hero {
+    padding: 28px 22px;
+    border-radius: 22px;
+  }
+
+  .service-create-page__hero h1 {
+    font-size: 28px;
+  }
+
+  .service-create-form {
+    padding: 24px 18px;
+    border-radius: 22px;
+  }
+
+  .service-create-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .service-create-form__actions {
+    flex-direction: column-reverse;
+  }
+
+  .service-create-form__actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+/* Campos obrigatórios */
+.service-create-form label strong,
+.service-create-form__helper strong {
+  color: #dc2626;
+}
+
+/* Texto de ajuda da seção de contato */
+.service-create-form__helper {
+  color: #667085;
+  font-size: 14px;
+  margin: -8px 0 16px;
+  line-height: 1.5;
+}
+
+/* Mensagem de erro */
+.service-create-form__error {
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: -2px;
+  line-height: 1.4;
+}
+
+/* Campo inválido */
+.service-create-form input[aria-invalid="true"],
+.service-create-form select[aria-invalid="true"],
+.service-create-form textarea[aria-invalid="true"] {
+  border-color: #dc2626;
+  background: #fffafa;
+}
+
+/* Campo inválido quando está selecionado */
+.service-create-form input[aria-invalid="true"]:focus,
+.service-create-form select[aria-invalid="true"]:focus,
+.service-create-form textarea[aria-invalid="true"]:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+}
+
+/* Erro geral da parte de contato */
+#contact-error {
+  display: block;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+/* Melhora o visual dos selects */
+.service-create-form select {
+  cursor: pointer;
+}
+
+/* Placeholder mais suave */
+.service-create-form input::placeholder,
+.service-create-form textarea::placeholder {
+  color: #98a2b3;
+}
