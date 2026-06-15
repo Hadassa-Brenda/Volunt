@@ -100,7 +100,7 @@
   font-weight: 800;
   font-size: 15px;
   background: var(--color-primary);
-  color: var( --color-page);
+  color: var(--color-page);
   background: linear-gradient(135deg, #8140f6, var(--color-primary-dark));
   box-shadow: 0 14px 28px rgba(103, 48, 214, 0.25);
 }

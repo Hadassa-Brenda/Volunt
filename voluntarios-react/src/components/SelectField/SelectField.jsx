@@ -27,7 +27,7 @@ const MenuProps = {
   },
 };
 
-export default function MultipleSelect({
+export default function SelectField({
   id,
   label = "Selecione",
   options = [],
@@ -81,7 +81,9 @@ export default function MultipleSelect({
 
   function renderSelectedValue(selected) {
     if (selected.length === 0) {
-      return <span className="multiple-select__placeholder">{placeholder}</span>;
+      return (
+        <span className="multiple-select__placeholder">{placeholder}</span>
+      );
     }
 
     if (selected.length === options.length) {

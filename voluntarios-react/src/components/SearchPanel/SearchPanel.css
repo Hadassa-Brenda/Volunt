@@ -1,57 +1,66 @@
 .search-panel {
-  width: min(1295px, calc(100% - 80px));
-  margin: -4px auto 32px;
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24px;
-  border-radius: var(--radius-md);
-  background: var(--color-white);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-medium);
-  flex-direction: row;
-}
-
-.search-panel__input {
-  min-height: 60px;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 16px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
+  padding: 24px;
+}
+
+.search-panel__search-field {
+  flex: 0 1 280px;
+  width: 280px;
+  max-width: 100%;
+  min-width: 220px;
+  height: 44px;
+  padding: 0 14px;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: 14px;
   background: var(--color-white);
   color: var(--color-text-soft);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 24px rgba(7, 15, 47, 0.05);
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.search-panel__input input {
+.search-panel__search-field:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(123, 53, 232, 0.13);
+}
+
+.search-panel__search-field svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.search-panel__search-field input {
   width: 100%;
-  border: 0;
-  outline: 0;
+  min-width: 0;
+  border: none;
+  outline: none;
   background: transparent;
   color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.search-panel__search-button {
-  min-height: 42px;
-  min-width: 80px;
-  border: 0;
-  border-radius: var(--radius-sm);
-  color: var(--color-white);
-  font-weight: 900;
-  background: var(--color-primary-dark);
+.search-panel__search-field input::placeholder {
+  color: var(--color-gray);
+  font-weight: 500;
 }
 
-@media (max-width: 1180px) {
-  .search-panel {
-    width: min(100% - 36px, 1295px);
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 760px) {
-  .search-panel {
-    grid-template-columns: 1fr;
+@media (max-width: 768px) {
+  .search-panel__search-field {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
   }
 }

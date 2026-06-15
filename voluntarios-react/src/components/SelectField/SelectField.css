@@ -43,7 +43,9 @@
   border-width: 1px;
 }
 
-.multiple-select.Mui-error .multiple-select__field .MuiOutlinedInput-notchedOutline {
+.multiple-select.Mui-error
+  .multiple-select__field
+  .MuiOutlinedInput-notchedOutline {
   border-color: var(--color-danger);
 }
 

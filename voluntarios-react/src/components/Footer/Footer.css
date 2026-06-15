@@ -67,7 +67,7 @@
   width: min(1280px, calc(100% - 80px));
   margin: 36px auto 0;
   padding-top: 22px;
-  border-top: 1px solid var( --color-text-dark);
+  border-top: 1px solid var(--color-text-dark);
   display: flex;
   justify-content: space-between;
   align-items: center;
