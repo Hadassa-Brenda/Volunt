@@ -1,5 +1,5 @@
 import { MapPin, SlidersHorizontal, Tag } from "lucide-react";
-import { CATEGORY_FILTER_OPTIONS } from "../../constants/categories";
+import { CATEGORY_FILTER_OPTIONS, LOCATION_FILTER_OPTIONS} from "../../constants/categories";
 import { MODALITY_OPTIONS } from "../../constants/serviceOptions";
 import SelectField from "../SelectField/SelectField";
 import "./SearchPanel.css";
@@ -12,8 +12,8 @@ export default function SearchPanel({ filters, onFilterChange }) {
         icon={MapPin}
         label="Localização"
         value="Belo Horizonte, MG"
-        options={CATEGORY_FILTER_OPTIONS}
-        onChange={() => {}}
+        options={LOCATION_FILTER_OPTIONS}
+        onChange={(value) => onFilterChange("location", value)}
       />
 
       <SelectField

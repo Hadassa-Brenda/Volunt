@@ -25,10 +25,16 @@ export const SERVICE_CATEGORIES = [
 
 export const POPULAR_CATEGORIES = [
   ...SERVICE_CATEGORIES,
-  { name: "Ver todas", value: "Todas", icon: MoreHorizontal, tone: "blue" },
+  { icon: MoreHorizontal, tone: "blue" },
 ];
 
 export const CATEGORY_FILTER_OPTIONS = [
-  "Todas",
   ...SERVICE_CATEGORIES.map((category) => category.name),
+];
+
+export const LOCATION_FILTER_OPTIONS = [
+  "São Paulo",
+  "Rio de Janeiro",
+  "Belo Horizonte",
+  "Porto Alegre",
 ];
