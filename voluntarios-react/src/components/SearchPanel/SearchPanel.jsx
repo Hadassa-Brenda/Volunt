@@ -11,8 +11,6 @@ import SelectField from "../SelectField/SelectField";
 import Button from "../Button/Button";
 import ServiceModal from "../ServiceModal/ServiceModal";
 
-import { DEFAULT_FORM } from "../ServiceModal/ServiceModalConstantes";
-
 import "./SearchPanel.css";
 
 export default function SearchPanel({

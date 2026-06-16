@@ -1,8 +1,4 @@
-export const MODALITY_OPTIONS = ["Todos", "Presencial", "Online", "Híbrido"];
-
-export const SERVICE_MODALITIES = MODALITY_OPTIONS.filter(
-  (modality) => modality !== "Todos",
-);
+export const MODALITY_OPTIONS = ["Presencial", "Online", "Híbrido"];
 
 export const LOCATION_OPTIONS = [
   "Belo Horizonte, MG",

@@ -1,14 +1,6 @@
 import { Check, Heart } from "lucide-react";
-
+import { PARTICIPATION_REASONS } from "./ImpactAsideConst";
 import "./ImpactAside.css";
-
-const PARTICIPATION_REASONS = [
-  "Ajude quem precisa na sua comunidade",
-  "Desenvolva novas habilidades",
-  "Conheça pessoas incríveis",
-  "Faça a diferença de verdade",
-];
-
 export default function ImpactAside({ onOpenServiceModal }) {
   return (
     <aside className="impact-aside" id="sobre">

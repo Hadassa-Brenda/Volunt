@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   ArrowLeft,
   HeartHandshake,
@@ -9,156 +12,25 @@ import {
   UserPlus,
   UserRound,
 } from "lucide-react";
-import { useState } from "react";
-import "../UserRegisterPage/UserRegisterPage.css";
 
-const registerImages = {
-  volunteer:
-    "https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=900&q=80",
-  community:
-    "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&fit=crop&w=900&q=80",
-};
+import FieldError from "../../components/FieldError/FieldError";
 
-const PROFILE_TYPES = [
-  "Voluntário",
-  "Projeto social / ONG",
-  "Instituição",
-  "Pessoa buscando ajuda",
-];
+import {
+  INITIAL_USER_REGISTER_FORM,
+  PROFILE_TYPES,
+  REGISTER_IMAGES,
+} from "./Constants/userRegisterConsts";
 
-const INITIAL_FORM = {
-  fullName: "",
-  email: "",
-  whatsapp: "",
-  profileType: "",
-  city: "",
-  neighborhood: "",
-  password: "",
-  confirmPassword: "",
-  acceptTerms: false,
-};
+import { validateField, validateForm } from "./Utils/userRegisterValidation";
 
-function FieldError({ id, message }) {
-  if (!message) return null;
+import { sanitizeUserForm } from "./Utils/userRegisterSanitizer";
 
-  return (
-    <small id={id} className="user-register-form__error">
-      {message}
-    </small>
-  );
-}
+import "./UserRegisterPage.css";
 
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
+export default function UserRegisterPage({ onSubmitUser }) {
+  const navigate = useNavigate();
 
-function getOnlyNumbers(value) {
-  return String(value || "").replace(/\D/g, "");
-}
-
-function validateField(field, value, form) {
-  const textValue = String(value || "").trim();
-
-  switch (field) {
-    case "fullName":
-      if (textValue.length < 3) {
-        return "Informe seu nome completo.";
-      }
-      return "";
-
-    case "email":
-      if (!isValidEmail(textValue)) {
-        return "Informe um e-mail válido.";
-      }
-      return "";
-
-    case "whatsapp": {
-      const numbers = getOnlyNumbers(textValue);
-
-      if (!numbers) {
-        return "Informe um WhatsApp para contato.";
-      }
-
-      if (numbers.length < 10 || numbers.length > 13) {
-        return "Informe um WhatsApp válido com DDD.";
-      }
-
-      return "";
-    }
-
-    case "profileType":
-      if (!textValue) {
-        return "Selecione o tipo de perfil.";
-      }
-      return "";
-
-    case "city":
-      if (textValue.length < 2) {
-        return "Informe sua cidade.";
-      }
-      return "";
-
-    case "neighborhood":
-      if (textValue.length < 2) {
-        return "Informe seu bairro.";
-      }
-      return "";
-
-    case "password":
-      if (textValue.length < 8) {
-        return "A senha deve ter pelo menos 8 caracteres.";
-      }
-
-      if (!/[A-Za-z]/.test(textValue) || !/[0-9]/.test(textValue)) {
-        return "A senha deve ter letras e números.";
-      }
-
-      return "";
-
-    case "confirmPassword":
-      if (textValue !== form.password) {
-        return "As senhas não conferem.";
-      }
-      return "";
-
-    case "acceptTerms":
-      if (!value) {
-        return "Você precisa aceitar os termos para continuar.";
-      }
-      return "";
-
-    default:
-      return "";
-  }
-}
-
-function validateForm(form) {
-  const errors = {};
-
-  Object.keys(form).forEach((field) => {
-    const error = validateField(field, form[field], form);
-
-    if (error) {
-      errors[field] = error;
-    }
-  });
-
-  return errors;
-}
-
-function sanitizeUserForm(form) {
-  return {
-    fullName: form.fullName.trim(),
-    email: form.email.trim().toLowerCase(),
-    whatsapp: form.whatsapp.trim(),
-    profileType: form.profileType,
-    city: form.city.trim(),
-    neighborhood: form.neighborhood.trim(),
-  };
-}
-
-export default function UserRegisterPage({ onBackHome, onSubmitUser }) {
-  const [form, setForm] = useState(INITIAL_FORM);
+  const [form, setForm] = useState(INITIAL_USER_REGISTER_FORM);
   const [errors, setErrors] = useState({});
   const [touchedFields, setTouchedFields] = useState({});
 
@@ -201,6 +73,26 @@ export default function UserRegisterPage({ onBackHome, onSubmitUser }) {
     return touchedFields[field] && errors[field];
   }
 
+  function markAllFieldsAsTouched() {
+    setTouchedFields({
+      fullName: true,
+      email: true,
+      whatsapp: true,
+      profileType: true,
+      city: true,
+      neighborhood: true,
+      password: true,
+      confirmPassword: true,
+      acceptTerms: true,
+    });
+  }
+
+  function resetForm() {
+    setForm(INITIAL_USER_REGISTER_FORM);
+    setErrors({});
+    setTouchedFields({});
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -208,19 +100,7 @@ export default function UserRegisterPage({ onBackHome, onSubmitUser }) {
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-
-      setTouchedFields({
-        fullName: true,
-        email: true,
-        whatsapp: true,
-        profileType: true,
-        city: true,
-        neighborhood: true,
-        password: true,
-        confirmPassword: true,
-        acceptTerms: true,
-      });
-
+      markAllFieldsAsTouched();
       return;
     }
 
@@ -239,29 +119,24 @@ export default function UserRegisterPage({ onBackHome, onSubmitUser }) {
 
     alert("Cadastro realizado com sucesso!");
 
-    setForm(INITIAL_FORM);
-    setErrors({});
-    setTouchedFields({});
+    resetForm();
   }
 
   return (
     <main className="user-register-page">
-      <div className="user-register-page__shape user-register-page__shape--one" />
-      <div className="user-register-page__shape user-register-page__shape--two" />
-
       <div className="user-register-page__background-photo user-register-page__background-photo--left">
-        <img src={registerImages.volunteer} alt="Ação voluntária" />
+        <img src={REGISTER_IMAGES.volunteer} alt="Ação voluntária" />
       </div>
 
       <div className="user-register-page__background-photo user-register-page__background-photo--right">
-        <img src={registerImages.community} alt="Comunidade reunida" />
+        <img src={REGISTER_IMAGES.community} alt="Comunidade reunida" />
       </div>
 
       <header className="user-register-page__topbar">
         <button
           className="user-register-page__back-button"
           type="button"
-          onClick={onBackHome}
+          onClick={() => navigate("/")}
         >
           <ArrowLeft size={18} />
           Voltar
@@ -305,6 +180,7 @@ export default function UserRegisterPage({ onBackHome, onSubmitUser }) {
               Nome completo <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <UserRound size={18} />
+
                 <input
                   value={form.fullName}
                   onChange={(event) =>
@@ -326,6 +202,7 @@ export default function UserRegisterPage({ onBackHome, onSubmitUser }) {
               E-mail <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <Mail size={18} />
+
                 <input
                   type="email"
                   value={form.email}
@@ -343,6 +220,7 @@ export default function UserRegisterPage({ onBackHome, onSubmitUser }) {
               WhatsApp <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <Phone size={18} />
+
                 <input
                   type="tel"
                   inputMode="numeric"
@@ -393,6 +271,7 @@ export default function UserRegisterPage({ onBackHome, onSubmitUser }) {
               Cidade <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
+
                 <input
                   value={form.city}
                   onChange={(event) => updateField("city", event.target.value)}
@@ -409,6 +288,7 @@ export default function UserRegisterPage({ onBackHome, onSubmitUser }) {
               Bairro <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
+
                 <input
                   value={form.neighborhood}
                   onChange={(event) =>
@@ -430,6 +310,7 @@ export default function UserRegisterPage({ onBackHome, onSubmitUser }) {
               Senha <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <LockKeyhole size={18} />
+
                 <input
                   type="password"
                   value={form.password}
@@ -452,6 +333,7 @@ export default function UserRegisterPage({ onBackHome, onSubmitUser }) {
               Confirmar senha <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <LockKeyhole size={18} />
+
                 <input
                   type="password"
                   value={form.confirmPassword}
@@ -495,7 +377,7 @@ export default function UserRegisterPage({ onBackHome, onSubmitUser }) {
             <button
               className="user-register-form__secondary-button"
               type="button"
-              onClick={onBackHome}
+              onClick={() => navigate("/")}
             >
               Cancelar
             </button>

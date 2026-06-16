@@ -1,0 +1,283 @@
+.about-volunteering {
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(123, 53, 232, 0.12),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(58, 134, 255, 0.1),
+      transparent 25%
+    ),
+    linear-gradient(180deg, #f9f8ff 0%, #ffffff 40%, #f8fbff 100%);
+  color: var(--color-text, #1f2937);
+}
+
+.about-volunteering__hero {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 80px 0 56px;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 36px;
+  align-items: center;
+}
+
+.about-volunteering__badge,
+.about-volunteering__section-header span,
+.about-volunteering__purpose-content span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(123, 53, 232, 0.1);
+  color: var(--color-primary, #7b35e8);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.about-volunteering__hero-content h1 {
+  margin: 0 0 18px;
+  font-size: clamp(2.3rem, 5vw, 4.2rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--color-text, #1f2937);
+}
+
+.about-volunteering__hero-content h1 span {
+  color: var(--color-primary, #7b35e8);
+}
+
+.about-volunteering__hero-content p {
+  max-width: 640px;
+  margin: 0;
+  color: var(--color-text-soft, #6b7280);
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.about-volunteering__hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.about-volunteering__primary-button,
+.about-volunteering__secondary-button {
+  text-decoration: none;
+  border-radius: 16px;
+  font-weight: 800;
+  transition: 0.2s ease;
+}
+
+.about-volunteering__primary-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px;
+  background: linear-gradient(135deg, var(--color-primary, #7b35e8), #9755f6);
+  color: #ffffff;
+  box-shadow: 0 18px 35px rgba(123, 53, 232, 0.22);
+}
+
+.about-volunteering__primary-button:hover {
+  transform: translateY(-2px);
+}
+
+.about-volunteering__secondary-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 20px;
+  border: 1px solid rgba(123, 53, 232, 0.2);
+  background: #ffffff;
+  color: var(--color-primary, #7b35e8);
+}
+
+.about-volunteering__secondary-button:hover {
+  background: rgba(123, 53, 232, 0.05);
+}
+
+.about-volunteering__hero-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.about-volunteering__hero-card {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(123, 53, 232, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.about-volunteering__hero-icon,
+.about-volunteering__benefit-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    rgba(123, 53, 232, 0.12),
+    rgba(151, 85, 246, 0.18)
+  );
+  color: var(--color-primary, #7b35e8);
+  margin-bottom: 16px;
+}
+
+.about-volunteering__hero-card h3,
+.about-volunteering__benefit-card h3,
+.about-volunteering__step-card h3 {
+  margin: 0 0 10px;
+  font-size: 1.12rem;
+  color: var(--color-text, #1f2937);
+}
+
+.about-volunteering__hero-card p,
+.about-volunteering__benefit-card p,
+.about-volunteering__step-card p,
+.about-volunteering__section-header p,
+.about-volunteering__purpose-content p {
+  margin: 0;
+  color: var(--color-text-soft, #6b7280);
+  line-height: 1.7;
+}
+
+.about-volunteering__section,
+.about-volunteering__purpose {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 42px 0 56px;
+}
+
+.about-volunteering__section--alt {
+  padding-top: 56px;
+}
+
+.about-volunteering__section-header {
+  max-width: 760px;
+  margin-bottom: 28px;
+}
+
+.about-volunteering__section-header h2,
+.about-volunteering__purpose-content h2 {
+  margin: 0 0 14px;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  line-height: 1.15;
+  color: var(--color-text, #1f2937);
+}
+
+.about-volunteering__benefits,
+.about-volunteering__steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.about-volunteering__benefit-card,
+.about-volunteering__step-card {
+  padding: 26px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 22px;
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.06);
+}
+
+.about-volunteering__step-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.about-volunteering__step-number {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary, #7b35e8), #9755f6);
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 1rem;
+}
+
+.about-volunteering__purpose {
+  padding-top: 40px;
+  padding-bottom: 80px;
+}
+
+.about-volunteering__purpose-content {
+  padding: 36px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #ffffff, #f8f4ff);
+  border: 1px solid rgba(123, 53, 232, 0.1);
+  box-shadow: 0 18px 45px rgba(123, 53, 232, 0.08);
+}
+
+.about-volunteering__purpose-content blockquote {
+  margin: 24px 0 0;
+  padding: 22px 24px;
+  border-left: 5px solid var(--color-primary, #7b35e8);
+  border-radius: 0 18px 18px 0;
+  background: rgba(123, 53, 232, 0.05);
+  color: var(--color-text, #1f2937);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  font-weight: 700;
+}
+
+@media (max-width: 992px) {
+  .about-volunteering__hero {
+    grid-template-columns: 1fr;
+    padding-top: 64px;
+  }
+
+  .about-volunteering__benefits,
+  .about-volunteering__steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-volunteering__hero,
+  .about-volunteering__section,
+  .about-volunteering__purpose {
+    width: min(100%, calc(100% - 32px));
+  }
+
+  .about-volunteering__hero {
+    padding: 40px 0 36px;
+    gap: 24px;
+  }
+
+  .about-volunteering__hero-content p,
+  .about-volunteering__section-header p,
+  .about-volunteering__purpose-content p {
+    font-size: 0.98rem;
+  }
+
+  .about-volunteering__hero-actions {
+    flex-direction: column;
+  }
+
+  .about-volunteering__primary-button,
+  .about-volunteering__secondary-button {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .about-volunteering__purpose-content {
+    padding: 26px 22px;
+  }
+}

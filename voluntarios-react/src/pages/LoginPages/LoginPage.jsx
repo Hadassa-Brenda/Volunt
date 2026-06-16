@@ -1,9 +1,10 @@
-import { ArrowLeft, Heart, Lock, Mail, Search } from "lucide-react";
+import { ArrowLeft, Lock, Mail, Search } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "../LoginPages/LoginPages.css";
 
-export default function LoginPage({ onBackHome }) {
+export default function LoginPage() {
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -22,13 +23,14 @@ export default function LoginPage({ onBackHome }) {
     console.log("Login:", form);
   }
 
+  const navigate = useNavigate();
   return (
     <main className="login-page">
       <section className="login-page__left">
         <button
           className="login-page__back-button"
           type="button"
-          onClick={onBackHome}
+          onClick={() => navigate("/")}
           style={{
             width: "fit-content",
             display: "inline-flex",

@@ -21,6 +21,7 @@ import {
 import "./ServiceCreatePage.css";
 import "react-phone-number-input/style.css";
 import WhatsappInput from "../../components/InputWhatssap/InputWhatssap";
+import { useNavigate } from "react-router-dom";
 
 const pageImages = {
   volunteer:
@@ -58,10 +59,11 @@ function FieldError({ id, message }) {
   );
 }
 
-export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
+export default function ServiceCreatePage({ onSubmitService }) {
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [touchedFields, setTouchedFields] = useState({});
+  const navigate = useNavigate();
 
   function updateField(field, value) {
     const nextValue = value || "";
@@ -196,7 +198,7 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
         <button
           className="service-create-page__back-button"
           type="button"
-          onClick={onBackHome}
+          onClick={() => navigate("/")}
         >
           <ArrowLeft size={18} />
           Voltar
@@ -445,7 +447,7 @@ export default function ServiceCreatePage({ onBackHome, onSubmitService }) {
             <button
               className="service-create-form__cancel"
               type="button"
-              onClick={onBackHome}
+              onClick={() => navigate("/")}
             >
               Cancelar
             </button>
