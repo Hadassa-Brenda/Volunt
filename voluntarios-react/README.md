@@ -1,4 +1,4 @@
-# Voluntá+ React
+# Voluntá+
 
 Projeto React organizado com CSS puro, componentes separados e sem Vite.
 
