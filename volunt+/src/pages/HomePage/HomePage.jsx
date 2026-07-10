@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import {
   Header,
   Hero,
-  HowItWorks,
-  ImpactAside,
   SearchPanel,
   ServiceModal,
   ServicesSection,
@@ -65,12 +63,6 @@ export default function HomePage() {
       <section className="app-content-grid">
         <ServicesSection services={filteredServices} />
       </section>
-
-      <div className="home-info-row" style={{ gap: "10px" }}>
-        <HowItWorks />
-        <ImpactAside onOpenServiceModal={() => setIsServiceModalOpen(true)} />
-      </div>
-
       <Footer />
 
       {isServiceModalOpen && (
