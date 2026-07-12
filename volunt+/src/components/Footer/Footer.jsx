@@ -1,4 +1,4 @@
-import { Heart, Instagram, Mail, MapPin } from "lucide-react";
+import { Heart} from "lucide-react";
 
 import "./Footer.css";
 
@@ -17,25 +17,6 @@ export default function Footer() {
           <a href="#explorar">Explorar serviços</a>
           <a href="#como-funciona">Como funciona</a>
           <a href="#sobre">Sobre</a>
-        </div>
-
-        <div className="footer__column">
-          <h3 style={{ color: "#f1f1f1" }}>Contato</h3>
-
-          <span>
-            <MapPin size={16} />
-            Belo Horizonte, MG
-          </span>
-
-          <span>
-            <Mail size={16} />
-            contato@voluntarios.com
-          </span>
-
-          <span>
-            <Instagram size={16} />
-            @voluntarios
-          </span>
         </div>
       </div>
 

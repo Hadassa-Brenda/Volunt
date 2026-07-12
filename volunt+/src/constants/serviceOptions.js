@@ -15,3 +15,10 @@ export const DEFAULT_SERVICE_FORM = {
   neighborhood: "",
   description: "",
 };
+
+export const DEFAULT_FORM = {
+  search: "",
+  category: "Todas",
+  modality: "Todos",
+  location: "Todos",
+};

@@ -8,10 +8,9 @@ import {
   ServiceModal,
   ServicesSection,
 } from "../../components";
-
 import Footer from "../../components/Footer/Footer";
 
-import { DEFAULT_SERVICE_FORM } from "../../constants/serviceOptions";
+import { DEFAULT_SERVICE_FORM, DEFAULT_FORM} from "../../constants/serviceOptions";
 import { servicesSeed } from "../../data/services";
 import { createService } from "../../utils/createService";
 import { filterServices } from "../../utils/filterServices";
@@ -22,11 +21,7 @@ export default function HomePage() {
 
   const [services, setServices] = useState(servicesSeed);
 
-  const [filters, setFilters] = useState({
-    search: "",
-    category: "Todas",
-    modality: "Todos",
-  });
+  const [filters, setFilters] = useState({ ...DEFAULT_FORM });
 
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
 
@@ -53,13 +48,13 @@ export default function HomePage() {
     <main className="app-shell">
       <Header
         onCreateUser={() => navigate("/cadastro")}
-        onOpenLogin={() => navigate("/login")}
+         onOpenLogin={() => navigate("/login")}
       />
 
       <Hero onOpenServiceModal={() => setIsServiceModalOpen(true)} />
 
       <SearchPanel filters={filters} onFilterChange={handleFilterChange} />
-
+      
       <section className="app-content-grid">
         <ServicesSection services={filteredServices} />
       </section>
