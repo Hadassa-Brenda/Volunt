@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 import { Header } from "../../components";
-import Footer from "../../components/Footer/Footer";
+import Footer from "../../layouts/Footer/Footer";
 import "../CatalogoServicos/CatalogoServicos.css";
 import { initialFilters } from "../CatalogoServicos/constants/forms/initialFilters";
 import { servicesMock } from "../CatalogoServicos/constants/forms/serviceMock";

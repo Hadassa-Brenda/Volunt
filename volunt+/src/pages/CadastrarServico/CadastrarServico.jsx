@@ -9,57 +9,15 @@ import {
   MessageCircle,
   Monitor,
   Upload,
-  X,
+  X
 } from "lucide-react";
 
-import { Header } from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
-
+import Header from "../../layouts/Header/Header";
+import Footer from "../../layouts/Footer/Footer";
+import {validateStep, progress} from "../../pages/CadastrarServico/utils/CadastrarServicoUtils"
+import {initialFormData, steps} from "../CadastrarServico/constants/CadastrarServicoConst"
+import { FormField } from "components/FormField/FormField";
 import "../CadastrarServico/CadastrarServico.css";
-
-const initialFormData = {
-  title: "",
-  category: "",
-  description: "",
-  image: null,
-  imagePreview: "",
-
-  modality: "",
-  city: "",
-  neighborhood: "",
-  schedule: "",
-
-  whatsapp: "",
-  instagram: "",
-  email: "",
-  website: "",
-
-  freeService: false,
-  acceptTerms: false,
-};
-
-const steps = [
-  {
-    id: 1,
-    title: "Informações",
-    description: "Dados principais",
-  },
-  {
-    id: 2,
-    title: "Atendimento",
-    description: "Local e modalidade",
-  },
-  {
-    id: 3,
-    title: "Contato",
-    description: "Canais de contato",
-  },
-  {
-    id: 4,
-    title: "Revisão",
-    description: "Confira os dados",
-  },
-];
 
 export default function CadastrarServico() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -67,9 +25,10 @@ export default function CadastrarServico() {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
-  const progress = useMemo(() => {
+    const progress = useMemo(() => {
     return ((currentStep - 1) / (steps.length - 1)) * 100;
   }, [currentStep]);
+
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -144,73 +103,6 @@ export default function CadastrarServico() {
     }));
   };
 
-  const validateStep = () => {
-    const newErrors = {};
-
-    if (currentStep === 1) {
-      if (!formData.title.trim()) {
-        newErrors.title = "Informe o título do serviço.";
-      }
-
-      if (!formData.category) {
-        newErrors.category = "Selecione uma categoria.";
-      }
-
-      if (formData.description.trim().length < 30) {
-        newErrors.description =
-          "A descrição deve ter pelo menos 30 caracteres.";
-      }
-    }
-
-    if (currentStep === 2) {
-      if (!formData.modality) {
-        newErrors.modality = "Selecione a modalidade.";
-      }
-
-      if (
-        formData.modality !== "Online" &&
-        !formData.city.trim()
-      ) {
-        newErrors.city = "Informe a cidade.";
-      }
-    }
-
-    if (currentStep === 3) {
-      const hasContact =
-        formData.whatsapp.trim() ||
-        formData.instagram.trim() ||
-        formData.email.trim() ||
-        formData.website.trim();
-
-      if (!hasContact) {
-        newErrors.contact =
-          "Informe pelo menos uma forma de contato.";
-      }
-
-      if (
-        formData.email &&
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
-      ) {
-        newErrors.email = "Informe um e-mail válido.";
-      }
-    }
-
-    if (currentStep === 4) {
-      if (!formData.freeService) {
-        newErrors.freeService =
-          "Confirme que o serviço é gratuito.";
-      }
-
-      if (!formData.acceptTerms) {
-        newErrors.acceptTerms =
-          "Você precisa aceitar os termos.";
-      }
-    }
-
-    setErrors(newErrors);
-
-    return Object.keys(newErrors).length === 0;
-  };
 
   const goToNextStep = () => {
     if (!validateStep()) {
@@ -929,45 +821,6 @@ function ReviewStep({
         </p>
       </div>
     </section>
-  );
-}
-
-function FormField({
-  label,
-  name,
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-  error,
-  required = false,
-  fullWidth = false,
-  disabled = false,
-}) {
-  return (
-    <label
-      className={`form-field ${
-        fullWidth ? "form-field--full" : ""
-      }`}
-    >
-      <span>
-        {label} {required && <strong>*</strong>}
-      </span>
-
-      <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className={error ? "input-error" : ""}
-        disabled={disabled}
-      />
-
-      {error && (
-        <small className="field-error">{error}</small>
-      )}
-    </label>
   );
 }
 

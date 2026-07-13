@@ -8,7 +8,7 @@ import {
   ServiceModal,
   ServicesSection,
 } from "../../components";
-import Footer from "../../components/Footer/Footer";
+import Footer from "../../layouts/Footer/Footer"
 
 import { DEFAULT_SERVICE_FORM, DEFAULT_FORM} from "../../constants/serviceOptions";
 import { servicesSeed } from "../../data/services";
@@ -48,7 +48,7 @@ export default function HomePage() {
     <main className="app-shell">
       <Header
         onCreateUser={() => navigate("/cadastro")}
-         onOpenLogin={() => navigate("/login")}
+         onOpenLogin={() => navigate("/cadastrar-servico")}
       />
 
       <Hero onOpenServiceModal={() => setIsServiceModalOpen(true)} />
