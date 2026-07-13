@@ -52,8 +52,9 @@ export default function HomePage() {
       />
 
       <Hero onOpenServiceModal={() => setIsServiceModalOpen(true)} />
-
+      <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
       <SearchPanel filters={filters} onFilterChange={handleFilterChange} />
+      </div>
       
       <section className="app-content-grid">
         <ServicesSection services={filteredServices} />
