@@ -1,0 +1,17 @@
+.review-item span,
+.review-item strong {
+  display: block;
+}
+
+.review-item span {
+  margin-bottom: 3px;
+  color: #949aab;
+  font-size: 0.67rem;
+}
+
+.review-item strong {
+  color: #3f475e;
+  font-size: 0.77rem;
+  line-height: 1.45;
+  white-space: pre-line;
+}

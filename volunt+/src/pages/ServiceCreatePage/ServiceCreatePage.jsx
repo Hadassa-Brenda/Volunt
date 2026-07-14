@@ -17,7 +17,7 @@ import {
   validateContactRequired,
   validateServiceField,
   validateServiceForm,
-} from "./ServiceCreatePageValidator";
+} from "./Utils/ServiceCreatePageValidator";
 import "./ServiceCreatePage.css";
 import "react-phone-number-input/style.css";
 import WhatsappInput from "../../components/InputWhatssap/InputWhatssap";

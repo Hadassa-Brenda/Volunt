@@ -1,3 +1,6 @@
+import {steps} from "../constants/CadastrarServicoConst";
+import {useMemo} from "react";
+
 export const validateStep = () => {
     const newErrors = {};
 
@@ -66,4 +69,30 @@ export const validateStep = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  
+export const goToNextStep = () => {
+    if (!validateStep()) {
+      return;
+    }
+
+    setCurrentStep((currentStepValue) =>
+      Math.min(currentStepValue + 1, steps.length)
+    );
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+export const goToPreviousStep = () => {
+    setErrors({});
+
+    setCurrentStep((currentStepValue) =>
+      Math.max(currentStepValue - 1, 1)
+    );
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };

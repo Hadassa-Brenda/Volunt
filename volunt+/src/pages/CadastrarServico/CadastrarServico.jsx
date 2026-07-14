@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -14,21 +14,17 @@ import {
 
 import Header from "../../layouts/Header/Header";
 import Footer from "../../layouts/Footer/Footer";
-import {validateStep, progress} from "../../pages/CadastrarServico/utils/CadastrarServicoUtils"
+import {validateStep, progress, goToNextStep} from "../../pages/CadastrarServico/utils/CadastrarServicoUtils"
 import {initialFormData, steps} from "../CadastrarServico/constants/CadastrarServicoConst"
 import { FormField } from "components/FormField/FormField";
 import "../CadastrarServico/CadastrarServico.css";
+import {Stepper} from "../../components/Stepper/Stepper";
 
 export default function CadastrarServico() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
-
-    const progress = useMemo(() => {
-    return ((currentStep - 1) / (steps.length - 1)) * 100;
-  }, [currentStep]);
-
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -103,35 +99,6 @@ export default function CadastrarServico() {
     }));
   };
 
-
-  const goToNextStep = () => {
-    if (!validateStep()) {
-      return;
-    }
-
-    setCurrentStep((currentStepValue) =>
-      Math.min(currentStepValue + 1, steps.length)
-    );
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
-  const goToPreviousStep = () => {
-    setErrors({});
-
-    setCurrentStep((currentStepValue) =>
-      Math.max(currentStepValue - 1, 1)
-    );
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -179,7 +146,6 @@ export default function CadastrarServico() {
   return (
     <main className="create-service-page">
       <Header />
-
       <section className="create-service-container">
         {submitted ? (
           <SuccessContent
@@ -201,7 +167,6 @@ export default function CadastrarServico() {
 
             <Stepper
               currentStep={currentStep}
-              progress={progress}
             />
 
             <form
@@ -282,51 +247,8 @@ export default function CadastrarServico() {
           </>
         )}
       </section>
-
       <Footer />
     </main>
-  );
-}
-
-function Stepper({ currentStep, progress }) {
-  return (
-    <section className="service-stepper">
-      <div className="service-stepper-line">
-        <div
-          className="service-stepper-progress"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-
-      <div className="service-stepper-items">
-        {steps.map((step) => {
-          const isActive = step.id === currentStep;
-          const isCompleted = step.id < currentStep;
-
-          return (
-            <div
-              key={step.id}
-              className={`service-stepper-item ${
-                isActive ? "service-stepper-item--active" : ""
-              } ${
-                isCompleted
-                  ? "service-stepper-item--completed"
-                  : ""
-              }`}
-            >
-              <div className="service-stepper-number">
-                {isCompleted ? <Check size={17} /> : step.id}
-              </div>
-
-              <div>
-                <strong>{step.title}</strong>
-                <span>{step.description}</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </section>
   );
 }
 
@@ -861,40 +783,6 @@ function SelectField({
   );
 }
 
-function ModalityOption({
-  name,
-  value,
-  checked,
-  onChange,
-  icon,
-  title,
-  description,
-}) {
-  return (
-    <label
-      className={`modality-option ${
-        checked ? "modality-option--selected" : ""
-      }`}
-    >
-      <input
-        type="radio"
-        name={name}
-        value={value}
-        checked={checked}
-        onChange={onChange}
-      />
-
-      <div className="modality-option-icon">{icon}</div>
-
-      <strong>{title}</strong>
-      <span>{description}</span>
-
-      <div className="modality-option-check">
-        {checked && <Check size={14} />}
-      </div>
-    </label>
-  );
-}
 
 function ReviewSection({ title, onEdit, children }) {
   return (
@@ -909,15 +797,6 @@ function ReviewSection({ title, onEdit, children }) {
 
       <div className="review-section-content">{children}</div>
     </section>
-  );
-}
-
-function ReviewItem({ label, value }) {
-  return (
-    <div className="review-item">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
   );
 }
 
