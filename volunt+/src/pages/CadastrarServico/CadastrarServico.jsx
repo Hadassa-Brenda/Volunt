@@ -14,12 +14,12 @@ import {
 
 import Header from "../../layouts/Header/Header";
 import Footer from "../../layouts/Footer/Footer";
-import {initialFormData, steps} from "../CadastrarServico/constants/CadastrarServicoConst"
+import {initialFormData, steps, reviewTexts} from "../CadastrarServico/constants/CadastrarServicoConst"
 import { FormField } from "components/FormField/FormField";
 import "../CadastrarServico/CadastrarServico.css";
 import {Stepper} from "../../components/Stepper/Stepper";
 import { ModalityOption } from "../../components/ModalityOption/ModalityOption";
-import { ReviewItem } from "../../components/ReviewItem/ReviewItem";
+import { ReviewStep } from "../../components/ReviewStep/ReviewStep";
 import { useNavigate } from "react-router-dom";
 import { useCadastrarServico } from "./hook/useCadastrarServico";
 
@@ -214,6 +214,7 @@ export default function CadastrarServico() {
                     errors={errors}
                     onChange={handleChange}
                     onEditStep={setCurrentStep}
+                    texts={reviewTexts}
                   />
                 )}
               </div>
@@ -570,190 +571,6 @@ function ContactStep({
   );
 }
 
-function ReviewStep({
-  formData,
-  errors,
-  onChange,
-  onEditStep,
-}) {
-  return (
-    <section className="form-step">
-      <div className="form-step-header">
-        <span>Etapa 4 de 4</span>
-        <h2>Revise seu serviço</h2>
-        <p>
-          Confira as informações antes de enviar para análise.
-        </p>
-      </div>
-
-      <div className="review-layout">
-        <article className="review-service-card">
-          <div className="review-service-image">
-            {formData.imagePreview ? (
-              <img
-                src={formData.imagePreview}
-                alt={formData.title}
-              />
-            ) : (
-              <div className="review-image-placeholder">
-                <ImagePlus size={34} />
-                <span>Sem imagem</span>
-              </div>
-            )}
-
-            <span>{formData.category}</span>
-          </div>
-
-          <div className="review-service-content">
-            <h3>{formData.title}</h3>
-
-            <p>{formData.description}</p>
-
-            <div className="review-service-information">
-              <span>
-                <Monitor size={16} />
-                {formData.modality}
-              </span>
-
-              {formData.modality !== "Online" && (
-                <span>
-                  <MapPin size={16} />
-                  {[formData.neighborhood, formData.city]
-                    .filter(Boolean)
-                    .join(", ")}
-                </span>
-              )}
-            </div>
-          </div>
-        </article>
-
-        <div className="review-sections">
-          <ReviewSection
-            title="Informações principais"
-            onEdit={() => onEditStep(1)}
-          >
-            <ReviewItem
-              label="Título"
-              value={formData.title}
-            />
-
-            <ReviewItem
-              label="Categoria"
-              value={formData.category}
-            />
-
-            <ReviewItem
-              label="Descrição"
-              value={formData.description}
-            />
-          </ReviewSection>
-
-          <ReviewSection
-            title="Atendimento"
-            onEdit={() => onEditStep(2)}
-          >
-            <ReviewItem
-              label="Modalidade"
-              value={formData.modality}
-            />
-
-            <ReviewItem
-              label="Cidade"
-              value={formData.city || "Não se aplica"}
-            />
-
-            <ReviewItem
-              label="Bairro"
-              value={formData.neighborhood || "Não informado"}
-            />
-
-            <ReviewItem
-              label="Horários"
-              value={formData.schedule || "Não informado"}
-            />
-          </ReviewSection>
-
-          <ReviewSection
-            title="Contato"
-            onEdit={() => onEditStep(3)}
-          >
-            <ReviewItem
-              label="WhatsApp"
-              value={formData.whatsapp || "Não informado"}
-            />
-
-            <ReviewItem
-              label="Instagram"
-              value={formData.instagram || "Não informado"}
-            />
-
-            <ReviewItem
-              label="E-mail"
-              value={formData.email || "Não informado"}
-            />
-
-            <ReviewItem
-              label="Site"
-              value={formData.website || "Não informado"}
-            />
-          </ReviewSection>
-        </div>
-      </div>
-
-      <div className="review-confirmations">
-        <label className="confirmation-checkbox">
-          <input
-            type="checkbox"
-            name="freeService"
-            checked={formData.freeService}
-            onChange={onChange}
-          />
-
-          <span>
-            Declaro que este serviço é gratuito ou voluntário.
-          </span>
-        </label>
-
-        {errors.freeService && (
-          <small className="field-error">
-            {errors.freeService}
-          </small>
-        )}
-
-        <label className="confirmation-checkbox">
-          <input
-            type="checkbox"
-            name="acceptTerms"
-            checked={formData.acceptTerms}
-            onChange={onChange}
-          />
-
-          <span>
-            Confirmo que as informações são verdadeiras e aceito os
-            termos de uso da plataforma.
-          </span>
-        </label>
-
-        {errors.acceptTerms && (
-          <small className="field-error">
-            {errors.acceptTerms}
-          </small>
-        )}
-      </div>
-
-      <div className="review-warning">
-        <strong>O que acontece depois?</strong>
-
-        <p>
-          O serviço será enviado para moderação com o status
-          “Pendente”. Ele só ficará disponível publicamente após a
-          aprovação.
-        </p>
-      </div>
-    </section>
-  );
-}
-
 function SelectField({
   label,
   name,
@@ -792,7 +609,7 @@ function SelectField({
 }
 
 
-function ReviewSection({ title, onEdit, children }) {
+export function ReviewSection({ title, onEdit, children }) {
   return (
     <section className="review-section">
       <div className="review-section-header">
