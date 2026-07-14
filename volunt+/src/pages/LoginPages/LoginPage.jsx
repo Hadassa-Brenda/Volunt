@@ -29,26 +29,9 @@ export default function LoginPage() {
     <main className="login-page">
       <section className="login-page__left">
         <button
-          className="login-page__back-button"
+          className="user-register-page__back-button"
           type="button"
           onClick={() => navigate("/")}
-          style={{
-            width: "fit-content",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            marginBottom: "32px",
-            border: "1px solid #dfe4ef",
-            borderRadius: "999px",
-            padding: "10px 16px",
-            fontSize: "14px",
-            background: "#ffffff",
-            color: "#081035",
-            fontWeight: 800,
-            cursor: "pointer",
-            boxShadow: "0 12px 28px rgba(15, 20, 55, 0.08)",
-          }}
         >
           <ArrowLeft size={18} />
           Voltar

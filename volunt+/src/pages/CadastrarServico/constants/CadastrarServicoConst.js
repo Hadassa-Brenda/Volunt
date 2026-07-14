@@ -1,4 +1,3 @@
-
 export const initialFormData = {
   title: "",
   category: "",

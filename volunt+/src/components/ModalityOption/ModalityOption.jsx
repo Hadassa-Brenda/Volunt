@@ -1,5 +1,6 @@
 import React from "react";
 import "../ModalityOption/ModalityOption.css";
+import { Check } from "lucide-react";
 
 export function ModalityOption({
   name,

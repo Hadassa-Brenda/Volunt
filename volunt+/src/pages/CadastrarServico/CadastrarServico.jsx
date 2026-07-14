@@ -18,6 +18,9 @@ import {initialFormData, steps} from "../CadastrarServico/constants/CadastrarSer
 import { FormField } from "components/FormField/FormField";
 import "../CadastrarServico/CadastrarServico.css";
 import {Stepper} from "../../components/Stepper/Stepper";
+import { ModalityOption } from "../../components/ModalityOption/ModalityOption";
+import { ReviewItem } from "../../components/ReviewItem/ReviewItem";
+import { useNavigate } from "react-router-dom";
 
 export default function CadastrarServico() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -25,6 +28,7 @@ export default function CadastrarServico() {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
+  const navigate = useNavigate();
    const validateStep = () => {
     const newErrors = {};
 
@@ -242,6 +246,14 @@ export default function CadastrarServico() {
   return (
     <main className="create-service-page">
       <Header />
+      <button
+          className="login-page__back-button"
+          type="button"
+          onClick={() => navigate("/")}
+        >
+          <ArrowLeft size={18} />
+          Voltar
+        </button>
       <section className="create-service-container">
         {submitted ? (
           <SuccessContent
