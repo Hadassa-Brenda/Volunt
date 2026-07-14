@@ -1,14 +1,15 @@
-import {steps} from "../constants/CadastrarServicoConst";
 import "../../components/Stepper/Stepper.css";
-import  progress from "../../pages/CadastrarServico/utils/CadastrarServicoUtils";
+import  {useStepper} from "../../components/Stepper/hook/useStepper";
+import { Check } from "lucide-react";
 
-export function Stepper({ currentStep }) {
+export function Stepper({ currentStep, steps }) {
+  const { progress } = useStepper(currentStep, steps);
   return (
     <section className="service-stepper">
       <div className="service-stepper-line">
         <div
           className="service-stepper-progress"
-          style={{ width: `${progress(currentStep)}%` }}
+          style={{ width: `${progress}%` }}
         />
       </div>
 
