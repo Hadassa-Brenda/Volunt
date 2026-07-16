@@ -40,30 +40,26 @@ export default function SearchPanel({
             placeholder="Buscar palavra-chave"
           />
         </label>
-
         <SelectField
-          icon={MapPin}
           label="Localização"
           value={filters.location}
           options={LOCATION_FILTER_OPTIONS}
-          onChange={(value) => onFilterChange("location", value)}
+          onChange={(event) => onFilterChange("location", event.target.value)}
         />
 
         <SelectField
-          icon={Tag}
           label="Categoria"
           value={filters.category}
           options={CATEGORY_FILTER_OPTIONS}
-          onChange={(value) => onFilterChange("category", value)}
+          onChange={(event) => onFilterChange("category", event.target.value)}
         />
 
         <SelectField
           label="Modalidade"
           value={filters.modality}
           options={MODALITY_OPTIONS}
-          onChange={(value) => onFilterChange("modality", value)}
+          onChange={(event) => onFilterChange("modality", event.target.value)}
         />
-
         <Button className="search-panel__search-button" type="button">
           Buscar
         </Button>
