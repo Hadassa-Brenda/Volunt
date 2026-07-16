@@ -29,6 +29,7 @@ const MenuProps = {
 
 export default function SelectField({
   id,
+  name,
   label = "Selecione",
   options = [],
   value,
@@ -58,13 +59,17 @@ export default function SelectField({
 
   function updateSelectedValues(nextValue) {
     if (onChange) {
-      onChange(nextValue);
+      onChange({
+        target: {
+          name,
+          value: nextValue,
+        },
+      });
       return;
     }
 
     setInternalValue(nextValue);
   }
-
   function handleChange(event) {
     const nextValue = event.target.value;
 

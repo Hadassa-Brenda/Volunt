@@ -47,11 +47,9 @@ export const reviewTexts = {
 
   title: "Revise seu serviço",
 
-  description:
-    "Confira as informações antes de enviar para análise.",
+  description: "Confira as informações antes de enviar para análise.",
 
-  freeService:
-    "Declaro que este serviço é gratuito ou voluntário.",
+  freeService: "Declaro que este serviço é gratuito ou voluntário.",
 
   acceptTerms:
     "Confirmo que as informações são verdadeiras e aceito os termos de uso da plataforma.",

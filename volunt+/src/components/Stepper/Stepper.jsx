@@ -1,5 +1,5 @@
 import "../../components/Stepper/Stepper.css";
-import  {useStepper} from "../../components/Stepper/hook/useStepper";
+import { useStepper } from "../../components/Stepper/hook/useStepper";
 import { Check } from "lucide-react";
 
 export function Stepper({ currentStep, steps }) {
@@ -23,11 +23,7 @@ export function Stepper({ currentStep, steps }) {
               key={step.id}
               className={`service-stepper-item ${
                 isActive ? "service-stepper-item--active" : ""
-              } ${
-                isCompleted
-                  ? "service-stepper-item--completed"
-                  : ""
-              }`}
+              } ${isCompleted ? "service-stepper-item--completed" : ""}`}
             >
               <div className="service-stepper-number">
                 {isCompleted ? <Check size={17} /> : step.id}

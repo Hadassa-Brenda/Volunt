@@ -35,7 +35,7 @@ export default function DetalhesServico() {
   const [reportSent, setReportSent] = useState(false);
 
   const service = servicesMock.find(
-    (currentService) => String(currentService.id) === String(id)
+    (currentService) => String(currentService.id) === String(id),
   );
 
   if (!service) {
@@ -118,29 +118,20 @@ export default function DetalhesServico() {
           <div className="service-main-image">
             <img src={service.image} alt={service.title} />
 
-            <span className="service-image-category">
-              {service.category}
-            </span>
+            <span className="service-image-category">{service.category}</span>
           </div>
 
           <aside className="service-summary">
-            <span className="service-status">
-              Serviço voluntário gratuito
-            </span>
+            <span className="service-status">Serviço voluntário gratuito</span>
 
             <h1>{service.title}</h1>
 
-            <p className="service-short-description">
-              {service.description}
-            </p>
+            <p className="service-short-description">{service.description}</p>
 
             <div className="service-provider-summary">
               <div className="provider-avatar">
                 {service.providerImage ? (
-                  <img
-                    src={service.providerImage}
-                    alt={service.provider}
-                  />
+                  <img src={service.providerImage} alt={service.provider} />
                 ) : (
                   <UserRound size={24} />
                 )}
@@ -149,9 +140,7 @@ export default function DetalhesServico() {
               <div>
                 <span>Oferecido por</span>
                 <strong>{service.provider}</strong>
-                <small>
-                  {service.providerType || "Projeto voluntário"}
-                </small>
+                <small>{service.providerType || "Projeto voluntário"}</small>
               </div>
             </div>
 
@@ -169,9 +158,7 @@ export default function DetalhesServico() {
               <button
                 type="button"
                 className={`secondary-icon-button ${
-                  isFavorite
-                    ? "secondary-icon-button--favorite"
-                    : ""
+                  isFavorite ? "secondary-icon-button--favorite" : ""
                 }`}
                 onClick={() => setIsFavorite((current) => !current)}
                 aria-label={
@@ -185,10 +172,7 @@ export default function DetalhesServico() {
                     : "Adicionar aos favoritos"
                 }
               >
-                <Heart
-                  size={21}
-                  fill={isFavorite ? "currentColor" : "none"}
-                />
+                <Heart size={21} fill={isFavorite ? "currentColor" : "none"} />
               </button>
 
               <button
@@ -214,9 +198,7 @@ export default function DetalhesServico() {
             <section className="details-section">
               <h2>Sobre o serviço</h2>
 
-              <p>
-                {service.fullDescription || service.description}
-              </p>
+              <p>{service.fullDescription || service.description}</p>
             </section>
 
             <section className="details-section">
@@ -239,8 +221,7 @@ export default function DetalhesServico() {
                   icon={<Clock3 size={21} />}
                   label="Horários"
                   value={
-                    service.schedule ||
-                    "Combine diretamente com o responsável"
+                    service.schedule || "Combine diretamente com o responsável"
                   }
                 />
 
@@ -265,10 +246,7 @@ export default function DetalhesServico() {
               <div className="provider-card">
                 <div className="provider-card-avatar">
                   {service.providerImage ? (
-                    <img
-                      src={service.providerImage}
-                      alt={service.provider}
-                    />
+                    <img src={service.providerImage} alt={service.provider} />
                   ) : (
                     <UserRound size={30} />
                   )}
@@ -278,9 +256,7 @@ export default function DetalhesServico() {
                   <div>
                     <h3>{service.provider}</h3>
 
-                    <span>
-                      {service.providerType || "Projeto voluntário"}
-                    </span>
+                    <span>{service.providerType || "Projeto voluntário"}</span>
                   </div>
 
                   <p>
@@ -310,8 +286,7 @@ export default function DetalhesServico() {
             <h2>Informações de contato</h2>
 
             <p>
-              Use um dos canais abaixo para falar diretamente com o
-              responsável.
+              Use um dos canais abaixo para falar diretamente com o responsável.
             </p>
 
             <div className="contact-list">
@@ -320,10 +295,7 @@ export default function DetalhesServico() {
                   icon={<MessageCircle size={20} />}
                   label="WhatsApp"
                   value={formatPhone(service.whatsapp)}
-                  href={buildWhatsAppLink(
-                    service.whatsapp,
-                    service.title
-                  )}
+                  href={buildWhatsAppLink(service.whatsapp, service.title)}
                 />
               )}
 
@@ -367,9 +339,7 @@ export default function DetalhesServico() {
             <div className="service-update-information">
               <span>Última atualização</span>
               <strong>
-                {formatDate(
-                  service.updatedAt || service.publishedAt
-                )}
+                {formatDate(service.updatedAt || service.publishedAt)}
               </strong>
             </div>
           </aside>
@@ -415,9 +385,7 @@ export default function DetalhesServico() {
 
                   <select
                     value={reportReason}
-                    onChange={(event) =>
-                      setReportReason(event.target.value)
-                    }
+                    onChange={(event) => setReportReason(event.target.value)}
                     required
                   >
                     <option value="">Selecione um motivo</option>
@@ -436,9 +404,7 @@ export default function DetalhesServico() {
                     <option value="inappropriate-content">
                       Conteúdo inadequado
                     </option>
-                    <option value="possible-fraud">
-                      Possível fraude
-                    </option>
+                    <option value="possible-fraud">Possível fraude</option>
                     <option value="other">Outro</option>
                   </select>
                 </label>
@@ -465,10 +431,7 @@ export default function DetalhesServico() {
                     Cancelar
                   </button>
 
-                  <button
-                    type="submit"
-                    className="submit-report-button"
-                  >
+                  <button type="submit" className="submit-report-button">
                     Enviar denúncia
                   </button>
                 </div>
@@ -496,12 +459,7 @@ function InformationItem({ icon, label, value }) {
 
 function ContactLink({ icon, label, value, href }) {
   return (
-    <a
-      className="contact-link"
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-    >
+    <a className="contact-link" href={href} target="_blank" rel="noreferrer">
       <div className="contact-link-icon">{icon}</div>
 
       <div>
@@ -529,9 +487,7 @@ function formatDate(date) {
     return "Não informado";
   }
 
-  return new Intl.DateTimeFormat("pt-BR").format(
-    new Date(`${date}T00:00:00`)
-  );
+  return new Intl.DateTimeFormat("pt-BR").format(new Date(`${date}T00:00:00`));
 }
 
 function formatPhone(phone) {
@@ -547,10 +503,7 @@ function formatPhone(phone) {
     return phone;
   }
 
-  return localNumber.replace(
-    /(\d{2})(\d{5})(\d{4})/,
-    "($1) $2-$3"
-  );
+  return localNumber.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
 }
 
 function buildWhatsAppLink(phone, serviceTitle) {
@@ -559,11 +512,12 @@ function buildWhatsAppLink(phone, serviceTitle) {
   }
 
   const digits = phone.replace(/\D/g, "");
-  const numberWithCountryCode =
-    digits.startsWith("55") ? digits : `55${digits}`;
+  const numberWithCountryCode = digits.startsWith("55")
+    ? digits
+    : `55${digits}`;
 
   const message = encodeURIComponent(
-    `Olá! Encontrei o serviço "${serviceTitle}" na plataforma Voluntá+ e gostaria de saber mais.`
+    `Olá! Encontrei o serviço "${serviceTitle}" na plataforma Voluntá+ e gostaria de saber mais.`,
   );
 
   return `https://wa.me/${numberWithCountryCode}?text=${message}`;

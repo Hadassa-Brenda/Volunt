@@ -1,14 +1,8 @@
 import { ImagePlus, MapPin, Monitor } from "lucide-react";
 import { ReviewItem } from "../ReviewItem/ReviewItem";
-import { ReviewSection } from "../../pages/CadastrarServico/CadastrarServico";
+import { ReviewSection } from "../../pages/CadastrarServico/steps/ReviewSection";
 
-export function ReviewStep({
-  formData,
-  errors,
-  onChange,
-  onEditStep,
-  texts,
-}) {
+export function ReviewStep({ formData, errors, onChange, onEditStep, texts }) {
   return (
     <section className="form-step">
       <div className="form-step-header">
@@ -21,10 +15,7 @@ export function ReviewStep({
         <article className="review-service-card">
           <div className="review-service-image">
             {formData.imagePreview ? (
-              <img
-                src={formData.imagePreview}
-                alt={formData.title}
-              />
+              <img src={formData.imagePreview} alt={formData.title} />
             ) : (
               <div className="review-image-placeholder">
                 <ImagePlus size={34} />
@@ -68,14 +59,8 @@ export function ReviewStep({
             <ReviewItem label="Descrição" value={formData.description} />
           </ReviewSection>
 
-          <ReviewSection
-            title="Atendimento"
-            onEdit={() => onEditStep(2)}
-          >
-            <ReviewItem
-              label="Modalidade"
-              value={formData.modality}
-            />
+          <ReviewSection title="Atendimento" onEdit={() => onEditStep(2)}>
+            <ReviewItem label="Modalidade" value={formData.modality} />
 
             <ReviewItem
               label="Cidade"
@@ -93,10 +78,7 @@ export function ReviewStep({
             />
           </ReviewSection>
 
-          <ReviewSection
-            title="Contato"
-            onEdit={() => onEditStep(3)}
-          >
+          <ReviewSection title="Contato" onEdit={() => onEditStep(3)}>
             <ReviewItem
               label="WhatsApp"
               value={formData.whatsapp || "Não informado"}
@@ -133,9 +115,7 @@ export function ReviewStep({
         </label>
 
         {errors.freeService && (
-          <small className="field-error">
-            {errors.freeService}
-          </small>
+          <small className="field-error">{errors.freeService}</small>
         )}
 
         <label className="confirmation-checkbox">
@@ -150,9 +130,7 @@ export function ReviewStep({
         </label>
 
         {errors.acceptTerms && (
-          <small className="field-error">
-            {errors.acceptTerms}
-          </small>
+          <small className="field-error">{errors.acceptTerms}</small>
         )}
       </div>
 

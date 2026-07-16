@@ -1,4 +1,3 @@
-
 export function FormField({
   label,
   name,
@@ -12,11 +11,7 @@ export function FormField({
   disabled = false,
 }) {
   return (
-    <label
-      className={`form-field ${
-        fullWidth ? "form-field--full" : ""
-      }`}
-    >
+    <label className={`form-field ${fullWidth ? "form-field--full" : ""}`}>
       <span>
         {label} {required && <strong>*</strong>}
       </span>
@@ -31,9 +26,7 @@ export function FormField({
         disabled={disabled}
       />
 
-      {error && (
-        <small className="field-error">{error}</small>
-      )}
+      {error && <small className="field-error">{error}</small>}
     </label>
   );
 }

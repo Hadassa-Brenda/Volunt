@@ -22,7 +22,6 @@ export default function CatalogoServicos() {
   const [favorites, setFavorites] = useState([]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
 
@@ -41,7 +40,7 @@ export default function CatalogoServicos() {
     setFavorites((currentFavorites) =>
       currentFavorites.includes(serviceId)
         ? currentFavorites.filter((id) => id !== serviceId)
-        : [...currentFavorites, serviceId]
+        : [...currentFavorites, serviceId],
     );
   };
 
@@ -64,16 +63,14 @@ export default function CatalogoServicos() {
       const matchesCity = !filters.city || service.city === filters.city;
 
       const matchesNeighborhood =
-        !filters.neighborhood ||
-        service.neighborhood === filters.neighborhood;
+        !filters.neighborhood || service.neighborhood === filters.neighborhood;
 
       const matchesProviderType =
-        !filters.providerType ||
-        service.providerType === filters.providerType;
+        !filters.providerType || service.providerType === filters.providerType;
 
       const matchesPublicationDate = checkPublicationDate(
         service.publishedAt,
-        filters.publicationDate
+        filters.publicationDate,
       );
 
       return (
@@ -413,7 +410,7 @@ function ServiceCard({ service, isFavorite, onFavorite }) {
       <div className="service-card-content">
         <span
           className={`service-category service-category--${normalizeCategory(
-            service.category
+            service.category,
           )}`}
         >
           {service.category}
@@ -465,8 +462,7 @@ function checkPublicationDate(date, selectedPeriod) {
   const currentDate = new Date();
 
   const differenceInMilliseconds = currentDate - serviceDate;
-  const differenceInDays =
-    differenceInMilliseconds / (1000 * 60 * 60 * 24);
+  const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
 
   return differenceInDays <= Number(selectedPeriod);
 }

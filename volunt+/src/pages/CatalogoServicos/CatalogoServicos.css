@@ -74,7 +74,9 @@
   background: linear-gradient(135deg, #6c31ee, #8339e9);
   color: #ffffff;
   cursor: pointer;
-  transition: transform 160ms ease, opacity 160ms ease;
+  transition:
+    transform 160ms ease,
+    opacity 160ms ease;
 }
 
 .catalog-search button:hover {
@@ -242,7 +244,9 @@
   border-radius: 16px;
   background: #ffffff;
   box-shadow: 0 12px 35px rgba(31, 40, 78, 0.06);
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .service-card:hover {

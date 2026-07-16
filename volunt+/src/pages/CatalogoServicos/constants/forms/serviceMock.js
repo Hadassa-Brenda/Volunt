@@ -1,4 +1,3 @@
-
 export const servicesMock = [
   {
     id: 1,

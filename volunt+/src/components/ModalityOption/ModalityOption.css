@@ -1,4 +1,3 @@
-
 .modality-options {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -16,7 +15,9 @@
   border-radius: 14px;
   background: #ffffff;
   cursor: pointer;
-  transition: border-color 160ms ease, background 160ms ease,
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
     transform 160ms ease;
 }
 

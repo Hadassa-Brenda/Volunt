@@ -2,7 +2,6 @@ import { ArrowLeft, Lock, Mail, Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 import "../LoginPages/LoginPages.css";
 
 export default function LoginPage() {

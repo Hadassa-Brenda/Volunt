@@ -28,11 +28,9 @@ export function useCadastrarServico() {
 
     switch (currentStep) {
       case 1:
-        if (!formData.title.trim())
-          newErrors.title = "Informe o título.";
+        if (!formData.title.trim()) newErrors.title = "Informe o título.";
 
-        if (!formData.category)
-          newErrors.category = "Selecione uma categoria.";
+        if (!formData.category) newErrors.category = "Selecione uma categoria.";
 
         if (formData.description.trim().length < 30)
           newErrors.description =
@@ -44,10 +42,7 @@ export function useCadastrarServico() {
         if (!formData.modality)
           newErrors.modality = "Selecione uma modalidade.";
 
-        if (
-          formData.modality !== "Online" &&
-          !formData.city.trim()
-        ) {
+        if (formData.modality !== "Online" && !formData.city.trim()) {
           newErrors.city = "Informe a cidade.";
         }
 
@@ -60,20 +55,15 @@ export function useCadastrarServico() {
           formData.email ||
           formData.website;
 
-        if (!hasContact)
-          newErrors.contact =
-            "Informe pelo menos um contato.";
+        if (!hasContact) newErrors.contact = "Informe pelo menos um contato.";
 
         break;
 
       case 4:
         if (!formData.freeService)
-          newErrors.freeService =
-            "Confirme que é gratuito.";
+          newErrors.freeService = "Confirme que é gratuito.";
 
-        if (!formData.acceptTerms)
-          newErrors.acceptTerms =
-            "Aceite os termos.";
+        if (!formData.acceptTerms) newErrors.acceptTerms = "Aceite os termos.";
 
         break;
     }
@@ -86,9 +76,7 @@ export function useCadastrarServico() {
   const nextStep = () => {
     if (!validateStep()) return;
 
-    setCurrentStep((step) =>
-      Math.min(step + 1, steps.length)
-    );
+    setCurrentStep((step) => Math.min(step + 1, steps.length));
   };
 
   const previousStep = () => {

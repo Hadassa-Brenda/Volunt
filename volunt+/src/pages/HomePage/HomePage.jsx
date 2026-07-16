@@ -8,9 +8,12 @@ import {
   ServiceModal,
   ServicesSection,
 } from "../../components";
-import Footer from "../../layouts/Footer/Footer"
+import Footer from "../../layouts/Footer/Footer";
 
-import { DEFAULT_SERVICE_FORM, DEFAULT_FORM} from "../../constants/serviceOptions";
+import {
+  DEFAULT_SERVICE_FORM,
+  DEFAULT_FORM,
+} from "../../constants/serviceOptions";
 import { servicesSeed } from "../../data/services";
 import { createService } from "../../utils/createService";
 import { filterServices } from "../../utils/filterServices";
@@ -48,14 +51,20 @@ export default function HomePage() {
     <main className="app-shell">
       <Header
         onCreateUser={() => navigate("/cadastro")}
-         onOpenLogin={() => navigate("/cadastrar-servico")}
+        onOpenLogin={() => navigate("/cadastrar-servico")}
       />
 
       <Hero onOpenServiceModal={() => setIsServiceModalOpen(true)} />
-      <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-      <SearchPanel filters={filters} onFilterChange={handleFilterChange} />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <SearchPanel filters={filters} onFilterChange={handleFilterChange} />
       </div>
-      
+
       <section className="app-content-grid">
         <ServicesSection services={filteredServices} />
       </section>
