@@ -1,9 +1,6 @@
 import React, { useMemo, useState } from "react";
 import {
   Search,
-  MapPin,
-  Monitor,
-  Heart,
   ChevronDown,
   SlidersHorizontal,
   X,
@@ -12,9 +9,11 @@ import {
 import { Header } from "../../components";
 import Footer from "../../layouts/Footer/Footer";
 import "../CatalogoServicos/CatalogoServicos.css";
+import { ServiceCard } from "../../components/ServiceCards/ServiceCards";
 import { initialFilters } from "../CatalogoServicos/constants/forms/initialFilters";
 import { servicesMock } from "../CatalogoServicos/constants/forms/serviceMock";
-
+import { checkPublicationDate } from "../CatalogoServicos/utils/filterUtils";
+import { FilterSelect } from "../../components/FilterSelect/FilterSelect";
 export default function CatalogoServicos() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState(initialFilters);
@@ -348,121 +347,4 @@ export default function CatalogoServicos() {
       <Footer />
     </main>
   );
-}
-
-function FilterSelect({
-  label,
-  name,
-  value,
-  onChange,
-  defaultOption,
-  options,
-}) {
-  return (
-    <label className="filter-field">
-      <span>{label}</span>
-
-      <div className="filter-select-wrapper">
-        <select name={name} value={value} onChange={onChange}>
-          <option value="">{defaultOption}</option>
-
-          {options.map((option) => {
-            const optionValue =
-              typeof option === "string" ? option : option.value;
-
-            const optionLabel =
-              typeof option === "string" ? option : option.label;
-
-            return (
-              <option key={optionValue} value={optionValue}>
-                {optionLabel}
-              </option>
-            );
-          })}
-        </select>
-
-        <ChevronDown size={16} />
-      </div>
-    </label>
-  );
-}
-
-function ServiceCard({ service, isFavorite, onFavorite }) {
-  return (
-    <article className="service-card">
-      <div className="service-card-image">
-        <img src={service.image} alt="" />
-
-        <button
-          type="button"
-          className={`favorite-button ${
-            isFavorite ? "favorite-button--active" : ""
-          }`}
-          onClick={onFavorite}
-          aria-label={
-            isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"
-          }
-        >
-          <Heart size={19} fill={isFavorite ? "currentColor" : "none"} />
-        </button>
-      </div>
-
-      <div className="service-card-content">
-        <span
-          className={`service-category service-category--${normalizeCategory(
-            service.category,
-          )}`}
-        >
-          {service.category}
-        </span>
-
-        <h2>{service.title}</h2>
-
-        <p className="service-description">{service.description}</p>
-
-        <div className="service-card-information">
-          <p>
-            <MapPin size={16} />
-            {service.city}, MG
-          </p>
-
-          <p>
-            <Monitor size={16} />
-            {service.modality}
-          </p>
-        </div>
-
-        <div className="service-provider">
-          <div>
-            <span>Oferecido por</span>
-            <strong>{service.provider}</strong>
-          </div>
-
-          <a href={`/servicos/${service.id}`}>Ver detalhes</a>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function normalizeCategory(category) {
-  return category
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/\s+/g, "-");
-}
-
-function checkPublicationDate(date, selectedPeriod) {
-  if (!selectedPeriod) {
-    return true;
-  }
-
-  const serviceDate = new Date(`${date}T00:00:00`);
-  const currentDate = new Date();
-
-  const differenceInMilliseconds = currentDate - serviceDate;
-  const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
-
-  return differenceInDays <= Number(selectedPeriod);
 }
