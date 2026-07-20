@@ -25,6 +25,7 @@ import { useServiceDetails } from "../../pages/DetalhesServico/hook/DetalhesServ
 import { InfoItem } from "../CadastrarServico/components/InfoItem/InfoItem";
 
 import "./DetalhesServico.css";
+import { ServiceNotFound } from "../../pages/DetalhesServico/components/ServiceNotFound/ServiceNotFound";
 
 export default function DetalhesServico() {
   const { id } = useParams();
@@ -54,24 +55,7 @@ export default function DetalhesServico() {
   );
 
   if (!service) {
-    return (
-      <main className="service-details-page">
-        <Header />
-
-        <section className="service-not-found">
-          <h1>Serviço não encontrado</h1>
-
-          <p>
-            O serviço pode ter sido removido, pausado ou o endereço está
-            incorreto.
-          </p>
-
-          <Link to="/explorar">Voltar para os serviços</Link>
-        </section>
-
-        <Footer />
-      </main>
-    );
+    return <ServiceNotFound />;
   }
 
   return (
