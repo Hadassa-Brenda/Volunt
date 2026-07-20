@@ -20,7 +20,7 @@ import {
 } from "./Utils/ServiceCreatePageValidator";
 import "./ServiceCreatePage.css";
 import "react-phone-number-input/style.css";
-import WhatsappInput from "../../components/InputWhatssap/InputWhatssap";
+import WhatsappInput from "../../../components/InputWhatssap/InputWhatssap";
 import { useNavigate } from "react-router-dom";
 
 const pageImages = {

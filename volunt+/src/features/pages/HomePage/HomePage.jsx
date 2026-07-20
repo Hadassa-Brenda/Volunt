@@ -7,16 +7,16 @@ import {
   SearchPanel,
   ServiceModal,
   ServicesSection,
-} from "../../components";
-import Footer from "../../layouts/Footer/Footer";
+} from "../../../components";
+import Footer from "../../../layouts/Footer/Footer";
 
 import {
   DEFAULT_SERVICE_FORM,
   DEFAULT_FORM,
-} from "../../constants/serviceOptions";
-import { servicesSeed } from "../../data/services";
-import { createService } from "../../utils/createService";
-import { filterServices } from "../../utils/filterServices";
+} from "../../../constants/serviceOptions";
+import { servicesSeed } from "../../../data/services";
+import { createService } from "../../../utils/createService";
+import { filterServices } from "../../../utils/filterServices";
 import "./HomePage.css";
 
 export default function HomePage() {

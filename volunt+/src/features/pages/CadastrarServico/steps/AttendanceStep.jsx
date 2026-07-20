@@ -1,6 +1,6 @@
 import React from "react";
 import { ModalityOption } from "components/ModalityOption/ModalityOption";
-import { FormField } from "../../../components/FormField/FormField";
+import { FormField } from "../../../../components/FormField/FormField";
 import { MapPin, Monitor, MessageCircle } from "lucide-react";
 
 export function AttendanceStep({ formData, errors, onChange }) {

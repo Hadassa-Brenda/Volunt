@@ -13,7 +13,7 @@ import {
   UserRound,
 } from "lucide-react";
 
-import FieldError from "../../components/FieldError/FieldError";
+import FieldError from "../../../components/FieldError/FieldError";
 
 import {
   INITIAL_USER_REGISTER_FORM,

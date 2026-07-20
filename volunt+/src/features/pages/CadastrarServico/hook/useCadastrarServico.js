@@ -84,6 +84,107 @@ export function useCadastrarServico() {
     setCurrentStep((step) => Math.max(step - 1, 1));
   };
 
+  const handleImageChange = (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setErrors((currentErrors) => ({
+        ...currentErrors,
+        image: "Selecione um arquivo de imagem válido.",
+      }));
+
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrors((currentErrors) => ({
+        ...currentErrors,
+        image: "A imagem deve ter no máximo 5 MB.",
+      }));
+
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+
+    setFormData((currentData) => {
+      if (currentData.imagePreview) {
+        URL.revokeObjectURL(currentData.imagePreview);
+      }
+
+      return {
+        ...currentData,
+        image: file,
+        imagePreview: previewUrl,
+      };
+    });
+
+    setErrors((currentErrors) => ({
+      ...currentErrors,
+      image: "",
+    }));
+  };
+
+  const removeImage = () => {
+    if (formData.imagePreview) {
+      URL.revokeObjectURL(formData.imagePreview);
+    }
+
+    setFormData((currentData) => ({
+      ...currentData,
+      image: null,
+      imagePreview: "",
+    }));
+  };
+
+  const resetForm = () => {
+    if (formData.imagePreview) {
+      URL.revokeObjectURL(formData.imagePreview);
+    }
+
+    setFormData(initialFormData);
+    setErrors({});
+    setCurrentStep(1);
+    setSubmitted(false);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (!validateStep()) {
+      return;
+    }
+
+    const payload = {
+      title: formData.title,
+      category: formData.category,
+      description: formData.description,
+      modality: formData.modality,
+      city: formData.city,
+      neighborhood: formData.neighborhood,
+      schedule: formData.schedule,
+      whatsapp: formData.whatsapp,
+      instagram: formData.instagram,
+      email: formData.email,
+      website: formData.website,
+      image: formData.image,
+      status: "pending",
+    };
+
+    console.log("Serviço enviado:", payload);
+
+    setSubmitted(true);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   return {
     currentStep,
     formData,
@@ -99,5 +200,10 @@ export function useCadastrarServico() {
     validateStep,
     nextStep,
     previousStep,
+
+    handleImageChange,
+    removeImage,
+    handleSubmit,
+    resetForm,
   };
 }

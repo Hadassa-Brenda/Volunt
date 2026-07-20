@@ -1,6 +1,6 @@
 import React from "react";
-import CategoryList from "../../../components/CategoryList/CategoryList";
-import { FormField } from "../../../components/FormField/FormField";
+import CategoryList from "../../../../components/CategoryList/CategoryList";
+import { FormField } from "../../../../components/FormField/FormField";
 import { ImagePlus } from "lucide-react";
 import SelectField from "components/SelectField/SelectField";
 

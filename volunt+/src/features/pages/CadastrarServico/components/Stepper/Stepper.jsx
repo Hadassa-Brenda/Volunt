@@ -1,5 +1,5 @@
-import "../../components/Stepper/Stepper.css";
-import { useStepper } from "../../components/Stepper/hook/useStepper";
+import "./Stepper.css";
+import { useStepper } from "./hook/useStepper";
 import { Check } from "lucide-react";
 
 export function Stepper({ currentStep, steps }) {

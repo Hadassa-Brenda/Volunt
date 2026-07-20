@@ -1,6 +1,6 @@
 import { ImagePlus, MapPin, Monitor } from "lucide-react";
-import { ReviewItem } from "../ReviewItem/ReviewItem";
-import { ReviewSection } from "../../pages/CadastrarServico/steps/ReviewSection";
+import { ReviewItem } from "../../../../../components/ReviewItem/ReviewItem";
+import { ReviewSection } from "../../steps/ReviewSection";
 
 export function ReviewStep({ formData, errors, onChange, onEditStep, texts }) {
   return (

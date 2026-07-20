@@ -18,9 +18,9 @@ import {
   X,
 } from "lucide-react";
 
-import { Header } from "../../components";
-import Footer from "../../layouts/Footer/Footer";
-import { servicesMock } from "../DetalhesServico/constants/forms/serviceMock";
+import { Header } from "../../../components";
+import Footer from "../../../layouts/Footer/Footer";
+import { servicesMock } from "./constants/forms/serviceMock";
 
 import "./DetalhesServico.css";
 

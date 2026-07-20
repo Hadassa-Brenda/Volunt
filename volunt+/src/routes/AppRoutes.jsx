@@ -1,11 +1,11 @@
 import { Routes, Route } from "react-router-dom";
 
-import HomePage from "../pages/HomePage/HomePage";
-import LoginPage from "../pages/LoginPages/LoginPage";
-import UserRegisterPage from "../pages/UserRegisterPage/UserRegisterPage";
-import DetalhesServico from "pages/DetalhesServico/DetalhesServico";
-import CadastrarServico from "../pages/CadastrarServico/CadastrarServico";
-import AboutVolunteering from "pages/AboutVolunteering/AboutVolunteering";
+import HomePage from "../features/pages/HomePage/HomePage";
+import LoginPage from "../features/pages/LoginPages/LoginPage";
+import UserRegisterPage from "../features/pages/UserRegisterPage/UserRegisterPage";
+import DetalhesServico from "features/pages/DetalhesServico/DetalhesServico";
+import CadastrarServico from "../features/pages/CadastrarServico/CadastrarServico";
+import AboutVolunteering from "features/pages/AboutVolunteering/AboutVolunteering";
 
 export default function AppRoutes() {
   return (

@@ -1,19 +1,14 @@
 import React, { useMemo, useState } from "react";
-import {
-  Search,
-  ChevronDown,
-  SlidersHorizontal,
-  X,
-} from "lucide-react";
+import { Search, ChevronDown, SlidersHorizontal, X } from "lucide-react";
 
-import { Header } from "../../components";
-import Footer from "../../layouts/Footer/Footer";
-import "../CatalogoServicos/CatalogoServicos.css";
+import { Header } from "../../../components";
+import Footer from "../../../layouts/Footer/Footer";
+import "./CatalogoServicos.css";
 import { ServiceCard } from "../../components/ServiceCards/ServiceCards";
-import { initialFilters } from "../CatalogoServicos/constants/forms/initialFilters";
-import { servicesMock } from "../CatalogoServicos/constants/forms/serviceMock";
-import { checkPublicationDate } from "../CatalogoServicos/utils/filterUtils";
-import { FilterSelect } from "../../components/FilterSelect/FilterSelect";
+import { initialFilters } from "./constants/forms/initialFilters";
+import { servicesMock } from "./constants/forms/serviceMock";
+import { checkPublicationDate } from "./utils/filterUtils";
+import { FilterSelect } from "../../../components/FilterSelect/FilterSelect";
 export default function CatalogoServicos() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState(initialFilters);
