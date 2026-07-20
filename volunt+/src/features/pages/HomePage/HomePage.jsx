@@ -14,7 +14,7 @@ import {
   DEFAULT_SERVICE_FORM,
   DEFAULT_FORM,
 } from "../../../constants/serviceOptions";
-import { servicesSeed } from "../../../data/services";
+import { serviceMock } from "../../../data/serviceMock";
 import { createService } from "../../../utils/createService";
 import { filterServices } from "../../../utils/filterServices";
 import "./HomePage.css";
@@ -22,7 +22,7 @@ import "./HomePage.css";
 export default function HomePage() {
   const navigate = useNavigate();
 
-  const [services, setServices] = useState(servicesSeed);
+  const [services, setServices] = useState(serviceMock);
 
   const [filters, setFilters] = useState({ ...DEFAULT_FORM });
 

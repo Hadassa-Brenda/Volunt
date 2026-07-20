@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -21,6 +21,8 @@ import {
 import { Header } from "../../../components";
 import Footer from "../../../layouts/Footer/Footer";
 import { servicesMock } from "./constants/forms/serviceMock";
+import { useServiceDetails } from "../../pages/DetalhesServico/hook/DetalhesServico";
+import { InfoItem } from "../CadastrarServico/components/InfoItem/InfoItem";
 
 import "./DetalhesServico.css";
 
@@ -28,11 +30,24 @@ export default function DetalhesServico() {
   const { id } = useParams();
   console.log(id);
 
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [reportModalOpen, setReportModalOpen] = useState(false);
-  const [reportReason, setReportReason] = useState("");
-  const [reportDescription, setReportDescription] = useState("");
-  const [reportSent, setReportSent] = useState(false);
+  const {
+    isFavorite,
+    setIsFavorite,
+
+    reportModalOpen,
+    setReportModalOpen,
+
+    reportReason,
+    setReportReason,
+
+    reportDescription,
+    setReportDescription,
+
+    reportSent,
+
+    handleShare,
+    handleReportSubmit,
+  } = useServiceDetails(service);
 
   const service = servicesMock.find(
     (currentService) => String(currentService.id) === String(id),
@@ -58,43 +73,6 @@ export default function DetalhesServico() {
       </main>
     );
   }
-
-  const handleShare = async () => {
-    const shareData = {
-      title: service.title,
-      text: service.description,
-      url: window.location.href,
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-        return;
-      }
-
-      await navigator.clipboard.writeText(window.location.href);
-      alert("Link copiado para a área de transferência.");
-    } catch (error) {
-      console.error("Não foi possível compartilhar o serviço:", error);
-    }
-  };
-
-  const handleReportSubmit = (event) => {
-    event.preventDefault();
-
-    if (!reportReason) {
-      return;
-    }
-
-    setReportSent(true);
-
-    setTimeout(() => {
-      setReportModalOpen(false);
-      setReportSent(false);
-      setReportReason("");
-      setReportDescription("");
-    }, 1800);
-  };
 
   return (
     <main className="service-details-page">
@@ -205,19 +183,19 @@ export default function DetalhesServico() {
               <h2>Informações do atendimento</h2>
 
               <div className="service-information-grid">
-                <InformationItem
+                <InfoItem
                   icon={<Monitor size={21} />}
                   label="Modalidade"
                   value={service.modality}
                 />
 
-                <InformationItem
+                <InfoItem
                   icon={<MapPin size={21} />}
                   label="Localização"
                   value={formatLocation(service)}
                 />
 
-                <InformationItem
+                <InfoItem
                   icon={<Clock3 size={21} />}
                   label="Horários"
                   value={
@@ -225,7 +203,7 @@ export default function DetalhesServico() {
                   }
                 />
 
-                <InformationItem
+                <InfoItem
                   icon={<CalendarDays size={21} />}
                   label="Publicado em"
                   value={formatDate(service.publishedAt)}
@@ -291,7 +269,7 @@ export default function DetalhesServico() {
 
             <div className="contact-list">
               {service.whatsapp && (
-                <ContactLink
+                <InfoItem
                   icon={<MessageCircle size={20} />}
                   label="WhatsApp"
                   value={formatPhone(service.whatsapp)}
@@ -300,7 +278,7 @@ export default function DetalhesServico() {
               )}
 
               {service.instagram && (
-                <ContactLink
+                <InfoItem
                   icon={<Instagram size={20} />}
                   label="Instagram"
                   value={formatInstagram(service.instagram)}
@@ -309,7 +287,7 @@ export default function DetalhesServico() {
               )}
 
               {service.email && (
-                <ContactLink
+                <InfoItem
                   icon={<Mail size={20} />}
                   label="E-mail"
                   value={service.email}
@@ -318,7 +296,7 @@ export default function DetalhesServico() {
               )}
 
               {service.website && (
-                <ContactLink
+                <InfoItem
                   icon={<Globe size={20} />}
                   label="Site"
                   value="Acessar site"
@@ -442,111 +420,4 @@ export default function DetalhesServico() {
       )}
     </main>
   );
-}
-
-function InformationItem({ icon, label, value }) {
-  return (
-    <div className="information-item">
-      <div className="information-item-icon">{icon}</div>
-
-      <div>
-        <span>{label}</span>
-        <strong>{value}</strong>
-      </div>
-    </div>
-  );
-}
-
-function ContactLink({ icon, label, value, href }) {
-  return (
-    <a className="contact-link" href={href} target="_blank" rel="noreferrer">
-      <div className="contact-link-icon">{icon}</div>
-
-      <div>
-        <span>{label}</span>
-        <strong>{value}</strong>
-      </div>
-
-      <ExternalLink size={16} />
-    </a>
-  );
-}
-
-function formatLocation(service) {
-  const location = [
-    service.neighborhood,
-    service.city,
-    service.state || "MG",
-  ].filter(Boolean);
-
-  return location.join(", ");
-}
-
-function formatDate(date) {
-  if (!date) {
-    return "Não informado";
-  }
-
-  return new Intl.DateTimeFormat("pt-BR").format(new Date(`${date}T00:00:00`));
-}
-
-function formatPhone(phone) {
-  if (!phone) {
-    return "";
-  }
-
-  const digits = phone.replace(/\D/g, "");
-  const localNumber =
-    digits.length > 11 ? digits.slice(digits.length - 11) : digits;
-
-  if (localNumber.length !== 11) {
-    return phone;
-  }
-
-  return localNumber.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
-}
-
-function buildWhatsAppLink(phone, serviceTitle) {
-  if (!phone) {
-    return "#";
-  }
-
-  const digits = phone.replace(/\D/g, "");
-  const numberWithCountryCode = digits.startsWith("55")
-    ? digits
-    : `55${digits}`;
-
-  const message = encodeURIComponent(
-    `Olá! Encontrei o serviço "${serviceTitle}" na plataforma Voluntá+ e gostaria de saber mais.`,
-  );
-
-  return `https://wa.me/${numberWithCountryCode}?text=${message}`;
-}
-
-function formatInstagram(instagram) {
-  if (!instagram) {
-    return "";
-  }
-
-  const username = instagram
-    .replace("https://www.instagram.com/", "")
-    .replace("https://instagram.com/", "")
-    .replace("/", "")
-    .replace("@", "");
-
-  return `@${username}`;
-}
-
-function buildInstagramLink(instagram) {
-  if (!instagram) {
-    return "#";
-  }
-
-  if (instagram.startsWith("http")) {
-    return instagram;
-  }
-
-  const username = instagram.replace("@", "");
-
-  return `https://www.instagram.com/${username}`;
 }

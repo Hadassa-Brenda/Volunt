@@ -5,8 +5,6 @@ const MIN_LENGTH = {
   description: 20,
 };
 
-const CONTACT_FIELDS = ["whatsapp", "instagram", "website"];
-
 function getSafeString(value) {
   return String(value || "");
 }

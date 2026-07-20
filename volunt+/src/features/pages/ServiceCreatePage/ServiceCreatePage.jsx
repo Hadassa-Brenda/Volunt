@@ -22,42 +22,12 @@ import "./ServiceCreatePage.css";
 import "react-phone-number-input/style.css";
 import WhatsappInput from "../../../components/InputWhatssap/InputWhatssap";
 import { useNavigate } from "react-router-dom";
-
-const pageImages = {
-  volunteer:
-    "https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=900&q=80",
-  tutor:
-    "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=900&q=80",
-  clean:
-    "https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?auto=format&fit=crop&w=900&q=80",
-  community:
-    "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&fit=crop&w=900&q=80",
-};
-
-const INITIAL_FORM = {
-  title: "",
-  category: "",
-  modality: "",
-  city: "",
-  neighborhood: "",
-  description: "",
-  whatsappCountry: "BR",
-  whatsapp: "",
-  instagram: "",
-  website: "",
-};
-
-const CONTACT_FIELDS = ["whatsapp", "instagram", "website"];
-
-function FieldError({ id, message }) {
-  if (!message) return null;
-
-  return (
-    <small id={id} className="service-create-form__error">
-      {message}
-    </small>
-  );
-}
+import FieldError from "../../../components/FieldError/FieldError";
+import {
+  CONTACT_FIELDS,
+  PAGE_IMAGES,
+  INITIAL_FORM,
+} from "./ServiceCreatePageConstants";
 
 export default function ServiceCreatePage({ onSubmitService }) {
   const [form, setForm] = useState(INITIAL_FORM);
@@ -224,7 +194,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
       <section className="service-create-page__stage">
         <div className="service-create-page__left-visual">
           <div className="service-create-page__photo service-create-page__photo--large">
-            <img src={pageImages.volunteer} alt="Ação voluntária" />
+            <img src={PAGE_IMAGES.volunteer} alt="Ação voluntária" />
           </div>
 
           <div className="service-create-page__impact-card">
@@ -239,7 +209,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
           </div>
 
           <div className="service-create-page__photo service-create-page__photo--small">
-            <img src={pageImages.tutor} alt="Aula voluntária" />
+            <img src={PAGE_IMAGES.tutor} alt="Aula voluntária" />
           </div>
         </div>
 
@@ -470,7 +440,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
           </div>
 
           <div className="service-create-page__photo service-create-page__photo--medium">
-            <img src={pageImages.clean} alt="Voluntários em ação" />
+            <img src={PAGE_IMAGES.clean} alt="Voluntários em ação" />
           </div>
 
           <div className="service-create-page__donate-card">
@@ -485,7 +455,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
           </div>
 
           <div className="service-create-page__photo service-create-page__photo--bottom">
-            <img src={pageImages.community} alt="Apoio comunitário" />
+            <img src={PAGE_IMAGES.community} alt="Apoio comunitário" />
           </div>
         </div>
       </section>

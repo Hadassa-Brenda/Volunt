@@ -37,15 +37,12 @@ export default function ServiceCard({ service }) {
 
         <div className="service-card__contacts">
           <a
-            href="https://wa.me/5531999999999"
+            href={service.whatsapp}
             aria-label="Entrar em contato pelo WhatsApp"
           >
             <MessageCircle size={18} />
           </a>
-          <a
-            href="https://instagram.com"
-            aria-label="Abrir Instagram do serviço"
-          >
+          <a href={service.instagram} aria-label="Abrir Instagram do serviço">
             <ExternalLink size={17} />
           </a>
         </div>
