@@ -31,7 +31,7 @@ import {
   formatLocation,
   formatPhone,
 } from "./Utils/DetalhesServicoUtils";
-
+import {useNavigate} from "react-router-dom";
 import "./DetalhesServico.css";
 import { ServiceNotFound } from "../../pages/DetalhesServico/components/ServiceNotFound/ServiceNotFound";
 
@@ -39,7 +39,8 @@ export default function DetalhesServico() {
   const { id } = useParams();
   console.log(id);
 
-const service = servicesMock.find(
+  const navigate = useNavigate();
+  const service = servicesMock.find(
     (currentService) => String(currentService.id) === String(id),
   );
   const {
@@ -61,8 +62,6 @@ const service = servicesMock.find(
     handleReportSubmit,
   } = useServiceDetails(service);
 
-  
-
   if (!service) {
     return <ServiceNotFound />;
   }
@@ -72,11 +71,14 @@ const service = servicesMock.find(
       <Header />
 
       <div className="service-details-container">
-        <Link className="back-link" to="/explorar">
+        <button
+          className="login-page__back-button"
+          type="button"
+          onClick={() => navigate("/")}
+        >
           <ArrowLeft size={18} />
-          Voltar para os serviços
-        </Link>
-
+          Voltar
+        </button>
         <nav className="service-breadcrumb" aria-label="Navegação estrutural">
           <Link to="/">Início</Link>
           <span>/</span>
