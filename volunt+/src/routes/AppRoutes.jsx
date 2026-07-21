@@ -6,6 +6,7 @@ import UserRegisterPage from "../features/pages/UserRegisterPage/UserRegisterPag
 import DetalhesServico from "features/pages/DetalhesServico/DetalhesServico";
 import CadastrarServico from "../features/pages/CadastrarServico/CadastrarServico";
 import AboutVolunteering from "features/pages/AboutVolunteering/AboutVolunteering";
+import CatalogoServicos from "features/pages/CatalogoServicos/CatalogoServicos";
 
 export default function AppRoutes() {
   return (
@@ -16,6 +17,7 @@ export default function AppRoutes() {
       <Route path="/detalhes-servico/:id" element={<DetalhesServico />} />
       <Route path="/cadastrar-servico" element={<CadastrarServico />} />
       <Route path="/about-volunteering" element={<AboutVolunteering />} />
+      <Route path="/catalogo-servicos" element={<CatalogoServicos />} />
       <Route path="*" element={<h1>Página não encontrada</h1>} />
     </Routes>
   );

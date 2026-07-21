@@ -1,20 +1,23 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Search, ChevronDown, SlidersHorizontal, X } from "lucide-react";
 
 import { Header } from "../../../components";
 import Footer from "../../../layouts/Footer/Footer";
 import "./CatalogoServicos.css";
-import { ServiceCard } from "../../components/ServiceCards/ServiceCards";
+import { ServiceCard } from "../../../components/ServiceCard/ServiceCard";
 import { initialFilters } from "./constants/forms/initialFilters";
 import { servicesMock } from "./constants/forms/serviceMock";
-import { checkPublicationDate } from "./utils/filterUtils";
+import { checkPublicationDate } from "./utils/CatalogoServicosUtils";
 import { FilterSelect } from "../../../components/FilterSelect/FilterSelect";
+import { BasicPagination } from "components/Pagination/BasicPagination";
+
 export default function CatalogoServicos() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState(initialFilters);
   const [sortOrder, setSortOrder] = useState("recent");
   const [favorites, setFavorites] = useState([]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
 
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
@@ -77,7 +80,6 @@ export default function CatalogoServicos() {
         matchesPublicationDate
       );
     });
-
     return [...result].sort((firstService, secondService) => {
       const firstDate = new Date(firstService.publishedAt);
       const secondDate = new Date(secondService.publishedAt);
@@ -92,6 +94,18 @@ export default function CatalogoServicos() {
 
       return secondDate - firstDate;
     });
+  }, [searchTerm, filters, sortOrder]);
+
+  const itemsPerPage = 6;
+
+  const [page, setPage] = useState(1);
+
+  const start = (page - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+
+
+  useEffect(() => {
+    setPage(1);
   }, [searchTerm, filters, sortOrder]);
 
   return (
@@ -291,34 +305,25 @@ export default function CatalogoServicos() {
             {filteredServices.length > 0 ? (
               <>
                 <div className="services-grid">
-                  {filteredServices.map((service) => (
+                  {filteredServices
+                  .slice(start, end)
+                  .map((service) => (
                     <ServiceCard
                       key={service.id}
                       service={service}
                       isFavorite={favorites.includes(service.id)}
                       onFavorite={() => toggleFavorite(service.id)}
                     />
-                  ))}
+                ))}
                 </div>
-
-                <nav
-                  className="catalog-pagination"
-                  aria-label="Paginação de serviços"
-                >
-                  <button type="button" disabled>
-                    ‹
-                  </button>
-
-                  <button type="button" className="active">
-                    1
-                  </button>
-
-                  <button type="button">2</button>
-                  <button type="button">3</button>
-                  <span>...</span>
-                  <button type="button">10</button>
-                  <button type="button">›</button>
-                </nav>
+                <div style={{display: "flex", justifyContent: "center", marginTop: "2rem"}}>
+                 <BasicPagination
+                    page={page}
+                    onPageChange={setPage}
+                    itemsPerPage={8}
+                    totalItems={filteredServices.length}
+                /> 
+                </div>
               </>
             ) : (
               <div className="empty-results">

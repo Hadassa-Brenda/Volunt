@@ -1,4 +1,4 @@
-import ServiceCard from "../ServiceCard/ServiceCard";
+import {ServiceCard} from "../ServiceCard/ServiceCard";
 import "./ServicesSection.css";
 
 export default function ServicesSection({ services }) {

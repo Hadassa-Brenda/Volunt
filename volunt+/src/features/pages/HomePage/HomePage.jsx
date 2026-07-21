@@ -51,7 +51,7 @@ export default function HomePage() {
     <main className="app-shell">
       <Header
         onCreateUser={() => navigate("/cadastro")}
-        onOpenLogin={() => navigate(`/detalhes-servico/${1}`)}
+        onOpenLogin={() => navigate("/catalogo-servicos")}
       />
 
       <Hero onOpenServiceModal={() => setIsServiceModalOpen(true)} />

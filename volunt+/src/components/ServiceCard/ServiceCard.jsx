@@ -2,7 +2,7 @@ import { ExternalLink, Heart, MapPin, MessageCircle } from "lucide-react";
 
 import "./ServiceCard.css";
 
-export default function ServiceCard({ service }) {
+export function ServiceCard({ service }) {
   const locationLabel =
     service.modality === "Online" ? "Online" : `${service.neighborhood}, BH`;
 
