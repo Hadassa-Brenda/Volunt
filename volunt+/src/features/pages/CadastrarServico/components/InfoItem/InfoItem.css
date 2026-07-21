@@ -1,5 +1,6 @@
 .information-item {
   min-height: 88px;
+  min-width: 88px;
   display: flex;
   align-items: center;
   gap: 13px;
@@ -36,3 +37,4 @@
   font-size: 0.85rem;
   line-height: 1.4;
 }
+

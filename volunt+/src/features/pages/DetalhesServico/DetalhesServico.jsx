@@ -23,6 +23,14 @@ import Footer from "../../../layouts/Footer/Footer";
 import { servicesMock } from "./constants/forms/serviceMock";
 import { useServiceDetails } from "../../pages/DetalhesServico/hook/DetalhesServico";
 import { InfoItem } from "../CadastrarServico/components/InfoItem/InfoItem";
+import {
+  buildInstagramLink,
+  buildWhatsAppLink,
+  formatDate,
+  formatInstagram,
+  formatLocation,
+  formatPhone,
+} from "./Utils/DetalhesServicoUtils";
 
 import "./DetalhesServico.css";
 import { ServiceNotFound } from "../../pages/DetalhesServico/components/ServiceNotFound/ServiceNotFound";
@@ -31,6 +39,9 @@ export default function DetalhesServico() {
   const { id } = useParams();
   console.log(id);
 
+const service = servicesMock.find(
+    (currentService) => String(currentService.id) === String(id),
+  );
   const {
     isFavorite,
     setIsFavorite,
@@ -50,9 +61,7 @@ export default function DetalhesServico() {
     handleReportSubmit,
   } = useServiceDetails(service);
 
-  const service = servicesMock.find(
-    (currentService) => String(currentService.id) === String(id),
-  );
+  
 
   if (!service) {
     return <ServiceNotFound />;

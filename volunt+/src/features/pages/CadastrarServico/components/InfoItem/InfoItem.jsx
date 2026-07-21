@@ -1,4 +1,5 @@
 import { ExternalLink } from "lucide-react";
+import "./InfoItem.css";
 
 export function InfoItem({ icon, label, value, href, external = true }) {
   const content = (

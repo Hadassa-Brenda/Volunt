@@ -1,4 +1,4 @@
-function formatInstagram(instagram) {
+export function formatInstagram(instagram) {
   if (!instagram) {
     return "";
   }
@@ -12,7 +12,7 @@ function formatInstagram(instagram) {
   return `@${username}`;
 }
 
-function buildInstagramLink(instagram) {
+export function buildInstagramLink(instagram) {
   if (!instagram) {
     return "#";
   }
@@ -26,7 +26,7 @@ function buildInstagramLink(instagram) {
   return `https://www.instagram.com/${username}`;
 }
 
-function formatDate(date) {
+export function formatDate(date) {
   if (!date) {
     return "Não informado";
   }
@@ -34,7 +34,7 @@ function formatDate(date) {
   return new Intl.DateTimeFormat("pt-BR").format(new Date(`${date}T00:00:00`));
 }
 
-function formatPhone(phone) {
+export function formatPhone(phone) {
   if (!phone) {
     return "";
   }
@@ -50,7 +50,7 @@ function formatPhone(phone) {
   return localNumber.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
 }
 
-function buildWhatsAppLink(phone, serviceTitle) {
+export function buildWhatsAppLink(phone, serviceTitle) {
   if (!phone) {
     return "#";
   }
@@ -67,7 +67,7 @@ function buildWhatsAppLink(phone, serviceTitle) {
   return `https://wa.me/${numberWithCountryCode}?text=${message}`;
 }
 
-function formatLocation(service) {
+export function formatLocation(service) {
   const location = [
     service.neighborhood,
     service.city,
