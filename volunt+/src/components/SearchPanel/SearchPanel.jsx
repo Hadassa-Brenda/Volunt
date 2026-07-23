@@ -3,14 +3,11 @@ import { Search, SlidersHorizontal, Tag } from "lucide-react";
 
 import {
   SERVICE_CATEGORIES,
-   LOCATION_FILTER_OPTIONS,
 } from "../../types/enum/Categories";
 import { SERVICE_MODALITIES } from "../../types/enum/Modalitires";
-
 import SelectField from "../SelectField/SelectField";
 import Button from "../Button/Button";
 import ServiceModal from "../ServiceModal/ServiceModal";
-
 import "./SearchPanel.css";
 
 export default function SearchPanel({
@@ -27,6 +24,12 @@ export default function SearchPanel({
 
     setIsAdvancedOpen(false);
   }
+ const LOCATION_FILTER_OPTIONS = [
+  "São Paulo",
+  "Rio de Janeiro",
+  "Belo Horizonte",
+  "Porto Alegre",
+];
 
   return (
     <>

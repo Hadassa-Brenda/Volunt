@@ -47,4 +47,5 @@ export const LOCAL_DA_ATIVIDADE_OPTIONS = [
   "Igreja",
   "Espaço público",
   "Remoto",
+  "Outro"
 ];
