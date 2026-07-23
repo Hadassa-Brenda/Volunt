@@ -6,7 +6,7 @@ import Footer from "../../../layouts/Footer/Footer";
 import "./CatalogoServicos.css";
 import { ServiceCard } from "../../../components/ServiceCard/ServiceCard";
 import { initialFilters } from "./constants/forms/initialFilters";
-import { servicesMock } from "./constants/forms/serviceMock";
+import { servicesDTO } from "types/DTOs/serviceDTO";
 import { checkPublicationDate } from "./utils/CatalogoServicosUtils";
 import { FilterSelect } from "../../../components/FilterSelect/FilterSelect";
 import { BasicPagination } from "components/Pagination/BasicPagination";
@@ -44,7 +44,7 @@ export default function CatalogoServicos() {
   const filteredServices = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
-    const result = servicesMock.filter((service) => {
+    const result = servicesDTO.filter((service) => {
       const matchesSearch =
         !normalizedSearch ||
         service.title.toLowerCase().includes(normalizedSearch) ||

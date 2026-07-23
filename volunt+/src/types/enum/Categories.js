@@ -9,6 +9,5 @@ export const SERVICE_CATEGORIES = [
   "Animais",
   "Serviços gerais",
   "Apoio comunitário",
+  "Outros",
 ];
-
-

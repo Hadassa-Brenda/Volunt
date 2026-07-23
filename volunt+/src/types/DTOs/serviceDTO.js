@@ -1,4 +1,4 @@
-export const servicesMock = [
+export const servicesDTO = [
   {
     id: 1,
     title: "Reforço escolar gratuito",

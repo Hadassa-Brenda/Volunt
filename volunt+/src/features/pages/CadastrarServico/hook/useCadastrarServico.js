@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { initialFormData, steps } from "../constants/CadastrarServicoConst";
+import { initialFormData, steps } from "../types/CadastrarServicoConst";
 
 export function useCadastrarServico() {
   const [currentStep, setCurrentStep] = useState(1);

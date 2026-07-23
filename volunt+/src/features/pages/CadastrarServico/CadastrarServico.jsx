@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 import Header from "../../../layouts/Header/Header";
 import Footer from "../../../layouts/Footer/Footer";
-import { steps } from "./constants/CadastrarServicoConst";
+import { steps } from "./types/CadastrarServicoConst";
 import "./CadastrarServico.css";
 import { Stepper } from "./components/Stepper/Stepper";
 import { useNavigate } from "react-router-dom";

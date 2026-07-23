@@ -19,7 +19,7 @@ import {
   INITIAL_USER_REGISTER_FORM,
   PROFILE_TYPES,
   REGISTER_IMAGES,
-} from "./Constants/userRegisterConsts";
+} from "./types/userRegisterConsts";
 
 import { validateField, validateForm } from "./Utils/userRegisterValidation";
 
