@@ -17,9 +17,10 @@ import FieldError from "../../../components/FieldError/FieldError";
 
 import {
   INITIAL_USER_REGISTER_FORM,
-  PROFILE_TYPES,
   REGISTER_IMAGES,
 } from "./types/userRegisterConsts";
+
+import { PROFILE_TYPES } from "types/enum/ProfileTypes";
 
 import { validateField, validateForm } from "./Utils/userRegisterValidation";
 

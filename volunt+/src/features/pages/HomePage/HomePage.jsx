@@ -1,20 +1,16 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import {
-  Header,
-  Hero,
-  SearchPanel,
-  ServiceModal,
-  ServicesSection,
-} from "../../../components";
 import Footer from "../../../layouts/Footer/Footer";
-
+import Header from "../../../layouts/Header/Header"
+import Hero  from "../../../components/Hero/Hero";
+import  SearchPanel from "../../../components/SearchPanel/SearchPanel";
+import ServiceModal from "../../../components/ServiceModal/ServiceModal";
+import ServicesSection  from "../../../components/ServicesSection/ServicesSection";
 import {
   DEFAULT_SERVICE_FORM,
   DEFAULT_FORM,
 } from "../../../constants/serviceOptions";
-import { serviceMock } from "../../../data/serviceMock";
+import { serviceMock } from "../../../types/DTOs/serviceMock";
 import { createService } from "../../../utils/createService";
 import { filterServices } from "../../../utils/filterServices";
 import "./HomePage.css";
