@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { MapPin, Search, SlidersHorizontal, Tag } from "lucide-react";
+import { Search, SlidersHorizontal, Tag } from "lucide-react";
 
 import {
-  CATEGORY_FILTER_OPTIONS,
-  LOCATION_FILTER_OPTIONS,
-} from "../../constants/categories";
-import { MODALITY_OPTIONS } from "../../constants/serviceOptions";
+  SERVICE_CATEGORIES,
+   LOCATION_FILTER_OPTIONS,
+} from "../../types/enum/Categories";
+import { SERVICE_MODALITIES } from "../../types/enum/Modalitires";
 
 import SelectField from "../SelectField/SelectField";
 import Button from "../Button/Button";
@@ -40,24 +40,23 @@ export default function SearchPanel({
             placeholder="Buscar palavra-chave"
           />
         </label>
-        <SelectField
-          label="Localização"
-          value={filters.location}
-          options={LOCATION_FILTER_OPTIONS}
-          onChange={(event) => onFilterChange("location", event.target.value)}
-        />
-
+    <SelectField
+            label="Localização"
+            value={filters.location}
+            options={ LOCATION_FILTER_OPTIONS}
+            onChange={(event) => onFilterChange("location", event.target.value)}
+          />
         <SelectField
           label="Categoria"
           value={filters.category}
-          options={CATEGORY_FILTER_OPTIONS}
+          options={SERVICE_CATEGORIES}
           onChange={(event) => onFilterChange("category", event.target.value)}
         />
 
         <SelectField
           label="Modalidade"
           value={filters.modality}
-          options={MODALITY_OPTIONS}
+          options={SERVICE_MODALITIES}
           onChange={(event) => onFilterChange("modality", event.target.value)}
         />
         <Button className="search-panel__search-button" type="button">
