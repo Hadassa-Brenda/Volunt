@@ -8,10 +8,8 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useState } from "react";
-import {
-  SERVICE_CATEGORIES,
-  SERVICE_MODALITIES,
-} from "./ServiceDTO/ServiceDTO";
+import { SERVICE_CATEGORIES } from "types/enum/Categories";
+import { SERVICE_MODALITIES } from "types/enum/Modalitires";
 import {
   sanitizeServiceForm,
   validateContactRequired,

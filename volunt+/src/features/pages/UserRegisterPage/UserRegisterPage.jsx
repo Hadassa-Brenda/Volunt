@@ -34,6 +34,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
   const [form, setForm] = useState(INITIAL_USER_REGISTER_FORM);
   const [errors, setErrors] = useState({});
   const [touchedFields, setTouchedFields] = useState({});
+  const [cep, setCep] = useState({});
 
   function updateField(field, value) {
     const nextForm = {
@@ -69,6 +70,41 @@ export default function UserRegisterPage({ onSubmitUser }) {
       [field]: fieldError,
     }));
   }
+
+const fetchCep = async (e) => {
+  const cep = e.target.value.replace(/\D/g, "");
+
+  setForm((prev) => ({
+    ...prev,
+    cep,
+  }));
+
+  if (cep.length !== 8) return;
+
+  try {
+    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const data = await res.json();
+
+    if (data.erro) {
+      throw new Error("CEP não encontrado");
+    }
+
+    console.log(data, "jdjshdhsjdd");
+
+    setForm((prev) => ({
+      ...prev,
+      cep,
+      bairro: data.bairro,
+      city: data.localidade,
+      state: data.uf,
+    }));
+  } catch (err) {
+    console.error("Erro:", err);
+  }
+};
 
   function shouldShowError(field) {
     return touchedFields[field] && errors[field];
@@ -240,8 +276,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
                 message={shouldShowError("whatsapp")}
               />
             </label>
-
-            <label className="user-register-form__full-field">
+            <label className="user-register-form__input-icon">
               Tipo de perfil <strong>*</strong>
               <select
                 value={form.profileType}
@@ -268,14 +303,60 @@ export default function UserRegisterPage({ onSubmitUser }) {
               />
             </label>
 
+             <label>
+              CEP <strong>*</strong>
+              <div className="user-register-form__input-icon">
+                <Mail size={18} />
+                <input
+                  minLength={8}
+                  type="text"
+                  value={form.cep}
+                  onChange={fetchCep}
+                  onBlur={() => handleBlur("cep")}
+                  placeholder="Ex: 31222-203"
+                  aria-invalid={Boolean(shouldShowError("CEP"))}
+                  aria-describedby="cep-error"
+                />
+              </div>
+              <FieldError id="cep-error" message={shouldShowError("cep")} />
+            </label>
+              
+          <label>
+              Barro <strong>*</strong>
+              <div className="user-register-form__input-icon">
+                <MapPin size={18} />
+
+                <input
+                 disabled
+                 value={form.bairro}
+                 onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      bairro: e.target.value,
+                    }))
+                  }
+                  onBlur={() => handleBlur("bairro")}
+                  placeholder="Ex: Ouro Preto"
+                  aria-invalid={Boolean(shouldShowError("bairro"))}
+                  aria-describedby="bairro-error"
+                />
+              </div>
+              <FieldError id="bairro-error" message={shouldShowError("bairro")} />
+            </label>
             <label>
               Cidade <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
 
                 <input
-                  value={form.city}
-                  onChange={(event) => updateField("city", event.target.value)}
+                 disabled
+                 value={form.city}
+                 onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      cidade: e.target.value,
+                    }))
+                  }
                   onBlur={() => handleBlur("city")}
                   placeholder="Ex: Belo Horizonte, MG"
                   aria-invalid={Boolean(shouldShowError("city"))}
@@ -286,24 +367,27 @@ export default function UserRegisterPage({ onSubmitUser }) {
             </label>
 
             <label>
-              Bairro <strong>*</strong>
+              Estado <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
-
                 <input
-                  value={form.neighborhood}
-                  onChange={(event) =>
-                    updateField("neighborhood", event.target.value)
+                  disabled
+                  value={form.state}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      estado: e.target.value,
+                    }))
                   }
-                  onBlur={() => handleBlur("neighborhood")}
-                  placeholder="Ex: São Gabriel"
-                  aria-invalid={Boolean(shouldShowError("neighborhood"))}
+                  onBlur={() => handleBlur("estado")}
+                  placeholder="Ex: Minas Gerais"
+                  aria-invalid={Boolean(shouldShowError("Minas Gerais"))}
                   aria-describedby="neighborhood-error"
                 />
               </div>
               <FieldError
-                id="neighborhood-error"
-                message={shouldShowError("neighborhood")}
+                id="estado-error"
+                message={shouldShowError("estado")}
               />
             </label>
 
