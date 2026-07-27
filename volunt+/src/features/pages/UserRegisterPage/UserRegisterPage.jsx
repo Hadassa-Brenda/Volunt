@@ -92,8 +92,6 @@ const fetchCep = async (e) => {
       throw new Error("CEP não encontrado");
     }
 
-    console.log(data, "jdjshdhsjdd");
-
     setForm((prev) => ({
       ...prev,
       cep,
@@ -308,7 +306,7 @@ const fetchCep = async (e) => {
               <div className="user-register-form__input-icon">
                 <Mail size={18} />
                 <input
-                  minLength={8}
+                  maxLength={8}
                   type="text"
                   value={form.cep}
                   onChange={fetchCep}
@@ -322,7 +320,7 @@ const fetchCep = async (e) => {
             </label>
               
           <label>
-              Barro <strong>*</strong>
+              Bairro <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
 
@@ -350,6 +348,7 @@ const fetchCep = async (e) => {
 
                 <input
                  disabled
+                 readOnly
                  value={form.city}
                  onChange={(e) =>
                     setForm((prev) => ({

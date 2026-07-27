@@ -45,19 +45,6 @@ export function validateField(field, value, form) {
 
       return "";
 
-    case "city":
-      if (textValue.length < 2) {
-        return "Informe sua cidade.";
-      }
-
-      return "";
-
-    case "neighborhood":
-      if (textValue.length < 2) {
-        return "Informe seu bairro.";
-      }
-
-      return "";
 
     case "password":
       if (textValue.length < 8) {

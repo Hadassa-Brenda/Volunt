@@ -5,11 +5,14 @@ import { Header } from "../../../components";
 import Footer from "../../../layouts/Footer/Footer";
 import "./CatalogoServicos.css";
 import { ServiceCard } from "../../../components/ServiceCard/ServiceCard";
-import { initialFilters } from "./constants/forms/initialFilters";
+import { initialFilters } from "./constants/initialFilters";
 import { servicesDTO } from "types/DTOs/serviceDTO";
 import { checkPublicationDate } from "./utils/CatalogoServicosUtils";
 import { FilterSelect } from "../../../components/FilterSelect/FilterSelect";
 import { BasicPagination } from "components/Pagination/BasicPagination";
+import {SERVICE_CATEGORIES}  from "../../../types/enum/Categories"
+import {SERVICE_MODALITIES} from "../../../types/enum/Modalitires"
+import {PROFILE_TYPES} from "../../../types/enum/ProfileTypes"
 
 export default function CatalogoServicos() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -180,18 +183,7 @@ export default function CatalogoServicos() {
               value={filters.category}
               onChange={handleFilterChange}
               defaultOption="Todas as categorias"
-              options={[
-                "Educação",
-                "Música",
-                "Tecnologia",
-                "Esporte",
-                "Alimentação",
-                "Doações",
-                "Saúde",
-                "Animais",
-                "Serviços gerais",
-                "Apoio comunitário",
-              ]}
+              options={SERVICE_CATEGORIES}
             />
 
             <FilterSelect
@@ -200,7 +192,7 @@ export default function CatalogoServicos() {
               value={filters.modality}
               onChange={handleFilterChange}
               defaultOption="Todas"
-              options={["Online", "Presencial", "Ambos"]}
+              options={SERVICE_MODALITIES}
             />
 
             <FilterSelect
@@ -234,7 +226,7 @@ export default function CatalogoServicos() {
               value={filters.providerType}
               onChange={handleFilterChange}
               defaultOption="Todos"
-              options={["ONG", "Projeto social", "Pessoa física"]}
+              options={PROFILE_TYPES}
             />
 
             <FilterSelect
