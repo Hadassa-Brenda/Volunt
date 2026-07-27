@@ -250,30 +250,6 @@ const fetchCep = async (e) => {
               </div>
               <FieldError id="email-error" message={shouldShowError("email")} />
             </label>
-
-            <label>
-              WhatsApp <strong>*</strong>
-              <div className="user-register-form__input-icon">
-                <Phone size={18} />
-
-                <input
-                  type="tel"
-                  inputMode="numeric"
-                  value={form.whatsapp}
-                  onChange={(event) =>
-                    updateField("whatsapp", event.target.value)
-                  }
-                  onBlur={() => handleBlur("whatsapp")}
-                  placeholder="Ex: (31) 98988-8283"
-                  aria-invalid={Boolean(shouldShowError("whatsapp"))}
-                  aria-describedby="whatsapp-error"
-                />
-              </div>
-              <FieldError
-                id="whatsapp-error"
-                message={shouldShowError("whatsapp")}
-              />
-            </label>
             <label className="user-register-form__input-icon">
               Tipo de perfil <strong>*</strong>
               <select
@@ -310,10 +286,8 @@ const fetchCep = async (e) => {
                   type="text"
                   value={form.cep}
                   onChange={fetchCep}
-                  onBlur={() => handleBlur("cep")}
                   placeholder="Ex: 31222-203"
                   aria-invalid={Boolean(shouldShowError("CEP"))}
-                  aria-describedby="cep-error"
                 />
               </div>
               <FieldError id="cep-error" message={shouldShowError("cep")} />
@@ -323,9 +297,9 @@ const fetchCep = async (e) => {
               Bairro <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
-
                 <input
-                 disabled
+                 style={{color: "#676767"}}
+                 readOnly
                  value={form.bairro}
                  onChange={(e) =>
                     setForm((prev) => ({
@@ -333,21 +307,18 @@ const fetchCep = async (e) => {
                       bairro: e.target.value,
                     }))
                   }
-                  onBlur={() => handleBlur("bairro")}
                   placeholder="Ex: Ouro Preto"
                   aria-invalid={Boolean(shouldShowError("bairro"))}
                   aria-describedby="bairro-error"
                 />
               </div>
-              <FieldError id="bairro-error" message={shouldShowError("bairro")} />
             </label>
             <label>
               Cidade <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
-
                 <input
-                 disabled
+                 style={{color: "#676767"}}
                  readOnly
                  value={form.city}
                  onChange={(e) =>
@@ -356,20 +327,18 @@ const fetchCep = async (e) => {
                       cidade: e.target.value,
                     }))
                   }
-                  onBlur={() => handleBlur("city")}
                   placeholder="Ex: Belo Horizonte, MG"
                   aria-invalid={Boolean(shouldShowError("city"))}
                   aria-describedby="city-error"
                 />
               </div>
-              <FieldError id="city-error" message={shouldShowError("city")} />
             </label>
-
             <label>
               Estado <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
                 <input
+                  style={{color: "#676767"}}
                   disabled
                   value={form.state}
                   onChange={(e) =>
@@ -378,18 +347,12 @@ const fetchCep = async (e) => {
                       estado: e.target.value,
                     }))
                   }
-                  onBlur={() => handleBlur("estado")}
                   placeholder="Ex: Minas Gerais"
                   aria-invalid={Boolean(shouldShowError("Minas Gerais"))}
                   aria-describedby="neighborhood-error"
                 />
               </div>
-              <FieldError
-                id="estado-error"
-                message={shouldShowError("estado")}
-              />
             </label>
-
             <label>
               Senha <strong>*</strong>
               <div className="user-register-form__input-icon">
