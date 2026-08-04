@@ -15,7 +15,7 @@ import {
   validateContactRequired,
   validateServiceField,
   validateServiceForm,
-} from "./Utils/ServiceCreatePageValidator";
+} from "./utils/ServiceCreatePageValidator";
 import "./ServiceCreatePage.css";
 import "react-phone-number-input/style.css";
 import WhatsappInput from "../../../components/InputWhatssap/InputWhatssap";
@@ -25,7 +25,8 @@ import {
   CONTACT_FIELDS,
   PAGE_IMAGES,
   INITIAL_FORM,
-} from "./ServiceCreatePageConstants";
+} from "./constants/ServiceCreatePageConsts";
+import "../../../styles/global.css"
 
 export default function ServiceCreatePage({ onSubmitService }) {
   const [form, setForm] = useState(INITIAL_FORM);
@@ -134,7 +135,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
 
     const newService = {
       ...sanitizeServiceForm(form),
-      status: "aprovado",
+      status: "pendente",
       createdAt: now,
       updatedAt: now,
     };
@@ -164,7 +165,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
 
       <header className="service-create-page__topbar">
         <button
-          className="service-create-page__back-button"
+          className="back-button"
           type="button"
           onClick={() => navigate("/")}
         >
@@ -220,7 +221,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
             <div className="service-create-form__grid">
               <label className="service-create-form__full-field">
                 Nome do serviço <strong>*</strong>
-                <input
+                <input style={{color: "#676767"}}
                   value={form.title}
                   onChange={(event) => updateField("title", event.target.value)}
                   onBlur={() => handleBlur("title")}
@@ -237,6 +238,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
               <label>
                 Categoria <strong>*</strong>
                 <select
+                  style={{color: "#676767"}}
                   value={form.category}
                   onChange={(event) =>
                     updateField("category", event.target.value)
@@ -264,6 +266,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
               <label>
                 Tipo de atendimento <strong>*</strong>
                 <select
+                  style={{color: "#676767"}}
                   value={form.modality}
                   onChange={(event) =>
                     updateField("modality", event.target.value)
@@ -291,6 +294,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
               <label>
                 Cidade <strong>*</strong>
                 <input
+                  style={{color: "#676767"}}
                   value={form.city}
                   onChange={(event) => updateField("city", event.target.value)}
                   onBlur={() => handleBlur("city")}
@@ -304,6 +308,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
               <label>
                 Bairro <strong>*</strong>
                 <input
+                  style={{color: "#676767"}}
                   value={form.neighborhood}
                   onChange={(event) =>
                     updateField("neighborhood", event.target.value)
@@ -323,6 +328,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
                 Descrição <strong>*</strong>
                 <div className="service-create-form__textarea-wrapper">
                   <textarea
+                   style={{color: "#676767"}}
                     value={form.description}
                     maxLength={1000}
                     onChange={(event) =>
@@ -360,6 +366,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
               <label>
                 WhatsApp
                 <WhatsappInput
+                  style={{color: "#676767"}}
                   country={form.whatsappCountry}
                   phone={form.whatsapp}
                   error={shouldShowError("whatsapp")}
@@ -376,6 +383,7 @@ export default function ServiceCreatePage({ onSubmitService }) {
               <label>
                 Instagram
                 <input
+                  style={{color: "#676767"}}
                   value={form.instagram}
                   onChange={(event) =>
                     updateField("instagram", event.target.value)

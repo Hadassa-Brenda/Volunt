@@ -9,12 +9,12 @@
 .catalog-container {
   width: min(1440px, calc(100% - 64px));
   margin: 0 auto;
-  padding: 52px 0 80px;
+  padding: 20px 0 80px;
   flex: 1;
 }
 
 .catalog-heading {
-  margin-bottom: 28px;
+  margin-bottom: 10px;
 }
 
 .catalog-heading h1 {

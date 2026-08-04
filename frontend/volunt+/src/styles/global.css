@@ -68,3 +68,24 @@ img {
   display: block;
   max-width: 100%;
 }
+
+.back-button {
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-primary);
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 12px 18px;
+  box-shadow: 0 10px 30px rgba(7, 15, 47, 0.08);
+}
+
+.service-create-page__back-button:hover {
+  background: var(--color-white);
+  border-color: rgba(123, 53, 232, 0.3);
+  transform: translateY(-1px);
+}

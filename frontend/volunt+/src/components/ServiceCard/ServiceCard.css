@@ -3,9 +3,10 @@
   border-radius: var(--radius-md);
   background: var(--color-white);
   overflow: hidden;
-  min-height: 440px;
-  min-width: 280px;
   box-shadow: var(--shadow-soft);
+
+  width: 300px;      
+  min-height: 460px; 
 }
 
 .service-card__image {
@@ -46,7 +47,7 @@
 }
 
 .service-card__body {
-  padding: 20px 20px 18px;
+  padding: 20px 20px 10px;
 }
 
 .service-card__category {

@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { useCadastrarServico } from "./hook/useCadastrarServico";
 import { SuccessContent } from "./steps/SuccessContent";
 import { FormStepContent } from "./components/FormStepContent/FormStepContent";
+import "../../../styles/global.css"
+import Button from "../../../components/Button/Button"
 
 export default function CadastrarServico() {
   const navigate = useNavigate();
@@ -31,14 +33,14 @@ export default function CadastrarServico() {
   return (
     <main className="create-service-page">
       <Header />
-      <button
-        className="login-page__back-button"
-        type="button"
+      <div style={{padding: "10px"}}>
+      <Button
+        className="back-button"
         onClick={() => navigate("/")}
-      >
-        <ArrowLeft size={18} />
-        Voltar
-      </button>
+        icon={<ArrowLeft size={18} />}
+        children={"Voltar"}
+      />
+      </div>
       <section className="create-service-container">
         {submitted ? (
           <SuccessContent

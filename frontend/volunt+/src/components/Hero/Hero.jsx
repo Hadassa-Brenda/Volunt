@@ -3,8 +3,11 @@ import { Heart, Search, Users } from "lucide-react";
 import { heroImages } from "../../assets/imgs/heroImages";
 import { HERO_CONTENT } from "../../constants/content";
 import "./Hero.css";
+import { useNavigate } from "react-router-dom";
+import Button from "components/Button/Button";
 
-export default function Hero({ onOpenServiceModal }) {
+export default function Hero() {
+  const navigate = useNavigate();
   return (
     <section className="hero" id="top">
       <div className="hero__text">
@@ -25,15 +28,12 @@ export default function Hero({ onOpenServiceModal }) {
           className="hero__buttons"
           style={{ gap: "10px", paddingBottom: "20px" }}
         >
-          <a className="hero__button hero__button--primary" href="#explorar">
-            <Search size={18} />
-            {HERO_CONTENT.findHelpButton}
-          </a>
+          <Button onClick={()=> navigate("catalogo-servicos")} className="hero__button hero__button--primary" icon={<Search size={18}></Search>} children={HERO_CONTENT.findHelpButton}/>
 
           <button
             className="hero__button hero__button--primary"
             type="button"
-            onClick={onOpenServiceModal}
+            onClick={() => navigate("cadastrar-servico")}
           >
             <Heart size={18} />
             {HERO_CONTENT.offerHelpButton}

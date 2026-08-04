@@ -1,6 +1,5 @@
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import PhoneNumberInput from "react-phone-number-input/input";
-import labels from "react-phone-number-input/locale/pt-BR.json";
 import "../../components/InputWhatssap/InputWhatssap.css";
 
 function getOnlyNumbers(value) {

@@ -34,6 +34,7 @@ import {
 import {useNavigate} from "react-router-dom";
 import "./DetalhesServico.css";
 import { ServiceNotFound } from "../../pages/DetalhesServico/components/ServiceNotFound/ServiceNotFound";
+import "../../../styles/global.css"
 
 export default function DetalhesServico() {
   const { id } = useParams();
@@ -72,7 +73,7 @@ export default function DetalhesServico() {
 
       <div className="service-details-container">
         <button
-          className="login-page__back-button"
+          className="back-button"
           type="button"
           onClick={() => navigate("/")}
         >

@@ -2,6 +2,7 @@ import { BasicInformationStep } from "../../steps/BasicInformationStep";
 import { AttendanceStep } from "../../steps/AttendanceStep";
 import { ContactStep } from "../../steps/ContactStep";
 import { ReviewStep } from "../../components/ReviewStep/ReviewStep";
+import { reviewTexts } from "../../types/CadastrarServicoConst";
 
 export function FormStepContent(props) {
   const {

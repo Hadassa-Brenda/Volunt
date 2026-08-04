@@ -1,34 +1,23 @@
 import { Plus } from "lucide-react";
 import "./Header.css";
+import { Link } from "react-router-dom"
 
 export default function Header({ onCreateUser, onOpenLogin }) {
   return (
     <header className="header">
-      <a className="header__brand" href="#top" aria-label="Voluntá+ início">
+      <Link to="/" className="header__brand" aria-label="Voluntá+ início">
         <span className="header__brand-icon">♡</span>
         <strong>Voluntá+</strong>
-      </a>
+      </Link>
 
       <nav className="header__nav" aria-label="Menu principal">
-        <a className="header__nav-link header__nav-link--active" href="#top">
+        <Link to="/" className="header__nav-link header__nav-link--active">
           Início
-        </a>
+        </Link>
 
-        <a className="header__nav-link" href="#explorar">
-          Explorar
-        </a>
-
-        <a className="header__nav-link" href="#categorias">
-          Categorias
-        </a>
-
-        <a className="header__nav-link" href="#como-funciona">
-          Como funciona
-        </a>
-
-        <a className="header__nav-link" href="#sobre">
+        <Link to="about-volunteering" className="header__nav-link">
           Sobre
-        </a>
+        </Link>
       </nav>
 
       <div className="header__actions">

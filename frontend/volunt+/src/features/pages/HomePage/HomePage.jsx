@@ -50,7 +50,7 @@ export default function HomePage() {
         onOpenLogin={() => navigate("/login")}
       />
 
-      <Hero onOpenServiceModal={() => setIsServiceModalOpen(true)} />
+      <Hero />
       <div
         style={{
           display: "flex",

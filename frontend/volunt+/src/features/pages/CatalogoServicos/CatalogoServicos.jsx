@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { Search, ChevronDown, SlidersHorizontal, X } from "lucide-react";
-
+import { Search, ChevronDown, SlidersHorizontal, X,ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "../../../components";
 import Footer from "../../../layouts/Footer/Footer";
 import "./CatalogoServicos.css";
@@ -13,6 +13,7 @@ import { BasicPagination } from "components/Pagination/BasicPagination";
 import {SERVICE_CATEGORIES}  from "../../../types/enum/Categories"
 import {SERVICE_MODALITIES} from "../../../types/enum/Modalitires"
 import {PROFILE_TYPES} from "../../../types/enum/ProfileTypes"
+import Button from "components/Button/Button";
 
 export default function CatalogoServicos() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,7 +22,7 @@ export default function CatalogoServicos() {
   const [favorites, setFavorites] = useState([]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-
+  const navigate = useNavigate()
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
 
@@ -114,9 +115,18 @@ export default function CatalogoServicos() {
   return (
     <main className="catalog-page">
       <Header />
-
+      <div style={{padding: "10px"}}> 
+      <Button
+                className="back-button"
+                type="button"
+                onClick={() => navigate("/")}
+                icon={ <ArrowLeft size={18} />}
+                children={"Voltar"}
+              />
+          </div>
       <section className="catalog-container">
-        <header className="catalog-heading">
+        
+          <header className="catalog-heading">
           <div>
             <h1>Explorar serviços</h1>
             <p>Encontre iniciativas voluntárias perto de você.</p>

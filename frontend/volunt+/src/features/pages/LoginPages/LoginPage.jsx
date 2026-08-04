@@ -1,10 +1,13 @@
 import { ArrowLeft, Lock, Mail, Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { login } from "./services/authService";
 import "./LoginPages.css";
+import "../../../styles/global.css"
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -17,25 +20,31 @@ export default function LoginPage() {
     }));
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  async function handleSubmit(event) {
+  event.preventDefault();
 
-    console.log("Login:", form);
+  try {
+    const data = await login(form.email, form.password);
+    sessionStorage.setItem("token", data.token);
+    navigate("/");
+  } catch (error) {
+    alert("E-mail ou senha inválidos.");
   }
+}
 
-  const navigate = useNavigate();
   return (
     <main className="login-page">
       <section className="login-page__left">
-        <button
-          className="user-register-page__back-button"
-          type="button"
-          onClick={() => navigate("/")}
-        >
-          <ArrowLeft size={18} />
-          Voltar
-        </button>
-
+        <header className="user-register-page__topbar">
+          <button
+            className="back-button"
+            type="button"
+            onClick={() => navigate("/")}
+          >
+            <ArrowLeft size={18} />
+            Voltar
+          </button>
+        </header>
         <a className="header__brand" href="#top" aria-label="Voluntá+ início">
           <span className="header__brand-icon">♡</span>
           <strong>Voluntá+</strong>

@@ -7,25 +7,21 @@ import {
   LockKeyhole,
   Mail,
   MapPin,
-  Phone,
   ShieldCheck,
   UserPlus,
   UserRound,
 } from "lucide-react";
 
 import FieldError from "../../../components/FieldError/FieldError";
-
+import { register } from "../../pages/UserRegisterPage/services/authService";
 import {
   INITIAL_USER_REGISTER_FORM,
   REGISTER_IMAGES,
 } from "./types/userRegisterConsts";
 
 import { PROFILE_TYPES } from "types/enum/ProfileTypes";
-
+import "../../../styles/global.css"
 import { validateField, validateForm } from "./Utils/userRegisterValidation";
-
-import { sanitizeUserForm } from "./Utils/userRegisterSanitizer";
-
 import "./UserRegisterPage.css";
 
 export default function UserRegisterPage({ onSubmitUser }) {
@@ -34,7 +30,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
   const [form, setForm] = useState(INITIAL_USER_REGISTER_FORM);
   const [errors, setErrors] = useState({});
   const [touchedFields, setTouchedFields] = useState({});
-  const [cep, setCep] = useState({});
 
   function updateField(field, value) {
     const nextForm = {
@@ -127,8 +122,9 @@ const fetchCep = async (e) => {
     setErrors({});
     setTouchedFields({});
   }
+  
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const validationErrors = validateForm(form);
@@ -139,22 +135,22 @@ const fetchCep = async (e) => {
       return;
     }
 
-    const newUser = {
-      ...sanitizeUserForm(form),
-      createdAt: new Date().toISOString(),
-      role: "user",
-      status: "active",
-    };
+    try {
+      const data = await register(form.bairro, form.cep, form.city, form.email, form.profileType, form.confirmPassword, form.password, form.whatsapp, form.fullName, form.state, form.acceptTerms);
+      sessionStorage.setItem("token", data.token);
+      navigate("/");
+    } catch (_) {
+      alert("E-mail ou senha inválidos.");
+    }
 
-    console.log("Usuário cadastrado:", newUser);
-
-    if (onSubmitUser) {
+     if (onSubmitUser) {
       onSubmitUser(newUser);
     }
 
     alert("Cadastro realizado com sucesso!");
 
     resetForm();
+    
   }
 
   return (
@@ -166,24 +162,16 @@ const fetchCep = async (e) => {
       <div className="user-register-page__background-photo user-register-page__background-photo--right">
         <img src={REGISTER_IMAGES.community} alt="Comunidade reunida" />
       </div>
-
+    
       <header className="user-register-page__topbar">
         <button
-          className="user-register-page__back-button"
+          className="back-button"
           type="button"
           onClick={() => navigate("/")}
         >
           <ArrowLeft size={18} />
           Voltar
         </button>
-
-        <a className="user-register-page__brand" href="#top">
-          <span className="user-register-page__brand-icon">
-            <HeartHandshake size={24} />
-          </span>
-
-          <strong>Voluntá+</strong>
-        </a>
       </header>
 
       <section className="user-register-page__content">
@@ -217,6 +205,7 @@ const fetchCep = async (e) => {
                 <UserRound size={18} />
 
                 <input
+                    style={{color: "#393939"}}
                   value={form.fullName}
                   onChange={(event) =>
                     updateField("fullName", event.target.value)
@@ -239,6 +228,7 @@ const fetchCep = async (e) => {
                 <Mail size={18} />
 
                 <input
+              style={{color: "#393939"}}
                   type="email"
                   value={form.email}
                   onChange={(event) => updateField("email", event.target.value)}
@@ -253,6 +243,7 @@ const fetchCep = async (e) => {
             <label className="user-register-form__input-icon">
               Tipo de perfil <strong>*</strong>
               <select
+                 style={{color: "#393939"}}
                 value={form.profileType}
                 onChange={(event) =>
                   updateField("profileType", event.target.value)
@@ -282,6 +273,7 @@ const fetchCep = async (e) => {
               <div className="user-register-form__input-icon">
                 <Mail size={18} />
                 <input
+                   style={{color: "#393939"}}
                   maxLength={8}
                   type="text"
                   value={form.cep}
@@ -298,7 +290,7 @@ const fetchCep = async (e) => {
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
                 <input
-                 style={{color: "#676767"}}
+               style={{color: "#393939"}}
                  readOnly
                  value={form.bairro}
                  onChange={(e) =>
@@ -318,7 +310,7 @@ const fetchCep = async (e) => {
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
                 <input
-                 style={{color: "#676767"}}
+                   style={{color: "#393939"}}
                  readOnly
                  value={form.city}
                  onChange={(e) =>
@@ -338,7 +330,7 @@ const fetchCep = async (e) => {
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
                 <input
-                  style={{color: "#676767"}}
+                   style={{color: "#393939"}}
                   disabled
                   value={form.state}
                   onChange={(e) =>
@@ -359,12 +351,13 @@ const fetchCep = async (e) => {
                 <LockKeyhole size={18} />
 
                 <input
+                 style={{color: "#393939"}}
                   type="password"
                   value={form.password}
                   onChange={(event) =>
                     updateField("password", event.target.value)
                   }
-                  onBlur={() => handleBlur("password")}
+                  
                   placeholder="Mínimo 8 caracteres"
                   aria-invalid={Boolean(shouldShowError("password"))}
                   aria-describedby="password-error"
@@ -382,12 +375,13 @@ const fetchCep = async (e) => {
                 <LockKeyhole size={18} />
 
                 <input
+                 style={{color: "#393939"}}
                   type="password"
                   value={form.confirmPassword}
                   onChange={(event) =>
                     updateField("confirmPassword", event.target.value)
                   }
-                  onBlur={() => handleBlur("confirmPassword")}
+                 
                   placeholder="Digite a senha novamente"
                   aria-invalid={Boolean(shouldShowError("confirmPassword"))}
                   aria-describedby="confirmPassword-error"
@@ -402,6 +396,7 @@ const fetchCep = async (e) => {
 
           <label className="user-register-form__terms">
             <input
+               style={{color: "#393939"}}
               type="checkbox"
               checked={form.acceptTerms}
               onChange={(event) =>
@@ -432,6 +427,7 @@ const fetchCep = async (e) => {
             <button
               className="user-register-form__primary-button"
               type="submit"
+              onClick={handleSubmit}
             >
               <UserPlus size={18} />
               Criar conta
