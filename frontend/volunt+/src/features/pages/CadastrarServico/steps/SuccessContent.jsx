@@ -30,7 +30,7 @@ export function SuccessContent({ serviceTitle, onCreateAnother }) {
           Cadastrar outro serviço
         </button>
 
-        <a href="/meus-servicos" className="primary-action-button">
+        <a href="/explorar" className="primary-action-button">
           Ver meus serviços
           <ArrowRight size={18} />
         </a>

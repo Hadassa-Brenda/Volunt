@@ -15,7 +15,7 @@ export default function Header({ onCreateUser, onOpenLogin }) {
           Início
         </Link>
 
-        <Link to="about-volunteering" className="header__nav-link">
+        <Link to="/about-volunteering" className="header__nav-link">
           Sobre
         </Link>
       </nav>
