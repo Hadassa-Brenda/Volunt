@@ -1,8 +1,9 @@
-import { Plus } from "lucide-react";
+import { Plus, UserRound } from "lucide-react";
 import "./Header.css";
 import { Link } from "react-router-dom"
 
 export default function Header({ onCreateUser, onOpenLogin }) {
+  const user = JSON.parse(localStorage.getItem("volunt-user") || "null");
   return (
     <header className="header">
       <Link to="/" className="header__brand" aria-label="Voluntá+ início">
@@ -21,6 +22,7 @@ export default function Header({ onCreateUser, onOpenLogin }) {
       </nav>
 
       <div className="header__actions">
+        {user ? <Link className="header__profile" to="/meus-servicos"><span className="header__avatar">{(user.fullName || user.name || "U").slice(0, 1).toUpperCase()}</span><span>Minha conta</span></Link> : <>
         <button
           className="header__primary-button"
           type="button"
@@ -37,6 +39,7 @@ export default function Header({ onCreateUser, onOpenLogin }) {
         >
           Entrar
         </button>
+        </>}
       </div>
     </header>
   );

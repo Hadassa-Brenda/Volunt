@@ -249,7 +249,7 @@ export default function DetalhesServico() {
             <button
               type="button"
               className="report-service-button"
-              onClick={() => setReportModalOpen(true)}
+              onClick={() => navigate(`/denunciar/${service.id}`)}
             >
               <Flag size={17} />
               Reportar informação incorreta
