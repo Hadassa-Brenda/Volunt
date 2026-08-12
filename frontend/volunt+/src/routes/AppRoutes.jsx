@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route } from "react-router-dom";
 
 import HomePage from "../features/pages/HomePage/HomePage";
 import LoginPage from "../features/pages/LoginPages/LoginPage";
@@ -18,6 +18,10 @@ export default function AppRoutes() {
       <Route path="/cadastrar-servico" element={<CadastrarServico />} />
       <Route path="/about-volunteering" element={<AboutVolunteering />} />
       <Route path="/catalogo-servicos" element={<CatalogoServicos />} />
+      <Route path="/explorar" element={<CatalogoServicos />} />
+      <Route path="/servicos" element={<Navigate to="/explorar" replace />} />
+      <Route path="/meus-servicos" element={<Navigate to="/explorar" replace />} />
+      <Route path="/perfil/:id" element={<Navigate to="/explorar" replace />} />
       <Route path="*" element={<h1>Página não encontrada</h1>} />
     </Routes>
   );

@@ -138,13 +138,12 @@ const fetchCep = async (e) => {
     try {
       const data = await register(form.bairro, form.cep, form.city, form.email, form.profileType, form.confirmPassword, form.password, form.whatsapp, form.fullName, form.state, form.acceptTerms);
       sessionStorage.setItem("token", data.token);
+      if (onSubmitUser) {
+        onSubmitUser(data.user);
+      }
       navigate("/");
     } catch (_) {
       alert("E-mail ou senha inválidos.");
-    }
-
-     if (onSubmitUser) {
-      onSubmitUser(newUser);
     }
 
     alert("Cadastro realizado com sucesso!");

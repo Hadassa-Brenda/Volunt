@@ -1,6 +1,7 @@
 import { ArrowLeft, Lock, Mail, Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { login } from "./services/authService";
 import "./LoginPages.css";
 import "../../../styles/global.css"
@@ -45,10 +46,10 @@ export default function LoginPage() {
             Voltar
           </button>
         </header>
-        <a className="header__brand" href="#top" aria-label="Voluntá+ início">
+        <Link className="header__brand" to="/" aria-label="Voluntá+ início">
           <span className="header__brand-icon">♡</span>
           <strong>Voluntá+</strong>
-        </a>
+        </Link>
 
         <div className="login-page__text">
           <span className="login-page__tag">Bem-vindo de volta</span>
@@ -128,7 +129,7 @@ export default function LoginPage() {
           </button>
 
           <p className="login-card__footer">
-            Ainda não tem conta? <a href="#cadastro">Criar conta</a>
+            Ainda não tem conta? <Link to="/cadastro">Criar conta</Link>
           </p>
         </form>
       </section>
