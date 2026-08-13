@@ -20,7 +20,7 @@ import {
 } from "./types/userRegisterConsts";
 
 import { PROFILE_TYPES } from "types/enum/ProfileTypes";
-import "../../../styles/global.css"
+import "../../../styles/global.css";
 import { validateField, validateForm } from "./Utils/userRegisterValidation";
 import "./UserRegisterPage.css";
 
@@ -66,38 +66,38 @@ export default function UserRegisterPage({ onSubmitUser }) {
     }));
   }
 
-const fetchCep = async (e) => {
-  const cep = e.target.value.replace(/\D/g, "");
-
-  setForm((prev) => ({
-    ...prev,
-    cep,
-  }));
-
-  if (cep.length !== 8) return;
-
-  try {
-    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    const data = await res.json();
-
-    if (data.erro) {
-      throw new Error("CEP não encontrado");
-    }
+  const fetchCep = async (e) => {
+    const cep = e.target.value.replace(/\D/g, "");
 
     setForm((prev) => ({
       ...prev,
       cep,
-      bairro: data.bairro,
-      city: data.localidade,
-      state: data.uf,
     }));
-  } catch (err) {
-    console.error("Erro:", err);
-  }
-};
+
+    if (cep.length !== 8) return;
+
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const data = await res.json();
+
+      if (data.erro) {
+        throw new Error("CEP não encontrado");
+      }
+
+      setForm((prev) => ({
+        ...prev,
+        cep,
+        bairro: data.bairro,
+        city: data.localidade,
+        state: data.uf,
+      }));
+    } catch (err) {
+      console.error("Erro:", err);
+    }
+  };
 
   function shouldShowError(field) {
     return touchedFields[field] && errors[field];
@@ -122,7 +122,6 @@ const fetchCep = async (e) => {
     setErrors({});
     setTouchedFields({});
   }
-  
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -136,7 +135,19 @@ const fetchCep = async (e) => {
     }
 
     try {
-      const data = await register(form.bairro, form.cep, form.city, form.email, form.profileType, form.confirmPassword, form.password, form.whatsapp, form.fullName, form.state, form.acceptTerms);
+      const data = await register(
+        form.bairro,
+        form.cep,
+        form.city,
+        form.email,
+        form.profileType,
+        form.confirmPassword,
+        form.password,
+        form.whatsapp,
+        form.fullName,
+        form.state,
+        form.acceptTerms,
+      );
       sessionStorage.setItem("token", data.token);
       if (onSubmitUser) {
         onSubmitUser(data.user);
@@ -149,7 +160,6 @@ const fetchCep = async (e) => {
     alert("Cadastro realizado com sucesso!");
 
     resetForm();
-    
   }
 
   return (
@@ -161,7 +171,7 @@ const fetchCep = async (e) => {
       <div className="user-register-page__background-photo user-register-page__background-photo--right">
         <img src={REGISTER_IMAGES.community} alt="Comunidade reunida" />
       </div>
-    
+
       <header className="user-register-page__topbar">
         <button
           className="back-button"
@@ -204,7 +214,7 @@ const fetchCep = async (e) => {
                 <UserRound size={18} />
 
                 <input
-                    style={{color: "#393939"}}
+                  style={{ color: "#393939" }}
                   value={form.fullName}
                   onChange={(event) =>
                     updateField("fullName", event.target.value)
@@ -227,7 +237,7 @@ const fetchCep = async (e) => {
                 <Mail size={18} />
 
                 <input
-              style={{color: "#393939"}}
+                  style={{ color: "#393939" }}
                   type="email"
                   value={form.email}
                   onChange={(event) => updateField("email", event.target.value)}
@@ -242,7 +252,7 @@ const fetchCep = async (e) => {
             <label className="user-register-form__input-icon">
               Tipo de perfil <strong>*</strong>
               <select
-                 style={{color: "#393939"}}
+                style={{ color: "#393939" }}
                 value={form.profileType}
                 onChange={(event) =>
                   updateField("profileType", event.target.value)
@@ -267,12 +277,12 @@ const fetchCep = async (e) => {
               />
             </label>
 
-             <label>
+            <label>
               CEP <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <Mail size={18} />
                 <input
-                   style={{color: "#393939"}}
+                  style={{ color: "#393939" }}
                   maxLength={8}
                   type="text"
                   value={form.cep}
@@ -283,16 +293,16 @@ const fetchCep = async (e) => {
               </div>
               <FieldError id="cep-error" message={shouldShowError("cep")} />
             </label>
-              
-          <label>
+
+            <label>
               Bairro <strong>*</strong>
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
                 <input
-               style={{color: "#393939"}}
-                 readOnly
-                 value={form.bairro}
-                 onChange={(e) =>
+                  style={{ color: "#393939" }}
+                  readOnly
+                  value={form.bairro}
+                  onChange={(e) =>
                     setForm((prev) => ({
                       ...prev,
                       bairro: e.target.value,
@@ -309,10 +319,10 @@ const fetchCep = async (e) => {
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
                 <input
-                   style={{color: "#393939"}}
-                 readOnly
-                 value={form.city}
-                 onChange={(e) =>
+                  style={{ color: "#393939" }}
+                  readOnly
+                  value={form.city}
+                  onChange={(e) =>
                     setForm((prev) => ({
                       ...prev,
                       cidade: e.target.value,
@@ -329,7 +339,7 @@ const fetchCep = async (e) => {
               <div className="user-register-form__input-icon">
                 <MapPin size={18} />
                 <input
-                   style={{color: "#393939"}}
+                  style={{ color: "#393939" }}
                   disabled
                   value={form.state}
                   onChange={(e) =>
@@ -350,13 +360,13 @@ const fetchCep = async (e) => {
                 <LockKeyhole size={18} />
 
                 <input
-                 style={{color: "#393939"}}
+                  style={{ color: "#393939" }}
                   type="password"
                   value={form.password}
                   onChange={(event) =>
                     updateField("password", event.target.value)
                   }
-                  
+
                   placeholder="Mínimo 8 caracteres"
                   aria-invalid={Boolean(shouldShowError("password"))}
                   aria-describedby="password-error"
@@ -374,13 +384,13 @@ const fetchCep = async (e) => {
                 <LockKeyhole size={18} />
 
                 <input
-                 style={{color: "#393939"}}
+                  style={{ color: "#393939" }}
                   type="password"
                   value={form.confirmPassword}
                   onChange={(event) =>
                     updateField("confirmPassword", event.target.value)
                   }
-                 
+
                   placeholder="Digite a senha novamente"
                   aria-invalid={Boolean(shouldShowError("confirmPassword"))}
                   aria-describedby="confirmPassword-error"
@@ -395,7 +405,7 @@ const fetchCep = async (e) => {
 
           <label className="user-register-form__terms">
             <input
-               style={{color: "#393939"}}
+              style={{ color: "#393939" }}
               type="checkbox"
               checked={form.acceptTerms}
               onChange={(event) =>

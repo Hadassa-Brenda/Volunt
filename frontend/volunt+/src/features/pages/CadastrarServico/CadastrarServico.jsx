@@ -10,8 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { useCadastrarServico } from "./hook/useCadastrarServico";
 import { SuccessContent } from "./steps/SuccessContent";
 import { FormStepContent } from "./components/FormStepContent/FormStepContent";
-import "../../../styles/global.css"
-import Button from "../../../components/Button/Button"
+import "../../../styles/global.css";
+import Button from "../../../components/Button/Button";
 
 export default function CadastrarServico() {
   const navigate = useNavigate();
@@ -29,17 +29,17 @@ export default function CadastrarServico() {
     handleSubmit,
     resetForm,
   } = useCadastrarServico();
-  
+
   return (
     <main className="create-service-page">
       <Header />
-      <div style={{padding: "10px"}}>
-      <Button
-        className="back-button"
-        onClick={() => navigate("/")}
-        icon={<ArrowLeft size={18} />}
-        children={"Voltar"}
-      />
+      <div style={{ padding: "10px" }}>
+        <Button
+          className="back-button"
+          onClick={() => navigate("/")}
+          icon={<ArrowLeft size={18} />}
+          children={"Voltar"}
+        />
       </div>
       <section className="create-service-container">
         {submitted ? (

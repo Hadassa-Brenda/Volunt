@@ -1,13 +1,13 @@
-import {ServiceCard} from "../ServiceCard/ServiceCard";
+import { ServiceCard } from "../ServiceCard/ServiceCard";
 import "./ServicesSection.css";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 
 export default function ServicesSection({ services }) {
   return (
     <section className="services-section">
       <div className="services-section__title">
-        <h2>Serviços em destaque</h2> 
-       <Link to="/catalogo-servicos">Ver todos </Link>
+        <h2>Serviços em destaque</h2>
+        <Link to="/catalogo-servicos">Ver todos </Link>
       </div>
       {services.length > 0 ? (
         <div className="services-section__grid">

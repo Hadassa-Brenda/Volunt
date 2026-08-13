@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Search, SlidersHorizontal, Tag } from "lucide-react";
 
-import {
-  SERVICE_CATEGORIES,
-} from "../../types/enum/Categories";
+import { SERVICE_CATEGORIES } from "../../types/enum/Categories";
 import { SERVICE_MODALITIES } from "../../types/enum/Modalitires";
 import SelectField from "../SelectField/SelectField";
 import Button from "../Button/Button";
@@ -24,12 +22,12 @@ export default function SearchPanel({
 
     setIsAdvancedOpen(false);
   }
- const LOCATION_FILTER_OPTIONS = [
-  "São Paulo",
-  "Rio de Janeiro",
-  "Belo Horizonte",
-  "Porto Alegre",
-];
+  const LOCATION_FILTER_OPTIONS = [
+    "São Paulo",
+    "Rio de Janeiro",
+    "Belo Horizonte",
+    "Porto Alegre",
+  ];
 
   return (
     <>
@@ -43,12 +41,12 @@ export default function SearchPanel({
             placeholder="Buscar palavra-chave"
           />
         </label>
-    <SelectField
-            label="Localização"
-            value={filters.location}
-            options={ LOCATION_FILTER_OPTIONS}
-            onChange={(event) => onFilterChange("location", event.target.value)}
-          />
+        <SelectField
+          label="Localização"
+          value={filters.location}
+          options={LOCATION_FILTER_OPTIONS}
+          onChange={(event) => onFilterChange("location", event.target.value)}
+        />
         <SelectField
           label="Categoria"
           value={filters.category}

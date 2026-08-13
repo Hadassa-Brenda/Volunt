@@ -5,19 +5,19 @@ import {
   HandHelping,
   ArrowRight,
   BadgeInfo,
-  ArrowLeft
+  ArrowLeft,
 } from "lucide-react";
 import "./AboutVolunteering.css";
 import "../UserRegisterPage/UserRegisterPage";
 import { useNavigate } from "react-router-dom";
-import Button from "../../../components/Button/Button"
+import Button from "../../../components/Button/Button";
 
 export default function AboutVolunteering() {
   const navigate = useNavigate();
   return (
     <main className="about-volunteering">
-        <header className="user-register-page__topbar">
-          <div style={{padding: "10px"}}>
+      <header className="user-register-page__topbar">
+        <div style={{ padding: "10px" }}>
           <Button
             className="back-button"
             type="button"
@@ -25,8 +25,8 @@ export default function AboutVolunteering() {
             icon={<ArrowLeft size={18} />}
             children={"Voltar"}
           />
-          </div>
-        </header>
+        </div>
+      </header>
       <section className="about-volunteering__hero">
         <div className="about-volunteering__hero-content">
           <span className="about-volunteering__badge">Sobre o projeto</span>

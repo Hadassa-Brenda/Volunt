@@ -28,7 +28,12 @@ export default function Hero() {
           className="hero__buttons"
           style={{ gap: "10px", paddingBottom: "20px" }}
         >
-          <Button onClick={()=> navigate("catalogo-servicos")} className="hero__button hero__button--primary" icon={<Search size={18}></Search>} children={HERO_CONTENT.findHelpButton}/>
+          <Button
+            onClick={() => navigate("catalogo-servicos")}
+            className="hero__button hero__button--primary"
+            icon={<Search size={18}></Search>}
+            children={HERO_CONTENT.findHelpButton}
+          />
 
           <button
             className="hero__button hero__button--primary"

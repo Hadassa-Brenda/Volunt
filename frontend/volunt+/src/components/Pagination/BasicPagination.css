@@ -1,6 +1,6 @@
-.pagination-container{ 
-display: 'flex';
-flex-direction: 'column-reverse';
-justify-content: 'center';
-align-items: 'center'
+.pagination-container {
+  display: "flex";
+  flex-direction: "column-reverse";
+  justify-content: "center";
+  align-items: "center";
 }

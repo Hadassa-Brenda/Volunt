@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { login } from "./services/authService";
 import "./LoginPages.css";
-import "../../../styles/global.css"
+import "../../../styles/global.css";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -22,16 +22,16 @@ export default function LoginPage() {
   }
 
   async function handleSubmit(event) {
-  event.preventDefault();
+    event.preventDefault();
 
-  try {
-    const data = await login(form.email, form.password);
-    sessionStorage.setItem("token", data.token);
-    navigate("/");
-  } catch (error) {
-    alert("E-mail ou senha inválidos.");
+    try {
+      const data = await login(form.email, form.password);
+      sessionStorage.setItem("token", data.token);
+      navigate("/");
+    } catch (error) {
+      alert("E-mail ou senha inválidos.");
+    }
   }
-}
 
   return (
     <main className="login-page">

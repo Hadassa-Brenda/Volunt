@@ -397,8 +397,8 @@
 }
 
 .user-register-page__topbar {
-    align-items: flex-start;
-    gap: 14px;
+  align-items: flex-start;
+  gap: 14px;
 }
 
 @media (max-width: 1024px) {

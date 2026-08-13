@@ -45,7 +45,6 @@ export function validateField(field, value, form) {
 
       return "";
 
-
     case "password":
       if (textValue.length < 8) {
         return "A senha deve ter pelo menos 8 caracteres.";
