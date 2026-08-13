@@ -45,6 +45,7 @@
   display: inline-grid;
   place-items: center;
 }
+.service-card__image .service-card__favorite--active{border-color:#efb7c5;background:#fff1f5;color:#bd3151}
 
 .service-card__body {
   padding: 20px 20px 10px;

@@ -11,6 +11,7 @@ import UserProfilePage from "../features/pages/UserProfilePage/UserProfilePage";
 import ReportPage from "../features/pages/ReportPage/ReportPage";
 import MyServicesPage from "../features/pages/MyServicesPage/MyServicesPage";
 import AdminReportsPage from "../features/pages/AdminReportsPage/AdminReportsPage";
+import FavoritesPage from "../features/pages/FavoritesPage/FavoritesPage";
 
 export default function AppRoutes() {
   return (
@@ -30,6 +31,7 @@ export default function AppRoutes() {
       <Route path="/denunciar/:id" element={<ReportPage />} />
       <Route path="/denuncias" element={<ReportPage history />} />
       <Route path="/admin/denuncias" element={<AdminReportsPage />} />
+      <Route path="/favoritos" element={<FavoritesPage />} />
       <Route path="*" element={<h1>Página não encontrada</h1>} />
     </Routes>
   );

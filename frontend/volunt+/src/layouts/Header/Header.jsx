@@ -1,4 +1,4 @@
-import { Plus, UserRound } from "lucide-react";
+import { Heart, Plus } from "lucide-react";
 import "./Header.css";
 import { Link } from "react-router-dom"
 
@@ -22,7 +22,7 @@ export default function Header({ onCreateUser, onOpenLogin }) {
       </nav>
 
       <div className="header__actions">
-        {user ? <Link className="header__profile" to="/meus-servicos"><span className="header__avatar">{(user.fullName || user.name || "U").slice(0, 1).toUpperCase()}</span><span>Minha conta</span></Link> : <>
+        {user ? <><Link className="header__icon-button" to="/favoritos" aria-label="Meus favoritos" title="Meus favoritos"><Heart size={19}/></Link><Link className="header__profile" to="/meus-servicos"><span className="header__avatar">{(user.fullName || user.name || "U").slice(0, 1).toUpperCase()}</span><span>Minha conta</span></Link></> : <>
         <button
           className="header__primary-button"
           type="button"

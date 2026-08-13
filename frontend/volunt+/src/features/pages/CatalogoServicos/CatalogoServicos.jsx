@@ -14,12 +14,13 @@ import {SERVICE_CATEGORIES}  from "../../../types/enum/Categories"
 import {SERVICE_MODALITIES} from "../../../types/enum/Modalitires"
 import {PROFILE_TYPES} from "../../../types/enum/ProfileTypes"
 import Button from "components/Button/Button";
+import { getFavoriteIds, saveFavoriteIds } from "../../../utils/favorites";
 
 export default function CatalogoServicos() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState(initialFilters);
   const [sortOrder, setSortOrder] = useState("recent");
-  const [favorites, setFavorites] = useState([]);
+  const [favorites, setFavorites] = useState(() => getFavoriteIds());
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const navigate = useNavigate()
@@ -38,11 +39,7 @@ export default function CatalogoServicos() {
   };
 
   const toggleFavorite = (serviceId) => {
-    setFavorites((currentFavorites) =>
-      currentFavorites.includes(serviceId)
-        ? currentFavorites.filter((id) => id !== serviceId)
-        : [...currentFavorites, serviceId],
-    );
+    setFavorites((currentFavorites) => {const id=String(serviceId);return saveFavoriteIds(currentFavorites.includes(id)?currentFavorites.filter(item=>item!==id):[...currentFavorites,id])});
   };
 
   const filteredServices = useMemo(() => {
@@ -313,7 +310,7 @@ export default function CatalogoServicos() {
                     <ServiceCard
                       key={service.id}
                       service={service}
-                      isFavorite={favorites.includes(service.id)}
+                      isFavorite={favorites.includes(String(service.id))}
                       onFavorite={() => toggleFavorite(service.id)}
                     />
                 ))}
