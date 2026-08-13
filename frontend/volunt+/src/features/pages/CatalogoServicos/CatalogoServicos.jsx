@@ -1,5 +1,11 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { Search, ChevronDown, SlidersHorizontal, X,ArrowLeft } from "lucide-react";
+import {
+  Search,
+  ChevronDown,
+  SlidersHorizontal,
+  X,
+  ArrowLeft,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "../../../components";
 import Footer from "../../../layouts/Footer/Footer";
@@ -10,9 +16,9 @@ import { servicesDTO } from "types/DTOs/serviceDTO";
 import { checkPublicationDate } from "./utils/CatalogoServicosUtils";
 import { FilterSelect } from "../../../components/FilterSelect/FilterSelect";
 import { BasicPagination } from "components/Pagination/BasicPagination";
-import {SERVICE_CATEGORIES}  from "../../../types/enum/Categories"
-import {SERVICE_MODALITIES} from "../../../types/enum/Modalitires"
-import {PROFILE_TYPES} from "../../../types/enum/ProfileTypes"
+import { SERVICE_CATEGORIES } from "../../../types/enum/Categories";
+import { SERVICE_MODALITIES } from "../../../types/enum/Modalitires";
+import { PROFILE_TYPES } from "../../../types/enum/ProfileTypes";
 import Button from "components/Button/Button";
 import { getFavoriteIds, saveFavoriteIds } from "../../../utils/favorites";
 
@@ -23,7 +29,7 @@ export default function CatalogoServicos() {
   const [favorites, setFavorites] = useState(() => getFavoriteIds());
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
 
@@ -39,7 +45,14 @@ export default function CatalogoServicos() {
   };
 
   const toggleFavorite = (serviceId) => {
-    setFavorites((currentFavorites) => {const id=String(serviceId);return saveFavoriteIds(currentFavorites.includes(id)?currentFavorites.filter(item=>item!==id):[...currentFavorites,id])});
+    setFavorites((currentFavorites) => {
+      const id = String(serviceId);
+      return saveFavoriteIds(
+        currentFavorites.includes(id)
+          ? currentFavorites.filter((item) => item !== id)
+          : [...currentFavorites, id],
+      );
+    });
   };
 
   const filteredServices = useMemo(() => {
@@ -104,7 +117,6 @@ export default function CatalogoServicos() {
   const start = (page - 1) * itemsPerPage;
   const end = start + itemsPerPage;
 
-
   useEffect(() => {
     setPage(1);
   }, [searchTerm, filters, sortOrder]);
@@ -112,18 +124,17 @@ export default function CatalogoServicos() {
   return (
     <main className="catalog-page">
       <Header />
-      <div style={{padding: "10px"}}> 
-      <Button
-                className="back-button"
-                type="button"
-                onClick={() => navigate("/")}
-                icon={ <ArrowLeft size={18} />}
-                children={"Voltar"}
-              />
-          </div>
+      <div style={{ padding: "10px" }}>
+        <Button
+          className="back-button"
+          type="button"
+          onClick={() => navigate("/")}
+          icon={<ArrowLeft size={18} />}
+          children={"Voltar"}
+        />
+      </div>
       <section className="catalog-container">
-        
-          <header className="catalog-heading">
+        <header className="catalog-heading">
           <div>
             <h1>Explorar serviços</h1>
             <p>Encontre iniciativas voluntárias perto de você.</p>
@@ -304,24 +315,28 @@ export default function CatalogoServicos() {
             {filteredServices.length > 0 ? (
               <>
                 <div className="services-grid">
-                  {filteredServices
-                  .slice(start, end)
-                  .map((service) => (
+                  {filteredServices.slice(start, end).map((service) => (
                     <ServiceCard
                       key={service.id}
                       service={service}
                       isFavorite={favorites.includes(String(service.id))}
                       onFavorite={() => toggleFavorite(service.id)}
                     />
-                ))}
+                  ))}
                 </div>
-                <div style={{display: "flex", justifyContent: "center", marginTop: "2rem"}}>
-                 <BasicPagination
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: "2rem",
+                  }}
+                >
+                  <BasicPagination
                     page={page}
                     onPageChange={setPage}
                     itemsPerPage={8}
                     totalItems={filteredServices.length}
-                /> 
+                  />
                 </div>
               </>
             ) : (

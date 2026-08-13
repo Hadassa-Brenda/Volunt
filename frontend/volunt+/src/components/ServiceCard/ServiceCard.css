@@ -5,8 +5,8 @@
   overflow: hidden;
   box-shadow: var(--shadow-soft);
 
-  width: 300px;      
-  min-height: 460px; 
+  width: 300px;
+  min-height: 460px;
 }
 
 .service-card__image {
@@ -45,7 +45,11 @@
   display: inline-grid;
   place-items: center;
 }
-.service-card__image .service-card__favorite--active{border-color:#efb7c5;background:#fff1f5;color:#bd3151}
+.service-card__image .service-card__favorite--active {
+  border-color: #efb7c5;
+  background: #fff1f5;
+  color: #bd3151;
+}
 
 .service-card__body {
   padding: 20px 20px 10px;
@@ -126,7 +130,9 @@
   color: #aa2947;
   font-size: 12px;
   font-weight: 800;
-  transition: background 160ms ease, color 160ms ease;
+  transition:
+    background 160ms ease,
+    color 160ms ease;
 }
 
 .service-card__contacts .service-card__report:hover {

@@ -1,7 +1,209 @@
-import { BarChart3, Eye, Flag, FolderKanban, Grid3X3, LogOut, Search, ShieldCheck, Users } from "lucide-react";
+import {
+  BarChart3,
+  Eye,
+  Flag,
+  FolderKanban,
+  Grid3X3,
+  LogOut,
+  Search,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import "./AdminReportsPage.css";
 
-const initial=[{protocol:"VOL-12870265",serviceTitle:"Reforço escolar gratuito",reason:"Contato não funciona",contact:"Usuário anônimo",createdAt:"2026-07-12",status:"Pendente",description:"O número de contato informado não recebe mensagens."},{protocol:"VOL-11070265",serviceTitle:"Aulas de violão",reason:"Informação incorreta",contact:"joao@email.com",createdAt:"2026-07-11",status:"Em análise",description:"Os horários divulgados estão diferentes dos informados pelo responsável."},{protocol:"VOL-10070265",serviceTitle:"Mentoria em programação",reason:"Serviço não existe mais",contact:"Usuário anônimo",createdAt:"2026-07-10",status:"Pendente",description:"O responsável confirmou que o projeto foi encerrado."},{protocol:"VOL-09070265",serviceTitle:"Apoio psicológico",reason:"Conteúdo comercial",contact:"maria@email.com",createdAt:"2026-07-09",status:"Resolvida",description:"Foi solicitado pagamento pelo atendimento anunciado como voluntário."}];
-export default function AdminReportsPage(){const stored=JSON.parse(localStorage.getItem("volunt-reports")||"[]");const reports=[...stored,...initial];const [status,setStatus]=useState("");const [reason,setReason]=useState("");const [query,setQuery]=useState("");const [selected,setSelected]=useState(null);const filtered=useMemo(()=>reports.filter(r=>(!status||r.status===status)&&(!reason||r.reason===reason)&&`${r.serviceTitle} ${r.protocol}`.toLowerCase().includes(query.toLowerCase())),[reports,status,reason,query]);return <main className="admin-layout"><aside className="admin-sidebar"><Link to="/" className="admin-brand">Voluntá+ <small>Admin</small></Link><nav><Link to="/admin"><BarChart3/>Visão geral</Link><Link to="/admin/moderacao"><ShieldCheck/>Moderação</Link><Link className="active" to="/admin/denuncias"><Flag/>Denúncias</Link><Link to="/meus-servicos"><FolderKanban/>Serviços</Link><Link to="/admin/categorias"><Grid3X3/>Categorias</Link><Link to="/admin/usuarios"><Users/>Usuários</Link><Link to="/"><LogOut/>Sair</Link></nav></aside><section className="admin-main"><header><div><h1>Denúncias</h1><p>Gerencie as denúncias de serviços.</p></div><div className="admin-user">AD <span><strong>Administrador</strong><small>Gestão da plataforma</small></span></div></header><section className="admin-toolbar"><label>Status<select value={status} onChange={e=>setStatus(e.target.value)}><option value="">Todos</option><option>Pendente</option><option>Em análise</option><option>Resolvida</option></select></label><label>Motivo<select value={reason} onChange={e=>setReason(e.target.value)}><option value="">Todos</option>{[...new Set(reports.map(r=>r.reason))].map(x=><option key={x}>{x}</option>)}</select></label><div><Search/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Buscar denúncia..."/></div></section><section className="admin-table"><div className="table-row table-head"><span>Serviço</span><span>Motivo</span><span>Denunciante</span><span>Data</span><span>Status</span><span>Ações</span></div>{filtered.map(report=><div className="table-row" key={report.protocol}><strong>{report.serviceTitle}</strong><span>{report.reason}</span><span>{report.contact||"Usuário anônimo"}</span><span>{new Date(report.createdAt).toLocaleDateString("pt-BR")}</span><span className={`admin-status ${report.status.replace(" ","-").toLowerCase()}`}>{report.status}</span><button onClick={()=>setSelected(report)}><Eye/>Ver</button></div>)}</section></section>{selected&&<div className="admin-modal-bg" onClick={()=>setSelected(null)}><section className="admin-modal" onClick={e=>e.stopPropagation()}><Flag/><small>{selected.protocol}</small><h2>{selected.serviceTitle}</h2><b>{selected.reason}</b><p>{selected.description||"Nenhuma descrição adicional foi informada."}</p><label>Atualizar status<select defaultValue={selected.status}><option>Pendente</option><option>Em análise</option><option>Resolvida</option></select></label><button onClick={()=>setSelected(null)}>Concluir análise</button></section></div>}</main>}
+const initial = [
+  {
+    protocol: "VOL-12870265",
+    serviceTitle: "Reforço escolar gratuito",
+    reason: "Contato não funciona",
+    contact: "Usuário anônimo",
+    createdAt: "2026-07-12",
+    status: "Pendente",
+    description: "O número de contato informado não recebe mensagens.",
+  },
+  {
+    protocol: "VOL-11070265",
+    serviceTitle: "Aulas de violão",
+    reason: "Informação incorreta",
+    contact: "joao@email.com",
+    createdAt: "2026-07-11",
+    status: "Em análise",
+    description:
+      "Os horários divulgados estão diferentes dos informados pelo responsável.",
+  },
+  {
+    protocol: "VOL-10070265",
+    serviceTitle: "Mentoria em programação",
+    reason: "Serviço não existe mais",
+    contact: "Usuário anônimo",
+    createdAt: "2026-07-10",
+    status: "Pendente",
+    description: "O responsável confirmou que o projeto foi encerrado.",
+  },
+  {
+    protocol: "VOL-09070265",
+    serviceTitle: "Apoio psicológico",
+    reason: "Conteúdo comercial",
+    contact: "maria@email.com",
+    createdAt: "2026-07-09",
+    status: "Resolvida",
+    description:
+      "Foi solicitado pagamento pelo atendimento anunciado como voluntário.",
+  },
+];
+export default function AdminReportsPage() {
+  const stored = JSON.parse(localStorage.getItem("volunt-reports") || "[]");
+  const reports = [...stored, ...initial];
+  const [status, setStatus] = useState("");
+  const [reason, setReason] = useState("");
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState(null);
+  const filtered = useMemo(
+    () =>
+      reports.filter(
+        (r) =>
+          (!status || r.status === status) &&
+          (!reason || r.reason === reason) &&
+          `${r.serviceTitle} ${r.protocol}`
+            .toLowerCase()
+            .includes(query.toLowerCase()),
+      ),
+    [reports, status, reason, query],
+  );
+  return (
+    <main className="admin-layout">
+      <aside className="admin-sidebar">
+        <Link to="/" className="admin-brand">
+          Voluntá+ <small>Admin</small>
+        </Link>
+        <nav>
+          <Link to="/admin">
+            <BarChart3 />
+            Visão geral
+          </Link>
+          <Link to="/admin/moderacao">
+            <ShieldCheck />
+            Moderação
+          </Link>
+          <Link className="active" to="/admin/denuncias">
+            <Flag />
+            Denúncias
+          </Link>
+          <Link to="/meus-servicos">
+            <FolderKanban />
+            Serviços
+          </Link>
+          <Link to="/admin/categorias">
+            <Grid3X3 />
+            Categorias
+          </Link>
+          <Link to="/admin/usuarios">
+            <Users />
+            Usuários
+          </Link>
+          <Link to="/">
+            <LogOut />
+            Sair
+          </Link>
+        </nav>
+      </aside>
+      <section className="admin-main">
+        <header>
+          <div>
+            <h1>Denúncias</h1>
+            <p>Gerencie as denúncias de serviços.</p>
+          </div>
+          <div className="admin-user">
+            AD{" "}
+            <span>
+              <strong>Administrador</strong>
+              <small>Gestão da plataforma</small>
+            </span>
+          </div>
+        </header>
+        <section className="admin-toolbar">
+          <label>
+            Status
+            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="">Todos</option>
+              <option>Pendente</option>
+              <option>Em análise</option>
+              <option>Resolvida</option>
+            </select>
+          </label>
+          <label>
+            Motivo
+            <select value={reason} onChange={(e) => setReason(e.target.value)}>
+              <option value="">Todos</option>
+              {[...new Set(reports.map((r) => r.reason))].map((x) => (
+                <option key={x}>{x}</option>
+              ))}
+            </select>
+          </label>
+          <div>
+            <Search />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Buscar denúncia..."
+            />
+          </div>
+        </section>
+        <section className="admin-table">
+          <div className="table-row table-head">
+            <span>Serviço</span>
+            <span>Motivo</span>
+            <span>Denunciante</span>
+            <span>Data</span>
+            <span>Status</span>
+            <span>Ações</span>
+          </div>
+          {filtered.map((report) => (
+            <div className="table-row" key={report.protocol}>
+              <strong>{report.serviceTitle}</strong>
+              <span>{report.reason}</span>
+              <span>{report.contact || "Usuário anônimo"}</span>
+              <span>
+                {new Date(report.createdAt).toLocaleDateString("pt-BR")}
+              </span>
+              <span
+                className={`admin-status ${report.status.replace(" ", "-").toLowerCase()}`}
+              >
+                {report.status}
+              </span>
+              <button onClick={() => setSelected(report)}>
+                <Eye />
+                Ver
+              </button>
+            </div>
+          ))}
+        </section>
+      </section>
+      {selected && (
+        <div className="admin-modal-bg" onClick={() => setSelected(null)}>
+          <section className="admin-modal" onClick={(e) => e.stopPropagation()}>
+            <Flag />
+            <small>{selected.protocol}</small>
+            <h2>{selected.serviceTitle}</h2>
+            <b>{selected.reason}</b>
+            <p>
+              {selected.description ||
+                "Nenhuma descrição adicional foi informada."}
+            </p>
+            <label>
+              Atualizar status
+              <select defaultValue={selected.status}>
+                <option>Pendente</option>
+                <option>Em análise</option>
+                <option>Resolvida</option>
+              </select>
+            </label>
+            <button onClick={() => setSelected(null)}>Concluir análise</button>
+          </section>
+        </div>
+      )}
+    </main>
+  );
+}

@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../../../layouts/Footer/Footer";
-import Header from "../../../layouts/Header/Header"
-import Hero  from "../../../components/Hero/Hero";
-import  SearchPanel from "../../../components/SearchPanel/SearchPanel";
+import Header from "../../../layouts/Header/Header";
+import Hero from "../../../components/Hero/Hero";
+import SearchPanel from "../../../components/SearchPanel/SearchPanel";
 import ServiceModal from "../../../components/ServiceModal/ServiceModal";
-import ServicesSection  from "../../../components/ServicesSection/ServicesSection";
+import ServicesSection from "../../../components/ServicesSection/ServicesSection";
 import {
   DEFAULT_SERVICE_FORM,
   DEFAULT_FORM,

@@ -31,10 +31,10 @@ import {
   formatLocation,
   formatPhone,
 } from "./Utils/DetalhesServicoUtils";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./DetalhesServico.css";
 import { ServiceNotFound } from "../../pages/DetalhesServico/components/ServiceNotFound/ServiceNotFound";
-import "../../../styles/global.css"
+import "../../../styles/global.css";
 
 export default function DetalhesServico() {
   const { id } = useParams();
