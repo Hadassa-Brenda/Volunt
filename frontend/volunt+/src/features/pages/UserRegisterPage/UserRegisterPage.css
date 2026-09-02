@@ -38,7 +38,7 @@
       transparent 30%
     ),
     var(--color-page);
-  padding: 24px 28px 42px;
+  padding: 24px 20px 42px;
   color: var(--color-text);
 }
 
@@ -146,7 +146,7 @@
   position: relative;
   z-index: 2;
   max-width: 980px;
-  margin: 28px auto 0;
+  margin: 16px auto 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -186,7 +186,7 @@
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(228, 231, 240, 0.95);
   border-radius: 32px;
-  padding: 36px;
+  padding: 32px;
   box-shadow: 0 34px 90px rgba(7, 15, 47, 0.12);
   backdrop-filter: blur(18px);
 }
@@ -226,6 +226,13 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 18px;
+  padding-top: 16px;
+}
+
+.user-register-form_select {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding-top: 16px;
 }
 
 .user-register-form__full-field {
@@ -396,11 +403,6 @@
   color: var(--color-primary);
 }
 
-.user-register-page__topbar {
-  align-items: flex-start;
-  gap: 14px;
-}
-
 @media (max-width: 1024px) {
   .user-register-page__background-photo {
     display: none;
@@ -414,12 +416,6 @@
 @media (max-width: 768px) {
   .user-register-page {
     padding: 18px 14px 28px;
-  }
-
-  .user-register-page__topbar {
-    align-items: flex-start;
-    gap: 14px;
-    padding: "10px";
   }
 
   .user-register-page__brand-icon {
@@ -463,10 +459,6 @@
 }
 
 @media (max-width: 520px) {
-  .user-register-page__topbar {
-    flex-direction: column;
-  }
-
   .user-register-page__back-button {
     padding: 10px 14px;
   }

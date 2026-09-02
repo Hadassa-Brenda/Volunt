@@ -1,7 +1,7 @@
 import React from "react";
 import { X } from "lucide-react";
 
-import SelectField from "../SelectField/SelectField";
+import MultiSelect from "../MultiSelect.tsx/MultiSelect";
 import Button from "../Button/Button";
 import {
   TARGET_AUDIENCES,
@@ -49,14 +49,14 @@ export default function ServiceModal({ onClose = () => {} }) {
         </div>
 
         <div className="advanced-filters-modal__grid">
-          <SelectField
+          <MultiSelect
             width="100%"
             label="Público atendido"
             value={filters.targetAudience || ""}
             options={TARGET_AUDIENCES}
             onChange={(value) => handleFilterChange("targetAudience", value)}
           />
-          <SelectField
+          <MultiSelect
             width="100%"
             label="Faixa etária do Voluntário"
             value={filters.ageRange || ""}
@@ -64,7 +64,7 @@ export default function ServiceModal({ onClose = () => {} }) {
             onChange={(value) => handleFilterChange("ageRange", value)}
           />
 
-          <SelectField
+          <MultiSelect
             width="100%"
             label="Disponibilidade"
             value={filters.availability || ""}
@@ -72,21 +72,21 @@ export default function ServiceModal({ onClose = () => {} }) {
             onChange={(value) => handleFilterChange("availability", value)}
           />
 
-          <SelectField
+          <MultiSelect
             width="100%"
             label="Período"
             value={filters.period || ""}
             options={PERIOD_OPTIONS}
             onChange={(value) => handleFilterChange("period", value)}
           />
-          <SelectField
+          <MultiSelect
             width="100%"
             label="Gênero do Voluntário"
             value={filters.gender || ""}
             options={GENEROS}
             onChange={(value) => handleFilterChange("gender", value)}
           />
-          <SelectField
+          <MultiSelect
             width="100%"
             label="Local da Atividade"
             value={filters.localDaAtividade || ""}

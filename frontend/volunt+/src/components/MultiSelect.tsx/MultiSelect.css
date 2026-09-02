@@ -3,7 +3,6 @@
 }
 
 .multiple-select__label.MuiInputLabel-root {
-  color: var(--color-text-dark);
   font-size: 14px;
   font-weight: 700;
 }

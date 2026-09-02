@@ -2,18 +2,17 @@ import {
   BarChart3,
   Edit3,
   Eye,
-  Flag,
-  Heart,
-  MoreHorizontal,
+  Trash2,
   Plus,
   Settings,
   UserRound,
+  LogOut,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { servicesDTO } from "../../../types/DTOs/serviceDTO";
 import "./MyServicesPage.css";
+import { SERVICE_STATUS } from "../../../types/enum/Status";
 
-const status = ["Publicado", "Em análise", "Pausado", "Recusado"];
 export default function MyServicesPage() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("volunt-user") || "null");
@@ -38,21 +37,13 @@ export default function MyServicesPage() {
             <BarChart3 />
             Meus serviços
           </Link>
-          <Link to="/explorar">
-            <Heart />
-            Favoritos
-          </Link>
           <Link to="/cadastrar-servico">
             <Plus />
             Criar serviço
           </Link>
           <Link to="/configuracoes">
-            <Settings />
-            Configurações
-          </Link>
-          <Link to="/denuncias">
-            <Flag />
-            Denúncias
+            <LogOut />
+            Sair
           </Link>
         </nav>
       </aside>
@@ -69,36 +60,39 @@ export default function MyServicesPage() {
         </header>
         <div className="service-tabs">
           <button className="active">Todos</button>
-          <button>Em análise</button>
-          <button>Publicados</button>
-          <button>Pausados</button>
-          <button>Recusados</button>
+          <button>Ativo</button>
+          <button>Inativo</button>
         </div>
         <section className="management-list">
           {servicesDTO.slice(0, 4).map((service, index) => (
             <article key={service.id}>
               <img src={service.image} alt="" />
               <div className="management-info">
-                <h2>{service.title}</h2>
+                <h2>{service.name}</h2>
                 <p>
                   Publicado em{" "}
                   {new Date(service.publishedAt).toLocaleDateString("pt-BR")}
                 </p>
               </div>
-              <span className={`status status-${index}`}>{status[index]}</span>
-              <button
+                <span className={`status-${service.status}`}>
+                 {SERVICE_STATUS.find((status) => status.value === service.status)?.label}
+              </span>
+              <div className="management-actions">
+              <button style={{ background: " #8240f1", color: "white" }}
                 onClick={() => navigate(`/detalhes-servico/${service.id}`)}
               >
                 <Eye />
                 Ver
               </button>
-              <button>
+              <button style={{ background: " #8240f1", color: "white" }} >
                 <Edit3 />
                 Editar
               </button>
-              <button className="more">
-                <MoreHorizontal />
+              <button style={{ background: " #8240f1", color: "white" }}>
+                <Trash2 />
+                Excluir
               </button>
+              </div>
             </article>
           ))}
         </section>

@@ -1,8 +1,7 @@
 import React from "react";
-import CategoryList from "../../../../components/CategoryList/CategoryList";
 import { FormField } from "../../../../components/FormField/FormField";
 import { ImagePlus } from "lucide-react";
-import SelectField from "components/SelectField/SelectField";
+import MultiSelect from "components/MultiSelect.tsx/MultiSelect";
 
 export function BasicInformationStep({
   formData,
@@ -31,7 +30,7 @@ export function BasicInformationStep({
           fullWidth
         />
 
-        <SelectField
+        <MultiSelect
           width="420px"
           label="Categoria"
           name="category"

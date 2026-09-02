@@ -17,7 +17,7 @@ import { checkPublicationDate } from "./utils/CatalogoServicosUtils";
 import { FilterSelect } from "../../../components/FilterSelect/FilterSelect";
 import { BasicPagination } from "components/Pagination/BasicPagination";
 import { SERVICE_CATEGORIES } from "../../../types/enum/Categories";
-import { SERVICE_MODALITIES } from "../../../types/enum/Modalitires";
+import { SERVICE_MODALITIES } from "../../../types/enum/Modalities";
 import { PROFILE_TYPES } from "../../../types/enum/ProfileTypes";
 import Button from "components/Button/Button";
 import { getFavoriteIds, saveFavoriteIds } from "../../../utils/favorites";

@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { ExternalLink, Flag, Heart, MapPin, MessageCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ExternalLink, Heart, MapPin, MessageCircle } from "lucide-react";
 import { getFavoriteIds, toggleFavoriteId } from "../../utils/favorites";
 
 import "./ServiceCard.css";
@@ -31,24 +30,6 @@ export function ServiceCard({ service, isFavorite, onFavorite }) {
         >
           {service.modality}
         </span>
-
-        <button
-          type="button"
-          className={
-            favorite
-              ? "service-card__favorite service-card__favorite--active"
-              : "service-card__favorite"
-          }
-          onClick={handleFavorite}
-          aria-label={
-            favorite
-              ? "Remover serviço dos favoritos"
-              : "Adicionar serviço aos favoritos"
-          }
-          title={favorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-        >
-          <Heart size={18} fill={favorite ? "currentColor" : "none"} />
-        </button>
       </div>
 
       <div className="service-card__body">
@@ -76,15 +57,6 @@ export function ServiceCard({ service, isFavorite, onFavorite }) {
               <ExternalLink size={17} />
             </a>
           </div>
-          <Link
-            className="service-card__report"
-            to={`/denunciar/${service.id}`}
-            aria-label={`Denunciar o serviço ${service.title}`}
-            title="Denunciar serviço"
-          >
-            <Flag size={15} />
-            Denunciar
-          </Link>
         </div>
       </div>
     </article>

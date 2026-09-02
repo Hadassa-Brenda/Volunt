@@ -114,16 +114,6 @@ export default function LoginPage() {
               />
             </div>
           </label>
-
-          <div className="login-card__options">
-            <label>
-              <input type="checkbox" />
-              Lembrar de mim
-            </label>
-
-            <a href="#recuperar-senha">Esqueci minha senha</a>
-          </div>
-
           <button className="login-card__button" type="submit">
             Entrar
           </button>

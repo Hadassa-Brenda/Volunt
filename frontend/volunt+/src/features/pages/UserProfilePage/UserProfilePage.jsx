@@ -3,7 +3,6 @@ import {
   ArrowLeft,
   Check,
   Edit3,
-  Flag,
   Mail,
   MapPin,
   MessageCircle,
@@ -111,11 +110,6 @@ export default function UserProfilePage() {
             </p>
             <div className="profile-contact">
               <span>
-                <MapPin size={16} />
-                {[user.city, user.state].filter(Boolean).join(" - ") ||
-                  "Localização não informada"}
-              </span>
-              <span>
                 <Mail size={16} />
                 {user.email}
               </span>
@@ -143,10 +137,6 @@ export default function UserProfilePage() {
           <div>
             <strong>{publishedServices.length}</strong>
             <span>Serviços publicados</span>
-          </div>
-          <div>
-            <strong>{isOwnProfile ? reports.length : 0}</strong>
-            <span>Denúncias enviadas</span>
           </div>
           <div>
             <strong>Ativo</strong>
@@ -203,18 +193,6 @@ export default function UserProfilePage() {
                 atendimento.
               </p>
             </section>
-            {isOwnProfile && (
-              <section>
-                <Flag />
-                <h3>Minhas denúncias</h3>
-                <p>
-                  {reports.length
-                    ? `${reports.length} denúncia(s) registrada(s) neste dispositivo.`
-                    : "Você ainda não enviou denúncias."}
-                </p>
-                <Link to="/denuncias">Consultar histórico</Link>
-              </section>
-            )}
           </aside>
         </div>
         {saved && (

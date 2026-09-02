@@ -36,7 +36,7 @@ export default function CadastrarServico() {
       <div style={{ padding: "10px" }}>
         <Button
           className="back-button"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/meus-servicos")}
           icon={<ArrowLeft size={18} />}
           children={"Voltar"}
         />

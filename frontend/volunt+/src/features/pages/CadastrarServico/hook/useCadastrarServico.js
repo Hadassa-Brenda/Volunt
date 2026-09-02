@@ -14,13 +14,6 @@ export function useCadastrarServico() {
       ...current,
       [name]: type === "checkbox" ? checked : value,
     }));
-
-    if (errors[name]) {
-      setErrors((current) => ({
-        ...current,
-        [name]: "",
-      }));
-    }
   };
 
   const validateStep = () => {

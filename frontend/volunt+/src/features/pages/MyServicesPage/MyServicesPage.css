@@ -109,14 +109,21 @@
   background: #fff;
   overflow: hidden;
 }
+
 .management-list article {
   display: grid;
-  grid-template-columns: 70px 1fr 110px 75px 85px 38px;
+  grid-template-columns: 70px minmax(0, 1fr) auto minmax(300px, auto);
   gap: 14px;
   align-items: center;
   padding: 14px 18px;
   border-bottom: 1px solid #ececf2;
 }
+
+.management-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .management-list article:last-child {
   border: 0;
 }
@@ -143,21 +150,18 @@
   font-weight: 900;
 }
 .status-0 {
-  background: #ddf7e9;
-  color: #14864b;
+  background: #039148;
+  color: #fdfffe;
+  border: 6px solid #039148;
+  border-radius: 8px;
+  width: 60px;
+  text-align: center;
 }
 .status-1 {
-  background: #fff0d1;
-  color: #a25b00;
+  background: red;
+  color: #fdfffe;
 }
-.status-2 {
-  background: #ece7ff;
-  color: #6141bd;
-}
-.status-3 {
-  background: #ffe2e7;
-  color: #be2e4c;
-}
+
 .management-list button {
   display: flex;
   align-items: center;

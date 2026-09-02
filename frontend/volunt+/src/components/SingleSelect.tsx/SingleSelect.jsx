@@ -6,22 +6,22 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 
-import "./SelectGeneric.css";
+import "./SingleSelect.css";
 
-export default function SelectGeneric({
+export default function SingleSelect({
   id,
   label,
   value,
   onChange,
   options = [],
+  width = "400px",
+  height = "50px",
   placeholder = "Selecione uma opção",
-  fullWidth = true,
   required = false,
   disabled = false,
   error = false,
   helperText = "",
   showEmptyOption = true,
-  emptyOptionLabel = "Todos",
   name,
   className = "",
 }) {
@@ -63,7 +63,7 @@ export default function SelectGeneric({
     <div className={selectClassName}>
       <FormControl
         className="select-generic__form-control"
-        fullWidth={fullWidth}
+        size="medium"
         error={Boolean(error)}
         disabled={disabled}
         required={required}
@@ -77,13 +77,13 @@ export default function SelectGeneric({
           name={name}
           labelId={labelId}
           value={value}
-          label={label}
           onChange={handleChange}
           className="select-generic__select"
+          sx={{ width: width, height: height }}
         >
           {showEmptyOption && (
             <MenuItem className="select-generic__menu-item" value="">
-              {value === "" ? placeholder : emptyOptionLabel}
+              {placeholder}
             </MenuItem>
           )}
 

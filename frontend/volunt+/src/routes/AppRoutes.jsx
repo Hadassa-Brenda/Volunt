@@ -8,10 +8,7 @@ import CadastrarServico from "../features/pages/CadastrarServico/CadastrarServic
 import AboutVolunteering from "features/pages/AboutVolunteering/AboutVolunteering";
 import CatalogoServicos from "features/pages/CatalogoServicos/CatalogoServicos";
 import UserProfilePage from "../features/pages/UserProfilePage/UserProfilePage";
-import ReportPage from "../features/pages/ReportPage/ReportPage";
 import MyServicesPage from "../features/pages/MyServicesPage/MyServicesPage";
-import AdminReportsPage from "../features/pages/AdminReportsPage/AdminReportsPage";
-import FavoritesPage from "../features/pages/FavoritesPage/FavoritesPage";
 
 export default function AppRoutes() {
   return (
@@ -28,10 +25,6 @@ export default function AppRoutes() {
       <Route path="/perfil" element={<UserProfilePage />} />
       <Route path="/perfil/:id" element={<UserProfilePage />} />
       <Route path="/meus-servicos" element={<MyServicesPage />} />
-      <Route path="/denunciar/:id" element={<ReportPage />} />
-      <Route path="/denuncias" element={<ReportPage history />} />
-      <Route path="/admin/denuncias" element={<AdminReportsPage />} />
-      <Route path="/favoritos" element={<FavoritesPage />} />
       <Route path="*" element={<h1>Página não encontrada</h1>} />
     </Routes>
   );

@@ -9,7 +9,7 @@ import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from "@mui/material/Select";
 
-import "./SelectField.css";
+import "./MultiSelect.css";
 
 const SELECT_ALL_VALUE = "__all__";
 
@@ -27,7 +27,7 @@ const MenuProps = {
   },
 };
 
-export default function SelectField({
+export default function MultiSelect({
   id,
   name,
   label = "Selecione",
@@ -36,26 +36,37 @@ export default function SelectField({
   onChange,
   placeholder = "",
   helperText = "",
+  width = "400px",
+  height = "50px",
   error = false,
   disabled = false,
-  fullWidth = false,
-  width = "200px",
 }) {
   const generatedId = React.useId();
 
   const selectId = id || `multiple-select-${generatedId}`;
   const labelId = `${selectId}-label`;
 
+  // Se value for um array, o componente é controlado.
   const isControlled = Array.isArray(value);
+
   const [internalValue, setInternalValue] = React.useState([]);
 
   const selectedValues = isControlled ? value : internalValue;
 
+  // Valores reais das opções
+  const optionValues = React.useMemo(
+    () => options.map((option) => option.value),
+    [options]
+  );
+
   const allSelected =
-    options.length > 0 && selectedValues.length === options.length;
+    optionValues.length > 0 &&
+    optionValues.every((optionValue) =>
+      selectedValues.includes(optionValue)
+    );
 
   const hasSomeSelected =
-    selectedValues.length > 0 && selectedValues.length < options.length;
+    selectedValues.length > 0 && !allSelected;
 
   function updateSelectedValues(nextValue) {
     if (onChange) {
@@ -65,19 +76,29 @@ export default function SelectField({
           value: nextValue,
         },
       });
+
       return;
     }
 
     setInternalValue(nextValue);
   }
+
   function handleChange(event) {
     const nextValue = event.target.value;
 
     const normalizedValue =
       typeof nextValue === "string" ? nextValue.split(",") : nextValue;
 
+    // Clique em "Todas"
     if (normalizedValue.includes(SELECT_ALL_VALUE)) {
-      updateSelectedValues(allSelected ? [] : options);
+      if (allSelected) {
+        // Se já está tudo selecionado, limpa tudo
+        updateSelectedValues([]);
+      } else {
+        // Seleciona SOMENTE os valores das opções
+        updateSelectedValues(optionValues);
+      }
+
       return;
     }
 
@@ -87,11 +108,13 @@ export default function SelectField({
   function renderSelectedValue(selected) {
     if (selected.length === 0) {
       return (
-        <span className="multiple-select__placeholder">{placeholder}</span>
+        <span className="multiple-select__placeholder">
+          {placeholder}
+        </span>
       );
     }
 
-    if (selected.length === options.length) {
+    if (allSelected) {
       return "Todas";
     }
 
@@ -99,25 +122,36 @@ export default function SelectField({
       return `${selected.length} selecionadas`;
     }
 
-    return selected.join(", ");
+    return selected
+      .map((selectedValue) => {
+        const option = options.find(
+          (option) => option.value === selectedValue
+        );
+
+        return option?.label || selectedValue;
+      })
+      .join(", ");
   }
 
   return (
     <FormControl
       className="multiple-select"
       size="small"
-      style={{ width }}
-      fullWidth={fullWidth}
+      style={{ width, height }}
       error={error}
       disabled={disabled}
     >
-      <InputLabel id={labelId} className="multiple-select__label">
+      <InputLabel
+        id={labelId}
+        className="multiple-select__label"
+      >
         {label}
       </InputLabel>
 
       <Select
         labelId={labelId}
         id={selectId}
+        name={name}
         multiple
         value={selectedValues}
         onChange={handleChange}
@@ -127,26 +161,33 @@ export default function SelectField({
         MenuProps={MenuProps}
         className="multiple-select__field"
       >
-        <MenuItem value={SELECT_ALL_VALUE} className="multiple-select__item">
+        {/* TODAS */}
+        <MenuItem
+          value={SELECT_ALL_VALUE}
+          className="multiple-select__item"
+        >
           <Checkbox
             checked={allSelected}
             indeterminate={hasSomeSelected}
             className="multiple-select__checkbox"
           />
+
           <ListItemText primary="Todas" />
         </MenuItem>
 
+        {/* OPÇÕES */}
         {options.map((option) => (
           <MenuItem
-            key={option}
-            value={option}
+            key={option.value}
+            value={option.value}
             className="multiple-select__item"
           >
             <Checkbox
-              checked={selectedValues.includes(option)}
+              checked={selectedValues.includes(option.value)}
               className="multiple-select__checkbox"
             />
-            <ListItemText primary={option} />
+
+            <ListItemText primary={option.label} />
           </MenuItem>
         ))}
       </Select>

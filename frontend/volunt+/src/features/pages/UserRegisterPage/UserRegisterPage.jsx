@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import {
   ArrowLeft,
-  HeartHandshake,
   LockKeyhole,
   Mail,
   MapPin,
@@ -18,11 +17,15 @@ import {
   INITIAL_USER_REGISTER_FORM,
   REGISTER_IMAGES,
 } from "./types/userRegisterConsts";
+import { GENDER_OPTIONS } from "../../../types/enum/Gender";
 
 import { PROFILE_TYPES } from "types/enum/ProfileTypes";
 import "../../../styles/global.css";
 import { validateField, validateForm } from "./Utils/userRegisterValidation";
 import "./UserRegisterPage.css";
+import SingleSelect from "components/SingleSelect.tsx/SingleSelect";
+import GenericTextField from "components/TextField/TextField";
+import DataPicker from "components/DataPicker/DataPicker";
 
 export default function UserRegisterPage({ onSubmitUser }) {
   const navigate = useNavigate();
@@ -65,39 +68,38 @@ export default function UserRegisterPage({ onSubmitUser }) {
       [field]: fieldError,
     }));
   }
+  // const fetchCep = async (e) => {
+  //   const cep = e.target.value.replace(/\D/g, "");
 
-  const fetchCep = async (e) => {
-    const cep = e.target.value.replace(/\D/g, "");
+  //   setForm((prev) => ({
+  //     ...prev,
+  //     cep,
+  //   }));
 
-    setForm((prev) => ({
-      ...prev,
-      cep,
-    }));
+  //   if (cep.length !== 8) return;
 
-    if (cep.length !== 8) return;
+  //   try {
+  //     const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
 
-    try {
-      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+  //     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  //     const data = await res.json();
 
-      const data = await res.json();
+  //     if (data.erro) {
+  //       throw new Error("CEP não encontrado");
+  //     }
 
-      if (data.erro) {
-        throw new Error("CEP não encontrado");
-      }
-
-      setForm((prev) => ({
-        ...prev,
-        cep,
-        bairro: data.bairro,
-        city: data.localidade,
-        state: data.uf,
-      }));
-    } catch (err) {
-      console.error("Erro:", err);
-    }
-  };
+  //     setForm((prev) => ({
+  //       ...prev,
+  //       cep,
+  //       bairro: data.bairro,
+  //       city: data.localidade,
+  //       state: data.uf,
+  //     }));
+  //   } catch (err) {
+  //     console.error("Erro:", err);
+  //   }
+  // };
 
   function shouldShowError(field) {
     return touchedFields[field] && errors[field];
@@ -109,9 +111,8 @@ export default function UserRegisterPage({ onSubmitUser }) {
       email: true,
       whatsapp: true,
       profileType: true,
-      city: true,
-      neighborhood: true,
-      password: true,
+      dataNascimento: true,
+      gender: true,
       confirmPassword: true,
       acceptTerms: true,
     });
@@ -136,17 +137,13 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
     try {
       const data = await register(
-        form.bairro,
-        form.cep,
-        form.city,
         form.email,
         form.profileType,
         form.confirmPassword,
         form.password,
-        form.whatsapp,
         form.fullName,
-        form.state,
-        form.acceptTerms,
+        form.dataNascimento,
+        form.gender,
       );
       sessionStorage.setItem("token", data.token);
       if (onSubmitUser) {
@@ -181,20 +178,22 @@ export default function UserRegisterPage({ onSubmitUser }) {
           <ArrowLeft size={18} />
           Voltar
         </button>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <h1 style={{ fontSize: "24px", margin: "0", fontWeight: "bold" }}>
+            Cadastre-se no Voluntá+
+          </h1>
+        </div>
       </header>
 
       <section className="user-register-page__content">
-        <div className="user-register-page__heading">
-          <span>Crie sua conta</span>
-
-          <h1>Cadastre-se no Voluntá+</h1>
-
-          <p>
-            Crie uma conta para cadastrar serviços voluntários, encontrar ações
-            sociais e participar da comunidade.
-          </p>
-        </div>
-
         <form className="user-register-form" onSubmit={handleSubmit} noValidate>
           <div className="user-register-form__title">
             <div>
@@ -203,222 +202,82 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
             <div>
               <h2>Informações de cadastro</h2>
-              <p>Preencha os dados principais para criar sua conta.</p>
+              <p>
+                Crie uma conta para cadastrar serviços voluntários, encontrar
+                ações sociais e participar da comunidade.
+              </p>
             </div>
           </div>
 
           <div className="user-register-form__grid">
-            <label className="user-register-form__full-field">
-              Nome completo <strong>*</strong>
-              <div className="user-register-form__input-icon">
-                <UserRound size={18} />
-
-                <input
-                  style={{ color: "#393939" }}
-                  value={form.fullName}
-                  onChange={(event) =>
-                    updateField("fullName", event.target.value)
-                  }
-                  onBlur={() => handleBlur("fullName")}
-                  placeholder="Ex: Luiz Carlos dos Santos"
-                  aria-invalid={Boolean(shouldShowError("fullName"))}
-                  aria-describedby="fullName-error"
-                />
-              </div>
-              <FieldError
-                id="fullName-error"
-                message={shouldShowError("fullName")}
-              />
-            </label>
-
-            <label>
-              E-mail <strong>*</strong>
-              <div className="user-register-form__input-icon">
-                <Mail size={18} />
-
-                <input
-                  style={{ color: "#393939" }}
-                  type="email"
-                  value={form.email}
-                  onChange={(event) => updateField("email", event.target.value)}
-                  onBlur={() => handleBlur("email")}
-                  placeholder="Ex: seuemail@gmail.com"
-                  aria-invalid={Boolean(shouldShowError("email"))}
-                  aria-describedby="email-error"
-                />
-              </div>
-              <FieldError id="email-error" message={shouldShowError("email")} />
-            </label>
-            <label className="user-register-form__input-icon">
-              Tipo de perfil <strong>*</strong>
-              <select
-                style={{ color: "#393939" }}
-                value={form.profileType}
-                onChange={(event) =>
-                  updateField("profileType", event.target.value)
-                }
-                onBlur={() => handleBlur("profileType")}
-                aria-invalid={Boolean(shouldShowError("profileType"))}
-                aria-describedby="profileType-error"
-              >
-                <option value="" disabled>
-                  Selecione como você quer usar a plataforma
-                </option>
-
-                {PROFILE_TYPES.map((profileType) => (
-                  <option key={profileType} value={profileType}>
-                    {profileType}
-                  </option>
-                ))}
-              </select>
-              <FieldError
-                id="profileType-error"
-                message={shouldShowError("profileType")}
-              />
-            </label>
-
-            <label>
-              CEP <strong>*</strong>
-              <div className="user-register-form__input-icon">
-                <Mail size={18} />
-                <input
-                  style={{ color: "#393939" }}
-                  maxLength={8}
-                  type="text"
-                  value={form.cep}
-                  onChange={fetchCep}
-                  placeholder="Ex: 31222-203"
-                  aria-invalid={Boolean(shouldShowError("CEP"))}
-                />
-              </div>
-              <FieldError id="cep-error" message={shouldShowError("cep")} />
-            </label>
-
-            <label>
-              Bairro <strong>*</strong>
-              <div className="user-register-form__input-icon">
-                <MapPin size={18} />
-                <input
-                  style={{ color: "#393939" }}
-                  readOnly
-                  value={form.bairro}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      bairro: e.target.value,
-                    }))
-                  }
-                  placeholder="Ex: Ouro Preto"
-                  aria-invalid={Boolean(shouldShowError("bairro"))}
-                  aria-describedby="bairro-error"
-                />
-              </div>
-            </label>
-            <label>
-              Cidade <strong>*</strong>
-              <div className="user-register-form__input-icon">
-                <MapPin size={18} />
-                <input
-                  style={{ color: "#393939" }}
-                  readOnly
-                  value={form.city}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      cidade: e.target.value,
-                    }))
-                  }
-                  placeholder="Ex: Belo Horizonte, MG"
-                  aria-invalid={Boolean(shouldShowError("city"))}
-                  aria-describedby="city-error"
-                />
-              </div>
-            </label>
-            <label>
-              Estado <strong>*</strong>
-              <div className="user-register-form__input-icon">
-                <MapPin size={18} />
-                <input
-                  style={{ color: "#393939" }}
-                  disabled
-                  value={form.state}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      estado: e.target.value,
-                    }))
-                  }
-                  placeholder="Ex: Minas Gerais"
-                  aria-invalid={Boolean(shouldShowError("Minas Gerais"))}
-                  aria-describedby="neighborhood-error"
-                />
-              </div>
-            </label>
-            <label>
-              Senha <strong>*</strong>
-              <div className="user-register-form__input-icon">
-                <LockKeyhole size={18} />
-
-                <input
-                  style={{ color: "#393939" }}
-                  type="password"
-                  value={form.password}
-                  onChange={(event) =>
-                    updateField("password", event.target.value)
-                  }
-
-                  placeholder="Mínimo 8 caracteres"
-                  aria-invalid={Boolean(shouldShowError("password"))}
-                  aria-describedby="password-error"
-                />
-              </div>
-              <FieldError
-                id="password-error"
-                message={shouldShowError("password")}
-              />
-            </label>
-
-            <label>
-              Confirmar senha <strong>*</strong>
-              <div className="user-register-form__input-icon">
-                <LockKeyhole size={18} />
-
-                <input
-                  style={{ color: "#393939" }}
-                  type="password"
-                  value={form.confirmPassword}
-                  onChange={(event) =>
-                    updateField("confirmPassword", event.target.value)
-                  }
-
-                  placeholder="Digite a senha novamente"
-                  aria-invalid={Boolean(shouldShowError("confirmPassword"))}
-                  aria-describedby="confirmPassword-error"
-                />
-              </div>
-              <FieldError
-                id="confirmPassword-error"
-                message={shouldShowError("confirmPassword")}
-              />
-            </label>
-          </div>
-
-          <label className="user-register-form__terms">
-            <input
-              style={{ color: "#393939" }}
-              type="checkbox"
-              checked={form.acceptTerms}
-              onChange={(event) =>
-                updateField("acceptTerms", event.target.checked)
-              }
+            <GenericTextField
+              label="Nome completo"
+              value={form.fullName}
+              onChange={(value) => updateField("fullName", value)}
+              onBlur={() => handleBlur("fullName")}
+              placeholder="Ex: Luiz Carlos dos Santos"
+              error={Boolean(shouldShowError("fullName"))}
+              helperText={shouldShowError("fullName")}
             />
-
-            <span>
-              Li e aceito os termos de uso e a política de privacidade da
-              plataforma. <strong>*</strong>
-            </span>
-          </label>
-
+            <GenericTextField
+              label="E-mail"
+              value={form.email}
+              onChange={(value) => updateField("email", value)}
+              onBlur={() => handleBlur("email")}
+              placeholder="Ex: seuemail@gmail.com"
+              error={Boolean(shouldShowError("email"))}
+              helperText={shouldShowError("email")}
+            />
+          </div>
+          <div className="user-register-form_select">
+            <SingleSelect
+              label="Gênero"
+              width="260px"
+              value={form.gender || ""}
+              onChange={(value) => updateField("gender", value)}
+              options={GENDER_OPTIONS.map((option) => ({
+                value: option.value,
+                label: option.label,
+              }))}
+              onBlur={() => handleBlur("gender")}
+              error={Boolean(shouldShowError("gender"))}
+            />
+            <DataPicker label="Data de nascimento" width="260px" />
+            <SingleSelect
+              label="Tipo de perfil"
+              value={form.profileType || ""}
+              width="260px"
+              onChange={(value) => updateField("profileType", value)}
+              options={PROFILE_TYPES.map((profileType) => ({
+                value: profileType.value,
+                label: profileType.label,
+              }))}
+              onBlur={() => handleBlur("profileType")}
+              error={Boolean(shouldShowError("profileType"))}
+            />
+          </div>
+          <div className="user-register-form__grid">
+            <GenericTextField
+              label="Senha"
+              type="password"
+              value={form.password}
+              onChange={(value) => updateField("password", value)}
+              onBlur={() => handleBlur("password")}
+              placeholder="Mínimo 8 caracteres"
+              error={Boolean(shouldShowError("password"))}
+              helperText={shouldShowError("password")}
+            />
+            <GenericTextField
+              label="Confirmar senha"
+              type="password"
+              value={form.confirmPassword}
+              onChange={(value) => updateField("confirmPassword", value)}
+              onBlur={() => handleBlur("confirmPassword")}
+              placeholder="Mínimo 8 caracteres"
+              error={Boolean(shouldShowError("confirmPassword"))}
+              helperText={shouldShowError("confirmPassword")}
+            />
+          </div>
           <FieldError
             id="acceptTerms-error"
             message={shouldShowError("acceptTerms")}

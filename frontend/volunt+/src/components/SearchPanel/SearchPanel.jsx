@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Search, SlidersHorizontal, Tag } from "lucide-react";
 
 import { SERVICE_CATEGORIES } from "../../types/enum/Categories";
-import { SERVICE_MODALITIES } from "../../types/enum/Modalitires";
-import SelectField from "../SelectField/SelectField";
+import { SERVICE_MODALITIES } from "../../types/enum/Modalities";
+import MultiSelect from "../MultiSelect.tsx/MultiSelect";
 import Button from "../Button/Button";
 import ServiceModal from "../ServiceModal/ServiceModal";
 import "./SearchPanel.css";
@@ -23,10 +23,11 @@ export default function SearchPanel({
     setIsAdvancedOpen(false);
   }
   const LOCATION_FILTER_OPTIONS = [
-    "São Paulo",
-    "Rio de Janeiro",
-    "Belo Horizonte",
-    "Porto Alegre",
+    { value: "SP", label: "São Paulo" },
+    { value: "RJ", label: "Rio de Janeiro" },
+    { value: "MG", label: "Belo Horizonte" },
+    { value: "PR", label: "Curitiba" },
+    { value: "RS", label: "Porto Alegre" },
   ];
 
   return (
@@ -41,23 +42,29 @@ export default function SearchPanel({
             placeholder="Buscar palavra-chave"
           />
         </label>
-        <SelectField
+        <MultiSelect
           label="Localização"
+          width="200px"
           value={filters.location}
           options={LOCATION_FILTER_OPTIONS}
           onChange={(event) => onFilterChange("location", event.target.value)}
         />
-        <SelectField
+        <MultiSelect
           label="Categoria"
+          width="200px"
           value={filters.category}
           options={SERVICE_CATEGORIES}
           onChange={(event) => onFilterChange("category", event.target.value)}
         />
 
-        <SelectField
+        <MultiSelect
           label="Modalidade"
+          width="200px"
           value={filters.modality}
-          options={SERVICE_MODALITIES}
+          options={SERVICE_MODALITIES.map((modality) => ({
+            value: modality.value,
+            label: modality.label,
+          }))}
           onChange={(event) => onFilterChange("modality", event.target.value)}
         />
         <Button className="search-panel__search-button" type="button">

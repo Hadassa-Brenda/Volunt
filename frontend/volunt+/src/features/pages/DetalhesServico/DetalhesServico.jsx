@@ -128,27 +128,6 @@ export default function DetalhesServico() {
                 <MessageCircle size={20} />
                 Entrar em contato
               </a>
-
-              <button
-                type="button"
-                className={`secondary-icon-button ${
-                  isFavorite ? "secondary-icon-button--favorite" : ""
-                }`}
-                onClick={() => setIsFavorite((current) => !current)}
-                aria-label={
-                  isFavorite
-                    ? "Remover dos favoritos"
-                    : "Adicionar aos favoritos"
-                }
-                title={
-                  isFavorite
-                    ? "Remover dos favoritos"
-                    : "Adicionar aos favoritos"
-                }
-              >
-                <Heart size={21} fill={isFavorite ? "currentColor" : "none"} />
-              </button>
-
               <button
                 type="button"
                 className="secondary-icon-button"
@@ -245,15 +224,6 @@ export default function DetalhesServico() {
                 </div>
               </div>
             </section>
-
-            <button
-              type="button"
-              className="report-service-button"
-              onClick={() => navigate(`/denunciar/${service.id}`)}
-            >
-              <Flag size={17} />
-              Reportar informação incorreta
-            </button>
           </div>
 
           <aside className="service-contact-card">
