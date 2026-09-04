@@ -1,5 +1,5 @@
 import { Heart } from "lucide-react";
-
+import { Link } from "react-router-dom";
 import "./Footer.css";
 
 export default function Footer() {
@@ -13,10 +13,8 @@ export default function Footer() {
 
         <div className="footer__column">
           <h3 style={{ color: "#f1f1f1" }}>Navegação</h3>
-          <a href="#top">Início</a>
-          <a href="#explorar">Explorar serviços</a>
-          <a href="#como-funciona">Como funciona</a>
-          <a href="#sobre">Sobre</a>
+          <Link to="/">Início</Link>
+          <Link to="/about-volunteering">Sobre </Link>
         </div>
       </div>
 
@@ -26,7 +24,7 @@ export default function Footer() {
           pessoas.
         </p>
 
-        <span>© 2026 Hadassa. Todos os direitos reservados.</span>
+        <span>© 2026 Hadassa e Ana. Todos os direitos reservados.</span>
       </div>
     </footer>
   );

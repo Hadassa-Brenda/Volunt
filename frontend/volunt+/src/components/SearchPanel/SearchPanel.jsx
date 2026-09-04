@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Search, SlidersHorizontal, Tag } from "lucide-react";
 
-import { SERVICE_CATEGORIES } from "../../types/enum/Categories";
+import { CATEGORIAS } from "../../types/enum/Categories";
 import { SERVICE_MODALITIES } from "../../types/enum/Modalities";
 import MultiSelect from "../MultiSelect.tsx/MultiSelect";
 import Button from "../Button/Button";
@@ -53,7 +53,7 @@ export default function SearchPanel({
           label="Categoria"
           width="200px"
           value={filters.category}
-          options={SERVICE_CATEGORIES}
+          options={CATEGORIAS}
           onChange={(event) => onFilterChange("category", event.target.value)}
         />
 
@@ -73,7 +73,6 @@ export default function SearchPanel({
 
         <Button
           className="search-panel__advanced-button"
-          type="button"
           icon={<SlidersHorizontal size={18} />}
           onClick={() => setIsAdvancedOpen(true)}
         >

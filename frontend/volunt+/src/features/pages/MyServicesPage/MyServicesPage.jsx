@@ -74,24 +74,29 @@ export default function MyServicesPage() {
                   {new Date(service.publishedAt).toLocaleDateString("pt-BR")}
                 </p>
               </div>
-                <span className={`status-${service.status}`}>
-                 {SERVICE_STATUS.find((status) => status.value === service.status)?.label}
+              <span className={`status-${service.status}`}>
+                {
+                  SERVICE_STATUS.find(
+                    (status) => status.value === service.status,
+                  )?.label
+                }
               </span>
               <div className="management-actions">
-              <button style={{ background: " #8240f1", color: "white" }}
-                onClick={() => navigate(`/detalhes-servico/${service.id}`)}
-              >
-                <Eye />
-                Ver
-              </button>
-              <button style={{ background: " #8240f1", color: "white" }} >
-                <Edit3 />
-                Editar
-              </button>
-              <button style={{ background: " #8240f1", color: "white" }}>
-                <Trash2 />
-                Excluir
-              </button>
+                <button
+                  style={{ background: " #8240f1", color: "white" }}
+                  onClick={() => navigate(`/detalhes-servico/${service.id}`)}
+                >
+                  <Eye />
+                  Ver
+                </button>
+                <button style={{ background: " #8240f1", color: "white" }}>
+                  <Edit3 />
+                  Editar
+                </button>
+                <button style={{ background: " #8240f1", color: "white" }}>
+                  <Trash2 />
+                  Excluir
+                </button>
               </div>
             </article>
           ))}

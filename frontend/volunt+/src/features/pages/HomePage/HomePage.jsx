@@ -1,28 +1,37 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import Footer from "../../../layouts/Footer/Footer";
 import Header from "../../../layouts/Header/Header";
 import Hero from "../../../components/Hero/Hero";
 import SearchPanel from "../../../components/SearchPanel/SearchPanel";
 import ServiceModal from "../../../components/ServiceModal/ServiceModal";
 import ServicesSection from "../../../components/ServicesSection/ServicesSection";
-import {
-  DEFAULT_SERVICE_FORM,
-  DEFAULT_FORM,
-} from "../../../constants/serviceOptions";
-import { serviceMock } from "../../../types/DTOs/serviceMock";
-import { createService } from "../../../utils/createService";
+
 import { filterServices } from "../../../utils/filterServices";
+import { getServices } from "api/servicesApi";
+
 import "./HomePage.css";
+
+const INITIAL_FILTERS = {
+  genero: [],
+  diaDaSemana: [],
+  turno: [],
+  avaliacao: [],
+};
 
 export default function HomePage() {
   const navigate = useNavigate();
 
-  const [services, setServices] = useState(serviceMock);
-
-  const [filters, setFilters] = useState({ ...DEFAULT_FORM });
-
+  const [services, setServices] = useState([]);
+  const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
+
+  useEffect(() => {
+    const data = getServices();
+
+    setServices(data);
+  }, []);
 
   const filteredServices = useMemo(
     () => filterServices(services, filters),
@@ -36,10 +45,8 @@ export default function HomePage() {
     }));
   }
 
-  function handleServiceSubmit(serviceForm) {
-    const newService = createService(serviceForm);
-
-    setServices((currentServices) => [newService, ...currentServices]);
+  function handleApplyFilters(newFilters) {
+    setFilters(newFilters);
     setIsServiceModalOpen(false);
   }
 
@@ -51,6 +58,7 @@ export default function HomePage() {
       />
 
       <Hero />
+
       <div
         style={{
           display: "flex",
@@ -64,13 +72,14 @@ export default function HomePage() {
       <section className="app-content-grid">
         <ServicesSection services={filteredServices} />
       </section>
+
       <Footer />
 
       {isServiceModalOpen && (
         <ServiceModal
-          initialForm={DEFAULT_SERVICE_FORM}
+          filters={filters}
           onClose={() => setIsServiceModalOpen(false)}
-          onSubmit={handleServiceSubmit}
+          onApplyFilters={handleApplyFilters}
         />
       )}
     </main>

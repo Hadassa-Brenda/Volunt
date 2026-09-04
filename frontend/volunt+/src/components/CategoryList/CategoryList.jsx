@@ -5,7 +5,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import SingleSelect from "../SingleSelect.tsx/SingleSelect";
-import { SERVICE_CATEGORIES } from "../../types/enum/Categories";
+import { CATEGORIAS } from "../../types/enum/Categories";
 
 export default function CategoryList() {
   const [category, setCategory] = React.useState("");
@@ -28,7 +28,7 @@ export default function CategoryList() {
         >
           <MenuItem value="">Todas as categorias</MenuItem>
 
-          {SERVICE_CATEGORIES.map((cat) => (
+          {CATEGORIAS.map((cat) => (
             <MenuItem key={cat.value} value={cat.value}>
               {cat.name}
             </MenuItem>

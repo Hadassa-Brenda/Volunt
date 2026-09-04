@@ -1,5 +1,5 @@
-export const SERVICE_CATEGORIES = [
-  {value: 1, label: "Educação" },
+export const CATEGORIAS = [
+  { value: 1, label: "Educação" },
   { value: 2, label: "Música" },
   { value: 3, label: "Tecnologia" },
   { value: 4, label: "Esporte" },
@@ -11,4 +11,3 @@ export const SERVICE_CATEGORIES = [
   { value: 10, label: "Apoio comunitário" },
   { value: 11, label: "Outros" },
 ];
- 

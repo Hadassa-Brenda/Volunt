@@ -32,7 +32,7 @@ export default function MultiSelect({
   name,
   label = "Selecione",
   options = [],
-  value,
+  value = [],
   onChange,
   placeholder = "",
   helperText = "",
@@ -44,30 +44,50 @@ export default function MultiSelect({
   const generatedId = React.useId();
 
   const selectId = id || `multiple-select-${generatedId}`;
+
   const labelId = `${selectId}-label`;
 
-  // Se value for um array, o componente é controlado.
-  const isControlled = Array.isArray(value);
+  /*
+   * Garante que o valor sempre seja um array.
+   */
+  const selectedValues = Array.isArray(value) ? value : [];
 
-  const [internalValue, setInternalValue] = React.useState([]);
-
-  const selectedValues = isControlled ? value : internalValue;
-
-  // Valores reais das opções
+  /*
+   * Pega somente os valores das opções.
+   *
+   * Exemplo:
+   *
+   * [
+   *   { value: 1, label: "Masculino" },
+   *   { value: 2, label: "Feminino" }
+   * ]
+   *
+   * vira:
+   *
+   * [1, 2]
+   */
   const optionValues = React.useMemo(
     () => options.map((option) => option.value),
-    [options]
+    [options],
   );
 
+  /*
+   * Verifica se todas as opções
+   * estão selecionadas.
+   */
   const allSelected =
     optionValues.length > 0 &&
-    optionValues.every((optionValue) =>
-      selectedValues.includes(optionValue)
-    );
+    optionValues.every((optionValue) => selectedValues.includes(optionValue));
 
-  const hasSomeSelected =
-    selectedValues.length > 0 && !allSelected;
+  /*
+   * Verifica se algumas opções
+   * estão selecionadas.
+   */
+  const hasSomeSelected = selectedValues.length > 0 && !allSelected;
 
+  /*
+   * Atualiza o valor selecionado.
+   */
   function updateSelectedValues(nextValue) {
     if (onChange) {
       onChange({
@@ -79,56 +99,86 @@ export default function MultiSelect({
 
       return;
     }
-
-    setInternalValue(nextValue);
   }
 
+  /*
+   * Quando o usuário seleciona uma opção.
+   */
   function handleChange(event) {
     const nextValue = event.target.value;
 
+    /*
+     * O Material UI pode retornar string
+     * em alguns cenários.
+     *
+     * Transformamos em array.
+     */
     const normalizedValue =
       typeof nextValue === "string" ? nextValue.split(",") : nextValue;
 
-    // Clique em "Todas"
+    /*
+     * Verifica se clicou em "Todas".
+     */
     if (normalizedValue.includes(SELECT_ALL_VALUE)) {
+      /*
+       * Se todas já estão selecionadas,
+       * remove todas.
+       */
       if (allSelected) {
-        // Se já está tudo selecionado, limpa tudo
         updateSelectedValues([]);
       } else {
-        // Seleciona SOMENTE os valores das opções
+        /*
+         * Caso contrário, seleciona
+         * todas as opções.
+         */
         updateSelectedValues(optionValues);
       }
 
       return;
     }
 
+    /*
+     * Atualiza normalmente.
+     */
     updateSelectedValues(normalizedValue);
   }
 
+  /*
+   * Texto que aparece dentro do select
+   * depois que o usuário seleciona.
+   */
   function renderSelectedValue(selected) {
+    /*
+     * Nenhuma opção selecionada.
+     */
     if (selected.length === 0) {
       return (
-        <span className="multiple-select__placeholder">
-          {placeholder}
-        </span>
+        <span className="multiple-select__placeholder">{placeholder}</span>
       );
     }
 
+    /*
+     * Todas selecionadas.
+     */
     if (allSelected) {
       return "Todas";
     }
 
+    /*
+     * Mais de duas selecionadas.
+     */
     if (selected.length > 2) {
       return `${selected.length} selecionadas`;
     }
 
+    /*
+     * Mostra o label das opções.
+     */
     return selected
       .map((selectedValue) => {
-        const option = options.find(
-          (option) => option.value === selectedValue
-        );
+        const option = options.find((option) => option.value === selectedValue);
 
-        return option?.label || selectedValue;
+        return option?.label ?? selectedValue;
       })
       .join(", ");
   }
@@ -137,17 +187,19 @@ export default function MultiSelect({
     <FormControl
       className="multiple-select"
       size="small"
-      style={{ width, height }}
+      style={{
+        width,
+        height,
+      }}
       error={error}
       disabled={disabled}
     >
-      <InputLabel
-        id={labelId}
-        className="multiple-select__label"
-      >
+      {/* LABEL */}
+      <InputLabel id={labelId} className="multiple-select__label">
         {label}
       </InputLabel>
 
+      {/* SELECT */}
       <Select
         labelId={labelId}
         id={selectId}
@@ -162,10 +214,7 @@ export default function MultiSelect({
         className="multiple-select__field"
       >
         {/* TODAS */}
-        <MenuItem
-          value={SELECT_ALL_VALUE}
-          className="multiple-select__item"
-        >
+        <MenuItem value={SELECT_ALL_VALUE} className="multiple-select__item">
           <Checkbox
             checked={allSelected}
             indeterminate={hasSomeSelected}
@@ -192,6 +241,7 @@ export default function MultiSelect({
         ))}
       </Select>
 
+      {/* MENSAGEM DE ERRO/AJUDA */}
       {helperText && (
         <FormHelperText className="multiple-select__helper-text">
           {helperText}

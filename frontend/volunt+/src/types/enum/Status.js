@@ -1,7 +1,10 @@
-export const SERVICE_STATUS = [{
+export const SERVICE_STATUS = [
+  {
     value: 0,
-    label: "Ativo"
-}, {
+    label: "Ativo",
+  },
+  {
     value: 1,
-    label: "Inativo"
-}];
+    label: "Inativo",
+  },
+];

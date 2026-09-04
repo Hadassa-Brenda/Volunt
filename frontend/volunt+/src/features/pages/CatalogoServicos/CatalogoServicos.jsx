@@ -7,29 +7,34 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
 import { Header } from "../../../components";
 import Footer from "../../../layouts/Footer/Footer";
-import "./CatalogoServicos.css";
 import { ServiceCard } from "../../../components/ServiceCard/ServiceCard";
+
 import { initialFilters } from "./constants/initialFilters";
 import { servicesDTO } from "types/DTOs/serviceDTO";
 import { checkPublicationDate } from "./utils/CatalogoServicosUtils";
+
 import { FilterSelect } from "../../../components/FilterSelect/FilterSelect";
 import { BasicPagination } from "components/Pagination/BasicPagination";
-import { SERVICE_CATEGORIES } from "../../../types/enum/Categories";
+import { CATEGORIAS } from "../../../types/enum/Categories";
 import { SERVICE_MODALITIES } from "../../../types/enum/Modalities";
 import { PROFILE_TYPES } from "../../../types/enum/ProfileTypes";
+
 import Button from "components/Button/Button";
-import { getFavoriteIds, saveFavoriteIds } from "../../../utils/favorites";
+
+import "./CatalogoServicos.css";
 
 export default function CatalogoServicos() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState(initialFilters);
   const [sortOrder, setSortOrder] = useState("recent");
-  const [favorites, setFavorites] = useState(() => getFavoriteIds());
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [page, setPage] = useState(1);
 
   const navigate = useNavigate();
+
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
 
@@ -44,32 +49,22 @@ export default function CatalogoServicos() {
     setSearchTerm("");
   };
 
-  const toggleFavorite = (serviceId) => {
-    setFavorites((currentFavorites) => {
-      const id = String(serviceId);
-      return saveFavoriteIds(
-        currentFavorites.includes(id)
-          ? currentFavorites.filter((item) => item !== id)
-          : [...currentFavorites, id],
-      );
-    });
-  };
-
   const filteredServices = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
     const result = servicesDTO.filter((service) => {
       const matchesSearch =
         !normalizedSearch ||
-        service.title.toLowerCase().includes(normalizedSearch) ||
-        service.description.toLowerCase().includes(normalizedSearch) ||
-        service.provider.toLowerCase().includes(normalizedSearch);
+        service.title?.toLowerCase().includes(normalizedSearch) ||
+        service.description?.toLowerCase().includes(normalizedSearch) ||
+        service.provider?.toLowerCase().includes(normalizedSearch);
 
       const matchesCategory =
-        !filters.category || service.category === filters.category;
+        !filters.category ||
+        Number(service.idCategoria) === Number(filters.category);
 
       const matchesModality =
-        !filters.modality || service.modality === filters.modality;
+        !filters.modality || service.modalities === filters.modality;
 
       const matchesCity = !filters.city || service.city === filters.city;
 
@@ -94,6 +89,7 @@ export default function CatalogoServicos() {
         matchesPublicationDate
       );
     });
+
     return [...result].sort((firstService, secondService) => {
       const firstDate = new Date(firstService.publishedAt);
       const secondDate = new Date(secondService.publishedAt);
@@ -112,8 +108,6 @@ export default function CatalogoServicos() {
 
   const itemsPerPage = 6;
 
-  const [page, setPage] = useState(1);
-
   const start = (page - 1) * itemsPerPage;
   const end = start + itemsPerPage;
 
@@ -124,19 +118,23 @@ export default function CatalogoServicos() {
   return (
     <main className="catalog-page">
       <Header />
+
       <div style={{ padding: "10px" }}>
         <Button
           className="back-button"
           type="button"
           onClick={() => navigate("/")}
           icon={<ArrowLeft size={18} />}
-          children={"Voltar"}
-        />
+        >
+          Voltar
+        </Button>
       </div>
+
       <section className="catalog-container">
         <header className="catalog-heading">
           <div>
             <h1>Explorar serviços</h1>
+
             <p>Encontre iniciativas voluntárias perto de você.</p>
           </div>
         </header>
@@ -195,15 +193,17 @@ export default function CatalogoServicos() {
               </button>
             </div>
 
+            {/* CATEGORIA */}
             <FilterSelect
               label="Categoria"
               name="category"
               value={filters.category}
               onChange={handleFilterChange}
               defaultOption="Todas as categorias"
-              options={SERVICE_CATEGORIES}
+              options={CATEGORIAS}
             />
 
+            {/* MODALIDADE */}
             <FilterSelect
               label="Modalidade"
               name="modality"
@@ -213,6 +213,7 @@ export default function CatalogoServicos() {
               options={SERVICE_MODALITIES}
             />
 
+            {/* CIDADE */}
             <FilterSelect
               label="Cidade"
               name="city"
@@ -222,6 +223,7 @@ export default function CatalogoServicos() {
               options={["Belo Horizonte", "Contagem", "Betim"]}
             />
 
+            {/* BAIRRO */}
             <FilterSelect
               label="Bairro"
               name="neighborhood"
@@ -238,6 +240,7 @@ export default function CatalogoServicos() {
               ]}
             />
 
+            {/* TIPO DE RESPONSÁVEL */}
             <FilterSelect
               label="Tipo de responsável"
               name="providerType"
@@ -247,6 +250,7 @@ export default function CatalogoServicos() {
               options={PROFILE_TYPES}
             />
 
+            {/* DATA DE PUBLICAÇÃO */}
             <FilterSelect
               label="Data de publicação"
               name="publicationDate"
@@ -304,7 +308,9 @@ export default function CatalogoServicos() {
                   onChange={(event) => setSortOrder(event.target.value)}
                 >
                   <option value="recent">Mais recentes</option>
+
                   <option value="oldest">Mais antigos</option>
+
                   <option value="alphabetical">Ordem alfabética</option>
                 </select>
 
@@ -316,14 +322,10 @@ export default function CatalogoServicos() {
               <>
                 <div className="services-grid">
                   {filteredServices.slice(start, end).map((service) => (
-                    <ServiceCard
-                      key={service.id}
-                      service={service}
-                      isFavorite={favorites.includes(String(service.id))}
-                      onFavorite={() => toggleFavorite(service.id)}
-                    />
+                    <ServiceCard key={service.id} service={service} />
                   ))}
                 </div>
+
                 <div
                   style={{
                     display: "flex",
@@ -334,7 +336,7 @@ export default function CatalogoServicos() {
                   <BasicPagination
                     page={page}
                     onPageChange={setPage}
-                    itemsPerPage={8}
+                    itemsPerPage={itemsPerPage}
                     totalItems={filteredServices.length}
                   />
                 </div>

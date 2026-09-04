@@ -1,27 +1,64 @@
 export function filterServices(services, filters) {
-  const normalizedSearch = filters.search.trim().toLowerCase();
+  const genero = filters?.genero ?? [];
+  const diaDaSemana = filters?.diaDaSemana ?? [];
+  const turno = filters?.turno ?? [];
+  const avaliacao = filters?.avaliacao ?? [];
 
   return services.filter((service) => {
-    const searchableContent = [
-      service.title,
-      service.description,
-      service.category,
-      service.city,
-      service.neighborhood,
-      service.modality,
-    ]
-      .join(" ")
-      .toLowerCase();
+    /*
+     * O serviço possui apenas o ID do usuário:
+     *
+     * service.idUsuario
+     *
+     * Mas o gênero está dentro do usuário.
+     *
+     * Se o mapper já criou service.usuario,
+     * usamos ele aqui.
+     */
+    const usuario = service.usuario ?? {};
 
-    const matchesSearch =
-      !normalizedSearch || searchableContent.includes(normalizedSearch);
+    const serviceGenero = usuario.genero;
 
-    const matchesCategory =
-      filters.category === "Todas" || service.category === filters.category;
+    const serviceDiaDaSemana = service.diaDaSemana;
 
-    const matchesModality =
-      filters.modality === "Todos" || service.modality === filters.modality;
+    const serviceTurno = service.turno;
 
-    return matchesSearch && matchesCategory && matchesModality;
+    const serviceAvaliacao = service.avaliacao;
+
+    /*
+     * GÊNERO
+     *
+     * Se nenhum gênero foi selecionado,
+     * não filtra.
+     *
+     * Caso tenha selecionado:
+     *
+     * genero = [1, 2]
+     *
+     * verifica se o gênero do serviço está
+     * dentro desses valores.
+     */
+    const matchesGenero = genero.length === 0 || genero.includes(serviceGenero);
+
+    /*
+     * DIA DA SEMANA
+     */
+    const matchesDiaDaSemana =
+      diaDaSemana.length === 0 || diaDaSemana.includes(serviceDiaDaSemana);
+
+    /*
+     * TURNO
+     */
+    const matchesTurno = turno.length === 0 || turno.includes(serviceTurno);
+
+    /*
+     * AVALIAÇÃO
+     */
+    const matchesAvaliacao =
+      avaliacao.length === 0 || avaliacao.includes(serviceAvaliacao);
+
+    return (
+      matchesGenero && matchesDiaDaSemana && matchesTurno && matchesAvaliacao
+    );
   });
 }

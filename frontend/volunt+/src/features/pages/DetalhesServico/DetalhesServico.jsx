@@ -20,7 +20,7 @@ import {
 
 import { Header } from "../../../components";
 import Footer from "../../../layouts/Footer/Footer";
-import { servicesMock } from "./constants/forms/serviceMock";
+import { servicesDTO } from "../../../types/DTOs/serviceDTO";
 import { useServiceDetails } from "../../pages/DetalhesServico/hook/DetalhesServico";
 import { InfoItem } from "../CadastrarServico/components/InfoItem/InfoItem";
 import {
@@ -41,13 +41,10 @@ export default function DetalhesServico() {
   console.log(id);
 
   const navigate = useNavigate();
-  const service = servicesMock.find(
+  const service = servicesDTO.find(
     (currentService) => String(currentService.id) === String(id),
   );
   const {
-    isFavorite,
-    setIsFavorite,
-
     reportModalOpen,
     setReportModalOpen,
 
@@ -85,20 +82,22 @@ export default function DetalhesServico() {
           <span>/</span>
           <Link to="/explorar">Serviços</Link>
           <span>/</span>
-          <span>{service.category}</span>
+          <span>{service.idCategoria}</span>
         </nav>
 
         <section className="service-hero">
           <div className="service-main-image">
-            <img src={service.image} alt={service.title} />
+            <img src={service.providerImage} alt={service.title} />
 
-            <span className="service-image-category">{service.category}</span>
+            <span className="service-image-category">
+              {service.idCategoria}
+            </span>
           </div>
 
           <aside className="service-summary">
             <span className="service-status">Serviço voluntário gratuito</span>
 
-            <h1>{service.title}</h1>
+            <h1>{service.name}</h1>
 
             <p className="service-short-description">{service.description}</p>
 
