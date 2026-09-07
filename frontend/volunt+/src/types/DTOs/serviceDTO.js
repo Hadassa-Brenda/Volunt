@@ -12,15 +12,16 @@ export const servicesDTO = [
     id: 1,
     name: "Reforço escolar gratuito",
     descricao: "Aulas de reforço para alunos do ensino fundamental.",
-    modalities: SERVICE_MODALITIES[0].value,
-    idCategoria: CategoriaDTO[0].id,
-    idUsuario: userDTO[0].id,
-    idLocalizacao: LocalizacaoDTO[0].id,
+    modalities: SERVICE_MODALITIES[0].value, // presencial
+    idCategoria: CategoriaDTO[0].id, // educação
+    idUsuario: userDTO[0].id, // masculino
+    idLocalizacao: LocalizacaoDTO[0].id, // minas belo horizonte
     status: SERVICE_STATUS[0].value,
     providerImage: "",
-    diaDaSemana: DiaSemana[0].value,
-    turno: Turno[0].value,
-    avaliacao: Nota[0],
+    diaDaSemana: DiaSemana[0].value, //segunda
+    turno: Turno[0].value, //manha
+    avaliacao: Nota[0], //1
+    publicationDate: new Date(),
   },
 
   {
@@ -35,7 +36,8 @@ export const servicesDTO = [
     providerImage: "",
     diaDaSemana: DiaSemana[1].value,
     turno: Turno[1].value,
-    avaliacao: Nota[1],
+    avaliacao: Nota[0],
+    publicationDate: new Date(),
   },
 
   {
@@ -51,6 +53,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[2].value,
     turno: Turno[2].value,
     avaliacao: Nota[2],
+    publicationDate: new Date(),
   },
 
   {
@@ -66,6 +69,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[3].value,
     turno: Turno[0].value,
     avaliacao: Nota[3],
+    publicationDate: new Date(),
   },
 
   {
@@ -81,6 +85,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[4].value,
     turno: Turno[1].value,
     avaliacao: Nota[4],
+    publicationDate: new Date(),
   },
 
   {
@@ -96,6 +101,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[0].value,
     turno: Turno[2].value,
     avaliacao: Nota[0],
+    publicationDate: new Date(),
   },
 
   {
@@ -111,6 +117,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[1].value,
     turno: Turno[0].value,
     avaliacao: Nota[1],
+    publicationDate: new Date(),
   },
 
   {
@@ -126,6 +133,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[2].value,
     turno: Turno[1].value,
     avaliacao: Nota[2],
+    publicationDate: new Date(),
   },
 
   {
@@ -141,6 +149,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[3].value,
     turno: Turno[2].value,
     avaliacao: Nota[3],
+    publicationDate: new Date(),
   },
 
   {
@@ -156,6 +165,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[4].value,
     turno: Turno[0].value,
     avaliacao: Nota[4],
+    publicationDate: new Date(),
   },
 
   {
@@ -171,6 +181,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[5].value,
     turno: Turno[1].value,
     avaliacao: Nota[0],
+    publicationDate: new Date(),
   },
 
   {
@@ -186,6 +197,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[6].value,
     turno: Turno[2].value,
     avaliacao: Nota[1],
+    publicationDate: new Date(),
   },
 
   {
@@ -201,6 +213,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[0].value,
     turno: Turno[1].value,
     avaliacao: Nota[2],
+    publicationDate: new Date(),
   },
 
   {
@@ -216,6 +229,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[1].value,
     turno: Turno[0].value,
     avaliacao: Nota[3],
+    publicationDate: new Date(),
   },
 
   {
@@ -231,6 +245,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[2].value,
     turno: Turno[1].value,
     avaliacao: Nota[4],
+    publicationDate: new Date(),
   },
 
   {
@@ -246,6 +261,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[3].value,
     turno: Turno[2].value,
     avaliacao: Nota[0],
+    publicationDate: new Date(),
   },
 
   {
@@ -261,6 +277,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[4].value,
     turno: Turno[0].value,
     avaliacao: Nota[1],
+    publicationDate: new Date(),
   },
 
   {
@@ -276,6 +293,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[5].value,
     turno: Turno[1].value,
     avaliacao: Nota[2],
+    publicationDate: new Date(),
   },
 
   {
@@ -291,6 +309,7 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[6].value,
     turno: Turno[2].value,
     avaliacao: Nota[3],
+    publicationDate: new Date(),
   },
 
   {
@@ -306,5 +325,6 @@ export const servicesDTO = [
     diaDaSemana: DiaSemana[0].value,
     turno: Turno[0].value,
     avaliacao: Nota[4],
+    publicationDate: new Date(),
   },
 ];

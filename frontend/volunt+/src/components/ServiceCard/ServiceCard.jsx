@@ -1,10 +1,13 @@
 import { ExternalLink, MapPin, MessageCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import { SERVICE_MODALITIES } from "../../types/enum/Modalities";
 
 import "./ServiceCard.css";
 
 export function ServiceCard({ service }) {
+  const navigate = useNavigate();
+
   const modalityLabel =
     SERVICE_MODALITIES.find((modality) => modality.value === service.modalities)
       ?.label ?? "Não informado";
@@ -24,8 +27,22 @@ export function ServiceCard({ service }) {
 
   const instagramUsername = service.contato?.instagram?.replace("@", "");
 
+  const handleCardClick = () => {
+    navigate(`/detalhes-servico/${service.id}`);
+  };
+
   return (
-    <article className="service-card">
+    <article
+      className="service-card"
+      onClick={handleCardClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          handleCardClick();
+        }
+      }}
+    >
       <div
         className="service-card__image"
         style={{
@@ -63,6 +80,7 @@ export function ServiceCard({ service }) {
                 aria-label="Entrar em contato pelo WhatsApp"
                 target="_blank"
                 rel="noreferrer"
+                onClick={(event) => event.stopPropagation()}
               >
                 <MessageCircle size={18} />
               </a>
@@ -74,6 +92,7 @@ export function ServiceCard({ service }) {
                 aria-label="Abrir Instagram do serviço"
                 target="_blank"
                 rel="noreferrer"
+                onClick={(event) => event.stopPropagation()}
               >
                 <ExternalLink size={17} />
               </a>

@@ -1,64 +1,109 @@
-export function filterServices(services, filters) {
-  const genero = filters?.genero ?? [];
-  const diaDaSemana = filters?.diaDaSemana ?? [];
-  const turno = filters?.turno ?? [];
-  const avaliacao = filters?.avaliacao ?? [];
+import { calculateAge } from "../utils/optionsUtils";
 
+function matchesFilter(selectedValues, serviceValue) {
+  if (!selectedValues?.length) {
+    return true;
+  }
+
+  if (serviceValue === null || serviceValue === undefined) {
+    return false;
+  }
+
+  return selectedValues.some(
+    (selectedValue) => String(selectedValue) === String(serviceValue),
+  );
+}
+
+export function filterServices(services = [], filters = {}) {
   return services.filter((service) => {
-    /*
-     * O serviço possui apenas o ID do usuário:
-     *
-     * service.idUsuario
-     *
-     * Mas o gênero está dentro do usuário.
-     *
-     * Se o mapper já criou service.usuario,
-     * usamos ele aqui.
-     */
-    const usuario = service.usuario ?? {};
+    if (filters.search?.trim()) {
+      const search = filters.search.trim().toLowerCase();
 
-    const serviceGenero = usuario.genero;
+      const matchesSearch =
+        service.name?.toLowerCase().includes(search) ||
+        service.descricao?.toLowerCase().includes(search);
 
-    const serviceDiaDaSemana = service.diaDaSemana;
+      if (!matchesSearch) {
+        return false;
+      }
+    }
 
-    const serviceTurno = service.turno;
+    if (
+      !matchesFilter(
+        filters.locations,
+        service.localizacao?.id ?? service.idLocalizacao,
+      )
+    ) {
+      return false;
+    }
 
-    const serviceAvaliacao = service.avaliacao;
+    if (
+      !matchesFilter(
+        filters.category,
+        service.categoria?.id ?? service.idCategoria,
+      )
+    ) {
+      return false;
+    }
 
-    /*
-     * GÊNERO
-     *
-     * Se nenhum gênero foi selecionado,
-     * não filtra.
-     *
-     * Caso tenha selecionado:
-     *
-     * genero = [1, 2]
-     *
-     * verifica se o gênero do serviço está
-     * dentro desses valores.
-     */
-    const matchesGenero = genero.length === 0 || genero.includes(serviceGenero);
+    if (!matchesFilter(filters.modality, service.modalities)) {
+      return false;
+    }
 
-    /*
-     * DIA DA SEMANA
-     */
-    const matchesDiaDaSemana =
-      diaDaSemana.length === 0 || diaDaSemana.includes(serviceDiaDaSemana);
+    if (!matchesFilter(filters.state, service.localizacao?.estado)) {
+      return false;
+    }
 
-    /*
-     * TURNO
-     */
-    const matchesTurno = turno.length === 0 || turno.includes(serviceTurno);
+    if (
+      !matchesFilter(
+        filters.typeLocalization,
+        service.localizacao?.tipoLocalizacao,
+      )
+    ) {
+      return false;
+    }
 
-    /*
-     * AVALIAÇÃO
-     */
-    const matchesAvaliacao =
-      avaliacao.length === 0 || avaliacao.includes(serviceAvaliacao);
+    if (!matchesFilter(filters.genero, service.usuario?.genero)) {
+      return false;
+    }
 
-    return (
-      matchesGenero && matchesDiaDaSemana && matchesTurno && matchesAvaliacao
-    );
+    if (!matchesFilter(filters.providerType, service.usuario?.tipoUsuario)) {
+      return false;
+    }
+
+    if (filters.dataNascimento?.length) {
+      const idade = calculateAge(service.usuario?.dataNascimento);
+
+      if (!matchesFilter(filters.dataNascimento, idade)) {
+        return false;
+      }
+    }
+
+    if (filters.diaDaSemana?.length) {
+      const hasDay = service.agendamentos?.some(
+        (agendamento) =>
+          String(agendamento.diaSemana) === String(filters.diaDaSemana),
+      );
+
+      if (!hasDay) {
+        return false;
+      }
+    }
+
+    if (filters.turno?.length) {
+      const hasShift = service.agendamentos?.some(
+        (agendamento) => String(agendamento.turno) === String(filters.turno),
+      );
+
+      if (!hasShift) {
+        return false;
+      }
+    }
+
+    if (!matchesFilter(filters.avaliacao, service.avaliacao)) {
+      return false;
+    }
+
+    return true;
   });
 }

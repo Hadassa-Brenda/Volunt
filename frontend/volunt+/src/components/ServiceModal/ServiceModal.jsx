@@ -4,14 +4,22 @@ import { X } from "lucide-react";
 import MultiSelect from "../MultiSelect.tsx/MultiSelect";
 import Button from "../Button/Button";
 
-import { GENDER_OPTIONS } from "../../types/enum/Gender";
-import { DiaSemana } from "../../types/enum/DiaSemana";
-import { Turno } from "../../types/enum/Turno";
-import { Nota } from "../../types/enum/Nota";
+import {
+  getStateOptions,
+  getLocationTypeOptions,
+  getCategoryOptions,
+  getGenderOptions,
+  getDayWeekOptions,
+  getShiftOptions,
+  getScoreOptions,
+} from "../../utils/optionsUtils";
 
 import "./ServiceModal.css";
 
 const INITIAL_FILTERS = {
+  estado: [],
+  tipoLocalizacao: [],
+  categoria: [],
   genero: [],
   diaDaSemana: [],
   turno: [],
@@ -22,8 +30,9 @@ export default function ServiceModal({
   filters: initialFilters = INITIAL_FILTERS,
   onClose = () => {},
   onApplyFilters = () => {},
+  data = [],
 }) {
-  const [filters, setFilters] = React.useState(INITIAL_FILTERS);
+  const [filters, setFilters] = React.useState(initialFilters);
 
   function handleFilterChange(field, value) {
     setFilters((currentFilters) => ({
@@ -31,6 +40,7 @@ export default function ServiceModal({
       [field]: value,
     }));
   }
+  console.log(data, "ejdhedheud");
 
   function clearAdvancedFilters() {
     setFilters(INITIAL_FILTERS);
@@ -62,14 +72,46 @@ export default function ServiceModal({
           </button>
         </div>
 
-        {/* FILTROS */}
         <div className="advanced-filters-modal__grid">
+          {/* ESTADO */}
+          <MultiSelect
+            width="100%"
+            label="Estado"
+            value={filters.estado}
+            options={getStateOptions(data)}
+            onChange={(event) =>
+              handleFilterChange("estado", event.target.value)
+            }
+          />
+
+          {/* TIPO DE LOCALIZAÇÃO */}
+          <MultiSelect
+            width="100%"
+            label="Tipo de localização"
+            value={filters.tipoLocalizacao}
+            options={getLocationTypeOptions(data)}
+            onChange={(event) =>
+              handleFilterChange("tipoLocalizacao", event.target.value)
+            }
+          />
+
+          {/* CATEGORIA */}
+          <MultiSelect
+            width="100%"
+            label="Categoria"
+            value={filters.categoria}
+            options={getCategoryOptions(data)}
+            onChange={(event) =>
+              handleFilterChange("categoria", event.target.value)
+            }
+          />
+
           {/* GÊNERO */}
           <MultiSelect
             width="100%"
             label="Gênero"
             value={filters.genero}
-            options={GENDER_OPTIONS}
+            options={getGenderOptions(data)}
             onChange={(event) =>
               handleFilterChange("genero", event.target.value)
             }
@@ -80,7 +122,7 @@ export default function ServiceModal({
             width="100%"
             label="Dia da semana"
             value={filters.diaDaSemana}
-            options={DiaSemana}
+            options={getDayWeekOptions(data)}
             onChange={(event) =>
               handleFilterChange("diaDaSemana", event.target.value)
             }
@@ -91,26 +133,23 @@ export default function ServiceModal({
             width="100%"
             label="Turno"
             value={filters.turno}
-            options={Turno}
+            options={getShiftOptions(data)}
             onChange={(event) =>
               handleFilterChange("turno", event.target.value)
             }
           />
 
-          {/* NOTA */}
           <MultiSelect
             width="100%"
-            label="Nota"
-            value={filters.avaliacao}
-            options={Nota.map((nota) => ({
-              value: nota,
-              label: nota.toString(),
-            }))}
+            label="Avaliação"
+            value={filters.avaliacao || []}
+            options={getScoreOptions()}
             onChange={(event) =>
               handleFilterChange("avaliacao", event.target.value)
             }
           />
         </div>
+
         <div className="advanced-filters-modal__actions">
           <Button
             variant="secondary"

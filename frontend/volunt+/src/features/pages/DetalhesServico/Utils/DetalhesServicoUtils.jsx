@@ -31,7 +31,17 @@ export function formatDate(date) {
     return "Não informado";
   }
 
-  return new Intl.DateTimeFormat("pt-BR").format(new Date(`${date}T00:00:00`));
+  const parsedDate = new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "Não informado";
+  }
+
+  return parsedDate.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 }
 
 export function formatPhone(phone) {

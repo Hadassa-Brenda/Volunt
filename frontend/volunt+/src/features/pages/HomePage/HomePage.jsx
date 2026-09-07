@@ -5,7 +5,6 @@ import Footer from "../../../layouts/Footer/Footer";
 import Header from "../../../layouts/Header/Header";
 import Hero from "../../../components/Hero/Hero";
 import SearchPanel from "../../../components/SearchPanel/SearchPanel";
-import ServiceModal from "../../../components/ServiceModal/ServiceModal";
 import ServicesSection from "../../../components/ServicesSection/ServicesSection";
 
 import { filterServices } from "../../../utils/filterServices";
@@ -14,6 +13,10 @@ import { getServices } from "api/servicesApi";
 import "./HomePage.css";
 
 const INITIAL_FILTERS = {
+  search: "",
+  location: [],
+  category: [],
+  modality: [],
   genero: [],
   diaDaSemana: [],
   turno: [],
@@ -25,7 +28,6 @@ export default function HomePage() {
 
   const [services, setServices] = useState([]);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
-  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
 
   useEffect(() => {
     const data = getServices();
@@ -33,10 +35,9 @@ export default function HomePage() {
     setServices(data);
   }, []);
 
-  const filteredServices = useMemo(
-    () => filterServices(services, filters),
-    [services, filters],
-  );
+  const filteredServices = useMemo(() => {
+    return filterServices(services, filters);
+  }, [services, filters]);
 
   function handleFilterChange(field, value) {
     setFilters((currentFilters) => ({
@@ -47,7 +48,6 @@ export default function HomePage() {
 
   function handleApplyFilters(newFilters) {
     setFilters(newFilters);
-    setIsServiceModalOpen(false);
   }
 
   return (
@@ -66,7 +66,12 @@ export default function HomePage() {
           alignItems: "center",
         }}
       >
-        <SearchPanel filters={filters} onFilterChange={handleFilterChange} />
+        <SearchPanel
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onApplyFilters={handleApplyFilters}
+          data={services}
+        />
       </div>
 
       <section className="app-content-grid">
@@ -74,14 +79,6 @@ export default function HomePage() {
       </section>
 
       <Footer />
-
-      {isServiceModalOpen && (
-        <ServiceModal
-          filters={filters}
-          onClose={() => setIsServiceModalOpen(false)}
-          onApplyFilters={handleApplyFilters}
-        />
-      )}
     </main>
   );
 }

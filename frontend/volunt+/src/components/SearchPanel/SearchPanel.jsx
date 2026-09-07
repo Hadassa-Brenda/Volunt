@@ -1,40 +1,34 @@
 import { useState } from "react";
-import { Search, SlidersHorizontal, Tag } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
 
 import { CATEGORIAS } from "../../types/enum/Categories";
 import { SERVICE_MODALITIES } from "../../types/enum/Modalities";
+
 import MultiSelect from "../MultiSelect.tsx/MultiSelect";
 import Button from "../Button/Button";
 import ServiceModal from "../ServiceModal/ServiceModal";
+import {
+  getLocationOptions,
+  getCategoryOptions,
+  getModalityOptions,
+} from "utils/optionsUtils";
+
 import "./SearchPanel.css";
 
 export default function SearchPanel({
   filters,
   onFilterChange,
-  onSubmitService,
+  onApplyFilters,
+  data,
 }) {
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
-
-  function handleSubmitService(service) {
-    if (onSubmitService) {
-      onSubmitService(service);
-    }
-
-    setIsAdvancedOpen(false);
-  }
-  const LOCATION_FILTER_OPTIONS = [
-    { value: "SP", label: "São Paulo" },
-    { value: "RJ", label: "Rio de Janeiro" },
-    { value: "MG", label: "Belo Horizonte" },
-    { value: "PR", label: "Curitiba" },
-    { value: "RS", label: "Porto Alegre" },
-  ];
 
   return (
     <>
       <section className="search-panel" id="explorar">
         <label className="search-panel__search-field">
           <Search size={18} />
+
           <input
             type="text"
             value={filters.search || ""}
@@ -42,38 +36,37 @@ export default function SearchPanel({
             placeholder="Buscar palavra-chave"
           />
         </label>
+
         <MultiSelect
           label="Localização"
           width="200px"
-          value={filters.location}
-          options={LOCATION_FILTER_OPTIONS}
-          onChange={(event) => onFilterChange("location", event.target.value)}
+          value={filters.locations || []}
+          options={getLocationOptions(data)}
+          onChange={(event) => {
+            onFilterChange("locations", event.target.value);
+          }}
         />
+
         <MultiSelect
           label="Categoria"
           width="200px"
-          value={filters.category}
-          options={CATEGORIAS}
+          value={filters.category || []}
+          options={getCategoryOptions(data)}
           onChange={(event) => onFilterChange("category", event.target.value)}
         />
 
         <MultiSelect
           label="Modalidade"
           width="200px"
-          value={filters.modality}
-          options={SERVICE_MODALITIES.map((modality) => ({
-            value: modality.value,
-            label: modality.label,
-          }))}
+          value={filters.modality || []}
+          options={getModalityOptions(data)}
           onChange={(event) => onFilterChange("modality", event.target.value)}
         />
-        <Button className="search-panel__search-button" type="button">
-          Buscar
-        </Button>
 
         <Button
           className="search-panel__advanced-button"
           icon={<SlidersHorizontal size={18} />}
+          type="button"
           onClick={() => setIsAdvancedOpen(true)}
         >
           Filtros avançados
@@ -82,8 +75,13 @@ export default function SearchPanel({
 
       {isAdvancedOpen && (
         <ServiceModal
+          filters={filters}
           onClose={() => setIsAdvancedOpen(false)}
-          onSubmit={handleSubmitService}
+          onApplyFilters={(newFilters) => {
+            onApplyFilters(newFilters);
+            setIsAdvancedOpen(false);
+          }}
+          data={data}
         />
       )}
     </>

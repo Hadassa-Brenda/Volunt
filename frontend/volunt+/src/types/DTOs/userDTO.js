@@ -9,7 +9,7 @@ export const userDTO = [
     email: "joao@email.com",
     tipoUsuario: TipoUsuario[0].value,
     genero: GENDER_OPTIONS[0].value,
-    dataNascimento: "21-02-2004",
+    dataNascimento: "2004-02-21T00:00:00.000Z",
     perfilUsuario: PROFILE_TYPES[0].value,
   },
 
@@ -19,7 +19,7 @@ export const userDTO = [
     email: "maria@email.com",
     tipoUsuario: TipoUsuario[0].value,
     genero: GENDER_OPTIONS[1].value,
-    dataNascimento: "15-08-1998",
+    dataNascimento: "1998-08-15T00:00:00.000Z",
     perfilUsuario: PROFILE_TYPES[0].value,
   },
 
@@ -29,7 +29,7 @@ export const userDTO = [
     email: "carlos@email.com",
     tipoUsuario: TipoUsuario[0].value,
     genero: GENDER_OPTIONS[0].value,
-    dataNascimento: "03-11-1992",
+    dataNascimento: "1992-11-03T00:00:00.000Z",
     perfilUsuario: PROFILE_TYPES[0].value,
   },
 
@@ -39,7 +39,7 @@ export const userDTO = [
     email: "ana@email.com",
     tipoUsuario: TipoUsuario[0].value,
     genero: GENDER_OPTIONS[1].value,
-    dataNascimento: "27-04-2001",
+    dataNascimento: "2001-04-27T00:00:00.000Z",
     perfilUsuario: PROFILE_TYPES[0].value,
   },
 
@@ -49,7 +49,7 @@ export const userDTO = [
     email: "pedro@email.com",
     tipoUsuario: TipoUsuario[0].value,
     genero: GENDER_OPTIONS[0].value,
-    dataNascimento: "10-01-1987",
+    dataNascimento: "1987-01-10T00:00:00.000Z",
     perfilUsuario: PROFILE_TYPES[0].value,
   },
 
@@ -59,7 +59,7 @@ export const userDTO = [
     email: "juliana@email.com",
     tipoUsuario: TipoUsuario[0].value,
     genero: GENDER_OPTIONS[1].value,
-    dataNascimento: "19-06-1995",
+    dataNascimento: "1995-06-19T00:00:00.000Z",
     perfilUsuario: PROFILE_TYPES[0].value,
   },
 ];
