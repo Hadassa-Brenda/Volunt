@@ -1,7 +1,4 @@
 export const PROFILE_TYPES = [
-  "Voluntário",
-  "Projeto social / ONG",
-  "Instituição",
-  "Pessoa buscando ajuda",
-  "Outro",
+  { value: "PF", label: "Ofertante" },
+  { value: "BF", label: "Beneficiário" },
 ];

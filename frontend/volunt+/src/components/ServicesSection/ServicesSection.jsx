@@ -7,11 +7,11 @@ export default function ServicesSection({ services }) {
     <section className="services-section">
       <div className="services-section__title">
         <h2>Serviços em destaque</h2>
-        <Link to="/catalogo-servicos">Ver todos </Link>
+        <Link to="/catalogo-servicos">Ver todos → </Link>
       </div>
       {services.length > 0 ? (
         <div className="services-section__grid">
-          {services.map((service) => (
+          {services.slice(0, 8).map((service) => (
             <ServiceCard key={service.id} service={service} />
           ))}
         </div>

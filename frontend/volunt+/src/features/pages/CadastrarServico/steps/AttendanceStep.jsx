@@ -1,16 +1,33 @@
 import React from "react";
-import { ModalityOption } from "components/ModalityOption/ModalityOption";
-import { FormField } from "../../../../components/FormField/FormField";
+
 import { MapPin, Monitor, MessageCircle } from "lucide-react";
 
+import { ModalityOption } from "components/ModalityOption/ModalityOption";
+
+import { FormField } from "../../../../components/FormField/FormField";
+
+import MultiSelect from "../../../../components/MultiSelect/MultiSelect";
+
+import { Turno } from "../../../../types/enum/Turno";
+
+import { DiaSemana } from "../../../../types/enum/DiaSemana";
+
 export function AttendanceStep({ formData, errors, onChange }) {
+  const isOnline = formData.modalities === "Online";
+
   return (
     <section className="form-step">
+      {/* CABEÇALHO */}
+
       <div className="form-step-header">
         <span>Etapa 2 de 4</span>
+
         <h2>Como será o atendimento?</h2>
+
         <p>Informe a modalidade, localização e horários disponíveis.</p>
       </div>
+
+      {/* MODALIDADE */}
 
       <div className="form-field form-field--full">
         <span>
@@ -19,9 +36,9 @@ export function AttendanceStep({ formData, errors, onChange }) {
 
         <div className="modality-options">
           <ModalityOption
-            name="modality"
+            name="modalities"
             value="Online"
-            checked={formData.modality === "Online"}
+            checked={formData.modalities === "Online"}
             onChange={onChange}
             icon={<Monitor size={23} />}
             title="Online"
@@ -29,9 +46,9 @@ export function AttendanceStep({ formData, errors, onChange }) {
           />
 
           <ModalityOption
-            name="modality"
+            name="modalities"
             value="Presencial"
-            checked={formData.modality === "Presencial"}
+            checked={formData.modalities === "Presencial"}
             onChange={onChange}
             icon={<MapPin size={23} />}
             title="Presencial"
@@ -39,9 +56,9 @@ export function AttendanceStep({ formData, errors, onChange }) {
           />
 
           <ModalityOption
-            name="modality"
+            name="modalities"
             value="Ambos"
-            checked={formData.modality === "Ambos"}
+            checked={formData.modalities === "Ambos"}
             onChange={onChange}
             icon={<MessageCircle size={23} />}
             title="Ambos"
@@ -49,47 +66,108 @@ export function AttendanceStep({ formData, errors, onChange }) {
           />
         </div>
 
-        {errors.modality && (
-          <small className="field-error">{errors.modality}</small>
+        {errors.modalities && (
+          <small className="field-error">{errors.modalities}</small>
         )}
       </div>
 
-      <div className="form-fields-grid">
-        <FormField
-          label="Cidade"
-          name="city"
-          value={formData.city}
-          onChange={onChange}
-          placeholder="Ex.: Belo Horizonte"
-          error={errors.city}
-          required={formData.modality !== "Online"}
-          disabled={formData.modality === "Online"}
-        />
+      {/* LOCALIZAÇÃO */}
 
-        <FormField
-          label="Bairro"
-          name="neighborhood"
-          value={formData.neighborhood}
-          onChange={onChange}
-          placeholder="Ex.: Centro"
-          disabled={formData.modality === "Online"}
-        />
+      {!isOnline && (
+        <div className="form-fields-grid">
+          {/* CEP */}
 
-        <FormField
-          label="Horários disponíveis"
-          name="schedule"
-          value={formData.schedule}
-          onChange={onChange}
-          placeholder="Ex.: Segunda e quarta, das 14h às 18h"
-          fullWidth
-        />
-      </div>
+          <FormField
+            label="CEP"
+            name="cep"
+            value={formData.cep || ""}
+            onChange={onChange}
+            placeholder="Ex.: 30130-010"
+            error={errors.cep}
+            required
+            maxLength={9}
+          />
 
-      {formData.modality === "Online" && (
+          {/* ESTADO */}
+
+          <FormField
+            label="Estado"
+            name="estado"
+            value={formData.estado || ""}
+            onChange={() => {}}
+            placeholder="Preenchido automaticamente"
+            error={errors.estado}
+            required
+            disabled
+          />
+
+          {/* CIDADE */}
+
+          <FormField
+            label="Cidade"
+            name="cidade"
+            value={formData.cidade || ""}
+            onChange={() => {}}
+            placeholder="Preenchida automaticamente"
+            error={errors.cidade}
+            required
+            disabled
+          />
+
+          {/* BAIRRO */}
+
+          <FormField
+            label="Bairro"
+            name="bairro"
+            value={formData.bairro || ""}
+            onChange={() => {}}
+            placeholder="Preenchido automaticamente"
+            error={errors.bairro}
+            required
+            disabled
+          />
+          {/* DIA DA SEMANA E TURNO */}
+
+          <MultiSelect
+            label="Dia da semana"
+            name="diaSemana"
+            value={formData.diaSemana || ""}
+            onChange={onChange}
+            options={DiaSemana}
+            width="100%"
+          />
+
+          <MultiSelect
+            label="Turno"
+            name="turno"
+            value={formData.turno || ""}
+            onChange={onChange}
+            options={Turno}
+            width="100%"
+          />
+        </div>
+      )}
+
+      {/* ERRO DIA DA SEMANA */}
+
+      {errors.diaSemana && (
+        <small className="field-error">{errors.diaSemana}</small>
+      )}
+
+      {/* ERRO TURNO */}
+
+      {errors.turno && <small className="field-error">{errors.turno}</small>}
+
+      {/* AVISO ONLINE */}
+
+      {isOnline && (
         <div className="form-information-box">
           <Monitor size={20} />
 
-          <p>Como o serviço é online, cidade e bairro não são obrigatórios.</p>
+          <p>
+            Como o serviço é online, cidade, estado, CEP e bairro não são
+            obrigatórios.
+          </p>
         </div>
       )}
     </section>

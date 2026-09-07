@@ -1,5 +1,3 @@
-export const MODALITY_OPTIONS = ["Presencial", "Online", "Híbrido"];
-
 export const LOCATION_OPTIONS = [
   "Belo Horizonte, MG",
   "Online",

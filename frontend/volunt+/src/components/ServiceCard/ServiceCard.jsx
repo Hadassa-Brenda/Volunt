@@ -1,60 +1,71 @@
-import { useState } from "react";
-import { ExternalLink, Flag, Heart, MapPin, MessageCircle } from "lucide-react";
-import { Link } from "react-router-dom";
-import { getFavoriteIds, toggleFavoriteId } from "../../utils/favorites";
+import { ExternalLink, MapPin, MessageCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+import { SERVICE_MODALITIES } from "../../types/enum/Modalities";
 
 import "./ServiceCard.css";
 
-export function ServiceCard({ service, isFavorite, onFavorite }) {
-  const [localFavorite, setLocalFavorite] = useState(() =>
-    getFavoriteIds().includes(String(service.id)),
-  );
-  const favorite = typeof isFavorite === "boolean" ? isFavorite : localFavorite;
-  const handleFavorite = () => {
-    if (onFavorite) return onFavorite(service.id);
-    const next = toggleFavoriteId(service.id);
-    setLocalFavorite(next.includes(String(service.id)));
-  };
+export function ServiceCard({ service }) {
+  const navigate = useNavigate();
+
+  const modalityLabel =
+    SERVICE_MODALITIES.find((modality) => modality.value === service.modalities)
+      ?.label ?? "Não informado";
+
   const locationLabel =
-    service.modality === "Online" ? "Online" : `${service.neighborhood}, BH`;
+    service.modalities === 2
+      ? "Online"
+      : [service.localizacao?.bairro, service.localizacao?.cidade || "BH"]
+          .filter(Boolean)
+          .join(", ");
+
+  const image =
+    service.providerImage ||
+    `https://picsum.photos/400/300?random=${service.id}`;
+
+  const whatsappNumber = service.contato?.telefone?.replace(/\D/g, "");
+
+  const instagramUsername = service.contato?.instagram?.replace("@", "");
+
+  const handleCardClick = () => {
+    navigate(`/detalhes-servico/${service.id}`);
+  };
 
   return (
-    <article className="service-card">
+    <article
+      className="service-card"
+      onClick={handleCardClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          handleCardClick();
+        }
+      }}
+    >
       <div
         className="service-card__image"
-        style={{ backgroundImage: `url(${service.image})` }}
+        style={{
+          backgroundImage: `url("${image}")`,
+        }}
       >
         <span
           className={`service-card__badge ${
-            service.modality === "Online" ? "service-card__badge--online" : ""
+            service.modalities === 2 ? "service-card__badge--online" : ""
           }`}
         >
-          {service.modality}
+          {modalityLabel}
         </span>
-
-        <button
-          type="button"
-          className={
-            favorite
-              ? "service-card__favorite service-card__favorite--active"
-              : "service-card__favorite"
-          }
-          onClick={handleFavorite}
-          aria-label={
-            favorite
-              ? "Remover serviço dos favoritos"
-              : "Adicionar serviço aos favoritos"
-          }
-          title={favorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-        >
-          <Heart size={18} fill={favorite ? "currentColor" : "none"} />
-        </button>
       </div>
 
       <div className="service-card__body">
-        <span className="service-card__category">{service.category}</span>
-        <h3>{service.title}</h3>
-        <p>{service.description}</p>
+        <span className="service-card__category">
+          {service.categoria?.nome ?? "Outros"}
+        </span>
+
+        <h3>{service.name}</h3>
+
+        <p>{service.descricao}</p>
 
         <div className="service-card__location">
           <MapPin size={15} />
@@ -63,28 +74,30 @@ export function ServiceCard({ service, isFavorite, onFavorite }) {
 
         <div className="service-card__contacts">
           <div>
-            <a
-              href={service.whatsapp || "#contato"}
-              aria-label="Entrar em contato pelo WhatsApp"
-            >
-              <MessageCircle size={18} />
-            </a>
-            <a
-              href={service.instagram || "#detalhes"}
-              aria-label="Abrir informações do serviço"
-            >
-              <ExternalLink size={17} />
-            </a>
+            {whatsappNumber && (
+              <a
+                href={`https://wa.me/${whatsappNumber}`}
+                aria-label="Entrar em contato pelo WhatsApp"
+                target="_blank"
+                rel="noreferrer"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <MessageCircle size={18} />
+              </a>
+            )}
+
+            {instagramUsername && (
+              <a
+                href={`https://instagram.com/${instagramUsername}`}
+                aria-label="Abrir Instagram do serviço"
+                target="_blank"
+                rel="noreferrer"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <ExternalLink size={17} />
+              </a>
+            )}
           </div>
-          <Link
-            className="service-card__report"
-            to={`/denunciar/${service.id}`}
-            aria-label={`Denunciar o serviço ${service.title}`}
-            title="Denunciar serviço"
-          >
-            <Flag size={15} />
-            Denunciar
-          </Link>
         </div>
       </div>
     </article>

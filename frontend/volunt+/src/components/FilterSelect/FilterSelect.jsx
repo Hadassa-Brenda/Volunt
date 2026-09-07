@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import React from "react";
 
 export function FilterSelect({
   label,
@@ -6,33 +6,29 @@ export function FilterSelect({
   value,
   onChange,
   defaultOption,
-  options,
+  options = [],
 }) {
   return (
-    <label className="filter-field">
-      <span>{label}</span>
+    <div className="filter-select">
+      <label htmlFor={name}>{label}</label>
 
-      <div className="filter-select-wrapper">
-        <select name={name} value={value} onChange={onChange}>
-          <option value="">{defaultOption}</option>
+      <select id={name} name={name} value={value} onChange={onChange}>
+        <option value="">{defaultOption}</option>
 
-          {options.map((option) => {
-            const optionValue =
-              typeof option === "string" ? option : option.value;
+        {options.map((option) => {
+          const isObject = typeof option === "object";
 
-            const optionLabel =
-              typeof option === "string" ? option : option.label;
+          const optionValue = isObject ? option.value : option;
 
-            return (
-              <option key={optionValue} value={optionValue}>
-                {optionLabel}
-              </option>
-            );
-          })}
-        </select>
+          const optionLabel = isObject ? option.label : option;
 
-        <ChevronDown size={16} />
-      </div>
-    </label>
+          return (
+            <option key={optionValue} value={optionValue}>
+              {optionLabel}
+            </option>
+          );
+        })}
+      </select>
+    </div>
   );
 }

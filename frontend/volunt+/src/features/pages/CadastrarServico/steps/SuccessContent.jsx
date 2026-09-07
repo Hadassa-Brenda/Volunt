@@ -1,6 +1,7 @@
 import { CheckCircle2, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
-export function SuccessContent({ serviceTitle, onCreateAnother }) {
+export function SuccessContent({ onCreateAnother }) {
   return (
     <section className="service-success">
       <div className="service-success-icon">
@@ -8,19 +9,6 @@ export function SuccessContent({ serviceTitle, onCreateAnother }) {
       </div>
 
       <span>Cadastro concluído</span>
-
-      <h1>Serviço enviado para análise!</h1>
-
-      <p>
-        O serviço <strong>{serviceTitle}</strong> foi cadastrado e agora será
-        revisado pela equipe da plataforma.
-      </p>
-
-      <div className="service-success-status">
-        <span>Status atual</span>
-        <strong>Pendente de aprovação</strong>
-      </div>
-
       <div className="service-success-actions">
         <button
           type="button"
@@ -30,10 +18,10 @@ export function SuccessContent({ serviceTitle, onCreateAnother }) {
           Cadastrar outro serviço
         </button>
 
-        <a href="/explorar" className="primary-action-button">
+        <Link to="/meus-servicos" className="primary-action-button">
           Ver meus serviços
           <ArrowRight size={18} />
-        </a>
+        </Link>
       </div>
     </section>
   );

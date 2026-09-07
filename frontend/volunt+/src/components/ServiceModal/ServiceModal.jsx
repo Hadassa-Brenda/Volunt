@@ -1,37 +1,59 @@
 import React from "react";
 import { X } from "lucide-react";
 
-import SelectField from "../SelectField/SelectField";
+import MultiSelect from "../MultiSelect/MultiSelect";
 import Button from "../Button/Button";
+
 import {
-  TARGET_AUDIENCES,
-  AGE_RANGES,
-  AVAILABILITY_OPTIONS,
-  PERIOD_OPTIONS,
-  DEFAULT_FORM,
-  GENEROS,
-  LOCAL_DA_ATIVIDADE_OPTIONS,
-} from "./ServiceModalConstantes";
+  getStateOptions,
+  getLocationTypeOptions,
+  getCategoryOptions,
+  getGenderOptions,
+  getDayWeekOptions,
+  getShiftOptions,
+  getScoreOptions,
+} from "../../utils/optionsUtils";
 
 import "./ServiceModal.css";
 
-export default function ServiceModal({ onClose = () => {} }) {
-  const [filters, setFilters] = React.useState(DEFAULT_FORM);
+const INITIAL_FILTERS = {
+  estado: [],
+  tipoLocalizacao: [],
+  categoria: [],
+  genero: [],
+  diaDaSemana: [],
+  turno: [],
+  avaliacao: [],
+};
+
+export default function ServiceModal({
+  filters: initialFilters = INITIAL_FILTERS,
+  onClose = () => {},
+  onApplyFilters = () => {},
+  data = [],
+}) {
+  const [filters, setFilters] = React.useState(initialFilters);
+
   function handleFilterChange(field, value) {
     setFilters((currentFilters) => ({
       ...currentFilters,
       [field]: value,
     }));
   }
+  console.log(data, "ejdhedheud");
 
   function clearAdvancedFilters() {
-    handleFilterChange("targetAudience", "");
-    handleFilterChange("ageRange", "");
-    handleFilterChange("serviceFormat", "");
-    handleFilterChange("availability", "");
-    handleFilterChange("period", "");
-    handleFilterChange("keyword", "");
+    setFilters(INITIAL_FILTERS);
   }
+
+  function handleApplyFilters() {
+    onApplyFilters(filters);
+    onClose();
+  }
+
+  React.useEffect(() => {
+    setFilters(initialFilters);
+  }, [initialFilters]);
 
   return (
     <div className="advanced-filters-modal" role="dialog" aria-modal="true">
@@ -39,7 +61,9 @@ export default function ServiceModal({ onClose = () => {} }) {
         <div className="advanced-filters-modal__header">
           <div>
             <span>Busca avançada</span>
+
             <h2>Filtros avançados</h2>
+
             <p>Refine sua busca para encontrar serviços mais específicos.</p>
           </div>
 
@@ -49,49 +73,80 @@ export default function ServiceModal({ onClose = () => {} }) {
         </div>
 
         <div className="advanced-filters-modal__grid">
-          <SelectField
+          {/* ESTADO */}
+          <MultiSelect
             width="100%"
-            label="Público atendido"
-            value={filters.targetAudience || ""}
-            options={TARGET_AUDIENCES}
-            onChange={(value) => handleFilterChange("targetAudience", value)}
-          />
-          <SelectField
-            width="100%"
-            label="Faixa etária do Voluntário"
-            value={filters.ageRange || ""}
-            options={AGE_RANGES}
-            onChange={(value) => handleFilterChange("ageRange", value)}
+            label="Estado"
+            value={filters.estado}
+            options={getStateOptions(data)}
+            onChange={(event) =>
+              handleFilterChange("estado", event.target.value)
+            }
           />
 
-          <SelectField
+          {/* TIPO DE LOCALIZAÇÃO */}
+          <MultiSelect
             width="100%"
-            label="Disponibilidade"
-            value={filters.availability || ""}
-            options={AVAILABILITY_OPTIONS}
-            onChange={(value) => handleFilterChange("availability", value)}
+            label="Tipo de localização"
+            value={filters.tipoLocalizacao}
+            options={getLocationTypeOptions(data)}
+            onChange={(event) =>
+              handleFilterChange("tipoLocalizacao", event.target.value)
+            }
           />
 
-          <SelectField
+          {/* CATEGORIA */}
+          <MultiSelect
             width="100%"
-            label="Período"
-            value={filters.period || ""}
-            options={PERIOD_OPTIONS}
-            onChange={(value) => handleFilterChange("period", value)}
+            label="Categoria"
+            value={filters.categoria}
+            options={getCategoryOptions(data)}
+            onChange={(event) =>
+              handleFilterChange("categoria", event.target.value)
+            }
           />
-          <SelectField
+
+          {/* GÊNERO */}
+          <MultiSelect
             width="100%"
-            label="Gênero do Voluntário"
-            value={filters.gender || ""}
-            options={GENEROS}
-            onChange={(value) => handleFilterChange("gender", value)}
+            label="Gênero"
+            value={filters.genero}
+            options={getGenderOptions(data)}
+            onChange={(event) =>
+              handleFilterChange("genero", event.target.value)
+            }
           />
-          <SelectField
+
+          {/* DIA DA SEMANA */}
+          <MultiSelect
             width="100%"
-            label="Local da Atividade"
-            value={filters.localDaAtividade || ""}
-            options={LOCAL_DA_ATIVIDADE_OPTIONS}
-            onChange={(value) => handleFilterChange("localDaAtividade", value)}
+            label="Dia da semana"
+            value={filters.diaDaSemana}
+            options={getDayWeekOptions(data)}
+            onChange={(event) =>
+              handleFilterChange("diaDaSemana", event.target.value)
+            }
+          />
+
+          {/* TURNO */}
+          <MultiSelect
+            width="100%"
+            label="Turno"
+            value={filters.turno}
+            options={getShiftOptions(data)}
+            onChange={(event) =>
+              handleFilterChange("turno", event.target.value)
+            }
+          />
+
+          <MultiSelect
+            width="100%"
+            label="Avaliação"
+            value={filters.avaliacao || []}
+            options={getScoreOptions()}
+            onChange={(event) =>
+              handleFilterChange("avaliacao", event.target.value)
+            }
           />
         </div>
 
@@ -104,7 +159,7 @@ export default function ServiceModal({ onClose = () => {} }) {
             Limpar filtros
           </Button>
 
-          <Button type="button" onClick={onClose}>
+          <Button type="button" onClick={handleApplyFilters}>
             Aplicar filtros
           </Button>
         </div>

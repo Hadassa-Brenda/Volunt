@@ -1,21 +1,20 @@
-export function normalizeCategory(category) {
-  return category
+export function normalizeText(value = "") {
+  return String(value)
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/\s+/g, "-");
+    .trim();
 }
 
-export function checkPublicationDate(date, selectedPeriod) {
-  if (!selectedPeriod) {
-    return true;
-  }
+export function buildOptions(items = [], labelKeys = ["label", "nome"]) {
+  return items.map((item) => {
+    if (typeof item !== "object" || item === null) {
+      return { label: String(item), value: String(item) };
+    }
 
-  const serviceDate = new Date(`${date}T00:00:00`);
-  const currentDate = new Date();
+    const label = labelKeys.map((key) => item[key]).find(Boolean);
+    const value = item.value ?? item.id ?? label;
 
-  const differenceInMilliseconds = currentDate - serviceDate;
-  const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
-
-  return differenceInDays <= Number(selectedPeriod);
+    return { label: String(label ?? value), value: String(value ?? "") };
+  });
 }

@@ -9,6 +9,7 @@ export function FormField({
   required = false,
   fullWidth = false,
   disabled = false,
+  maxLength,
 }) {
   return (
     <label className={`form-field ${fullWidth ? "form-field--full" : ""}`}>
@@ -24,6 +25,7 @@ export function FormField({
         placeholder={placeholder}
         className={error ? "input-error" : ""}
         disabled={disabled}
+        maxLength={maxLength}
       />
 
       {error && <small className="field-error">{error}</small>}

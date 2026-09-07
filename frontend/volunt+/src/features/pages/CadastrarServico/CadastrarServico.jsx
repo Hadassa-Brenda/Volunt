@@ -1,31 +1,44 @@
 import React from "react";
+
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+
+import { useNavigate } from "react-router-dom";
 
 import Header from "../../../layouts/Header/Header";
 import Footer from "../../../layouts/Footer/Footer";
-import { steps } from "./types/CadastrarServicoConst";
-import "./CadastrarServico.css";
-import { Stepper } from "./components/Stepper/Stepper";
-import { useNavigate } from "react-router-dom";
-import { useCadastrarServico } from "./hook/useCadastrarServico";
-import { SuccessContent } from "./steps/SuccessContent";
-import { FormStepContent } from "./components/FormStepContent/FormStepContent";
-import "../../../styles/global.css";
 import Button from "../../../components/Button/Button";
+
+import { steps } from "./types/CadastrarServicoConst";
+
+import { Stepper } from "./components/Stepper/Stepper";
+
+import { FormStepContent } from "./components/FormStepContent/FormStepContent";
+
+import { SuccessContent } from "./steps/SuccessContent";
+
+import { useCadastrarServico } from "./hook/useCadastrarServico";
+
+import "./CadastrarServico.css";
+import "../../../styles/global.css";
 
 export default function CadastrarServico() {
   const navigate = useNavigate();
+
   const {
     currentStep,
     formData,
     errors,
     submitted,
+
     setCurrentStep,
+
     handleChange,
     nextStep,
     previousStep,
+
     handleImageChange,
     removeImage,
+
     handleSubmit,
     resetForm,
   } = useCadastrarServico();
@@ -33,18 +46,21 @@ export default function CadastrarServico() {
   return (
     <main className="create-service-page">
       <Header />
+
       <div style={{ padding: "10px" }}>
         <Button
           className="back-button"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/meus-servicos")}
           icon={<ArrowLeft size={18} />}
-          children={"Voltar"}
-        />
+        >
+          Voltar
+        </Button>
       </div>
+
       <section className="create-service-container">
         {submitted ? (
           <SuccessContent
-            serviceTitle={formData.title}
+            serviceTitle={formData.name}
             onCreateAnother={resetForm}
           />
         ) : (
@@ -60,9 +76,15 @@ export default function CadastrarServico() {
               </p>
             </header>
 
-            <Stepper currentStep={currentStep} steps={steps} />
+            <Stepper
+              currentStep={currentStep}
+              steps={steps}
+            />
 
-            <form className="create-service-form" onSubmit={handleSubmit}>
+            <form
+              className="create-service-form"
+              onSubmit={handleSubmit}
+            >
               <div className="create-service-card">
                 <FormStepContent
                   currentStep={currentStep}
@@ -99,16 +121,26 @@ export default function CadastrarServico() {
                     <ArrowRight size={18} />
                   </button>
                 ) : (
-                  <button type="submit" className="primary-action-button">
+                  <button
+                    type="submit"
+                    className="primary-action-button"
+                  >
                     <Check size={18} />
-                    Enviar para análise
+                    Salvar serviço
                   </button>
                 )}
               </div>
+
+              {errors.submit && (
+                <div className="general-form-error">
+                  {errors.submit}
+                </div>
+              )}
             </form>
           </>
         )}
       </section>
+
       <Footer />
     </main>
   );

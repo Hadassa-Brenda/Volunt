@@ -1,8 +1,12 @@
 import React from "react";
-import CategoryList from "../../../../components/CategoryList/CategoryList";
+
+import { ImagePlus, X, Upload } from "lucide-react";
+
 import { FormField } from "../../../../components/FormField/FormField";
-import { ImagePlus } from "lucide-react";
-import SelectField from "components/SelectField/SelectField";
+
+import MultiSelect from "components/MultiSelect/MultiSelect";
+
+import { CATEGORIAS } from "types/enum/Categories";
 
 export function BasicInformationStep({
   formData,
@@ -15,42 +19,39 @@ export function BasicInformationStep({
     <section className="form-step">
       <div className="form-step-header">
         <span>Etapa 1 de 4</span>
+
         <h2>Informações principais</h2>
+
         <p>Explique de forma clara qual serviço será oferecido.</p>
       </div>
 
       <div className="form-fields-grid">
+        {/* TÍTULO */}
+
         <FormField
           label="Título do serviço"
-          name="title"
-          value={formData.title}
+          name="name"
+          value={formData.name || ""}
           onChange={onChange}
           placeholder="Ex.: Reforço escolar gratuito"
-          error={errors.title}
+          error={errors.name}
           required
           fullWidth
         />
 
-        <SelectField
+        {/* CATEGORIA */}
+
+        <MultiSelect
           width="420px"
           label="Categoria"
-          name="category"
-          value={formData.category}
+          name="categorias"
+          value={formData.categorias || ""}
           onChange={onChange}
-          error={errors.category}
-          options={[
-            "Educação",
-            "Música",
-            "Tecnologia",
-            "Esporte",
-            "Alimentação",
-            "Doações",
-            "Saúde",
-            "Animais",
-            "Serviços gerais",
-            "Apoio comunitário",
-          ]}
+          error={errors.categorias}
+          options={CATEGORIAS}
         />
+
+        {/* DESCRIÇÃO */}
 
         <label className="form-field form-field--full">
           <span>
@@ -58,24 +59,26 @@ export function BasicInformationStep({
           </span>
 
           <textarea
-            name="description"
-            value={formData.description}
+            name="descricao"
+            value={formData.descricao || ""}
             onChange={onChange}
             placeholder="Explique o objetivo do serviço, quem pode participar e como funciona o atendimento."
             rows={7}
-            className={errors.description ? "input-error" : ""}
+            className={errors.descricao ? "input-error" : ""}
           />
 
           <div className="textarea-information">
             <small>Mínimo recomendado: 30 caracteres</small>
 
-            <small>{formData.description.length} caracteres</small>
+            <small>{(formData.descricao || "").length} caracteres</small>
           </div>
 
-          {errors.description && (
-            <small className="field-error">{errors.description}</small>
+          {errors.descricao && (
+            <small className="field-error">{errors.descricao}</small>
           )}
         </label>
+
+        {/* IMAGEM */}
 
         <div className="form-field form-field--full">
           <span>Foto do serviço</span>
@@ -117,7 +120,8 @@ export function BasicInformationStep({
                 <Upload size={17} />
 
                 <div>
-                  <strong>{formData.image?.name}</strong>
+                  <strong>{formData.image?.name || "Imagem do serviço"}</strong>
+
                   <span>Imagem selecionada</span>
                 </div>
               </div>

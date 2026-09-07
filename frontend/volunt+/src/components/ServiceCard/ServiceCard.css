@@ -4,9 +4,13 @@
   background: var(--color-white);
   overflow: hidden;
   box-shadow: var(--shadow-soft);
-
+  cursor: pointer;
   width: 300px;
   min-height: 460px;
+}
+
+.service-card:hover {
+  background-color: rgba(227, 225, 235, 0.715);
 }
 
 .service-card__image {

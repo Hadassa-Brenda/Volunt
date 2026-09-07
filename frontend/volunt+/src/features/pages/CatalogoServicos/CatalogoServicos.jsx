@@ -1,148 +1,231 @@
-import React, { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
-  Search,
+  ArrowLeft,
   ChevronDown,
+  Search,
   SlidersHorizontal,
   X,
-  ArrowLeft,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Header } from "../../../components";
-import Footer from "../../../layouts/Footer/Footer";
-import "./CatalogoServicos.css";
-import { ServiceCard } from "../../../components/ServiceCard/ServiceCard";
-import { initialFilters } from "./constants/initialFilters";
-import { servicesDTO } from "types/DTOs/serviceDTO";
-import { checkPublicationDate } from "./utils/CatalogoServicosUtils";
-import { FilterSelect } from "../../../components/FilterSelect/FilterSelect";
-import { BasicPagination } from "components/Pagination/BasicPagination";
-import { SERVICE_CATEGORIES } from "../../../types/enum/Categories";
-import { SERVICE_MODALITIES } from "../../../types/enum/Modalitires";
-import { PROFILE_TYPES } from "../../../types/enum/ProfileTypes";
-import Button from "components/Button/Button";
-import { getFavoriteIds, saveFavoriteIds } from "../../../utils/favorites";
 
+import { Header } from "../../../components";
+import Button from "../../../components/Button/Button";
+import { BasicPagination } from "../../../components/Pagination/BasicPagination";
+import { ServiceCard } from "../../../components/ServiceCard/ServiceCard";
+import Footer from "../../../layouts/Footer/Footer";
+import { filterServices } from "../../../utils/filterServices";
+import { useServices } from "../../../hook/useServices";
+
+import {
+  getCategoryOptions,
+  getModalityOptions,
+  getDayWeekOptions,
+  getShiftOptions,
+  getScoreOptions,
+  getLocationOptions,
+  getAge,
+  getGenderOptions,
+  getStateOptions,
+  getLocationTypeOptions,
+} from "../../../utils/optionsUtils";
+import MultiSelect from "../../../components/MultiSelect/MultiSelect";
+import { initialFilters } from "./constants/initialFilters";
+
+import "./CatalogoServicos.css";
+
+const ITEMS_PER_PAGE = 9;
 export default function CatalogoServicos() {
+  const navigate = useNavigate();
+
+  const { services = [], loading, error } = useServices();
+
   const [searchTerm, setSearchTerm] = useState("");
+
   const [filters, setFilters] = useState(initialFilters);
-  const [sortOrder, setSortOrder] = useState("recent");
-  const [favorites, setFavorites] = useState(() => getFavoriteIds());
+
+  const [sortOrder, setSortOrder] = useState("alphabetical");
+
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const navigate = useNavigate();
+  const [page, setPage] = useState(1);
+
+  /*
+   * ========================================
+   * ALTERAÇÃO DOS FILTROS
+   * ========================================
+   */
+
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
 
-    setFilters((currentFilters) => ({
-      ...currentFilters,
+    setFilters((previousFilters) => ({
+      ...previousFilters,
       [name]: value,
     }));
   };
 
-  const clearFilters = () => {
-    setFilters(initialFilters);
-    setSearchTerm("");
-  };
-
-  const toggleFavorite = (serviceId) => {
-    setFavorites((currentFavorites) => {
-      const id = String(serviceId);
-      return saveFavoriteIds(
-        currentFavorites.includes(id)
-          ? currentFavorites.filter((item) => item !== id)
-          : [...currentFavorites, id],
-      );
-    });
-  };
+  /*
+   * ========================================
+   * FILTRAGEM + ORDENAÇÃO
+   * ========================================
+   */
 
   const filteredServices = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase();
+    const filtersToApply = {
+      ...filters,
+      search: searchTerm,
+    };
 
-    const result = servicesDTO.filter((service) => {
-      const matchesSearch =
-        !normalizedSearch ||
-        service.title.toLowerCase().includes(normalizedSearch) ||
-        service.description.toLowerCase().includes(normalizedSearch) ||
-        service.provider.toLowerCase().includes(normalizedSearch);
+    const result = filterServices(services, filtersToApply);
 
-      const matchesCategory =
-        !filters.category || service.category === filters.category;
-
-      const matchesModality =
-        !filters.modality || service.modality === filters.modality;
-
-      const matchesCity = !filters.city || service.city === filters.city;
-
-      const matchesNeighborhood =
-        !filters.neighborhood || service.neighborhood === filters.neighborhood;
-
-      const matchesProviderType =
-        !filters.providerType || service.providerType === filters.providerType;
-
-      const matchesPublicationDate = checkPublicationDate(
-        service.publishedAt,
-        filters.publicationDate,
-      );
-
-      return (
-        matchesSearch &&
-        matchesCategory &&
-        matchesModality &&
-        matchesCity &&
-        matchesNeighborhood &&
-        matchesProviderType &&
-        matchesPublicationDate
-      );
-    });
-    return [...result].sort((firstService, secondService) => {
-      const firstDate = new Date(firstService.publishedAt);
-      const secondDate = new Date(secondService.publishedAt);
-
-      if (sortOrder === "oldest") {
-        return firstDate - secondDate;
-      }
-
+    return [...result].sort((a, b) => {
+      // A → Z
       if (sortOrder === "alphabetical") {
-        return firstService.title.localeCompare(secondService.title);
+        return (a.name || "").localeCompare(b.name || "");
       }
 
-      return secondDate - firstDate;
+      // Z → A
+      if (sortOrder === "reverseAlphabetical") {
+        return (b.name || "").localeCompare(a.name || "");
+      }
+
+      // Melhor avaliação
+      if (sortOrder === "rating") {
+        return Number(b.avaliacao || 0) - Number(a.avaliacao || 0);
+      }
+
+      return 0;
     });
-  }, [searchTerm, filters, sortOrder]);
+  }, [services, filters, searchTerm, sortOrder]);
 
-  const itemsPerPage = 6;
-
-  const [page, setPage] = useState(1);
-
-  const start = (page - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
+  /*
+   * ========================================
+   * VOLTA PARA PÁGINA 1
+   * QUANDO ALGUM FILTRO MUDA
+   * ========================================
+   */
 
   useEffect(() => {
     setPage(1);
   }, [searchTerm, filters, sortOrder]);
 
+  /*
+   * ========================================
+   * PAGINAÇÃO
+   * ========================================
+   */
+
+  const start = (page - 1) * ITEMS_PER_PAGE;
+
+  const visibleServices = filteredServices.slice(start, start + ITEMS_PER_PAGE);
+
+  /*
+   * ========================================
+   * LIMPAR FILTROS
+   * ========================================
+   */
+
+  const clearFilters = () => {
+    setFilters(initialFilters);
+    setSearchTerm("");
+    setSortOrder("alphabetical");
+    setPage(1);
+  };
+
+  /*
+   * ========================================
+   * BLOQUEIA SCROLL NO MOBILE
+   * ========================================
+   */
+
+  useEffect(() => {
+    document.body.style.overflow = mobileFiltersOpen ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileFiltersOpen]);
+
+  /*
+   * ========================================
+   * LOADING
+   * ========================================
+   */
+
+  if (loading) {
+    return (
+      <main className="catalog-page">
+        <Header />
+
+        <section className="catalog-container">
+          <p>Carregando serviços...</p>
+        </section>
+
+        <Footer />
+      </main>
+    );
+  }
+
+  /*
+   * ========================================
+   * ERRO
+   * ========================================
+   */
+
+  if (error) {
+    return (
+      <main className="catalog-page">
+        <Header />
+
+        <section className="catalog-container">
+          <p>Não foi possível carregar os serviços.</p>
+        </section>
+
+        <Footer />
+      </main>
+    );
+  }
+
+  /*
+   * ========================================
+   * PÁGINA
+   * ========================================
+   */
+
   return (
     <main className="catalog-page">
       <Header />
-      <div style={{ padding: "10px" }}>
+
+      <section className="catalog-container">
+        {/* VOLTAR */}
+
         <Button
-          className="back-button"
-          type="button"
+          className="catalog-back-button"
+          variant="ghost"
+          size="small"
           onClick={() => navigate("/")}
           icon={<ArrowLeft size={18} />}
-          children={"Voltar"}
-        />
-      </div>
-      <section className="catalog-container">
+        >
+          Voltar
+        </Button>
+
+        {/* TÍTULO */}
+
         <header className="catalog-heading">
           <div>
             <h1>Explorar serviços</h1>
+
             <p>Encontre iniciativas voluntárias perto de você.</p>
           </div>
         </header>
 
+        {/* ======================================
+            BUSCA
+        ====================================== */}
+
         <form
           className="catalog-search"
+          role="search"
           onSubmit={(event) => event.preventDefault()}
         >
           <Search size={21} aria-hidden="true" />
@@ -151,7 +234,7 @@ export default function CatalogoServicos() {
             type="search"
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Buscar por serviço, palavra-chave ou responsável..."
+            placeholder="Buscar por serviço, categoria ou localização..."
             aria-label="Buscar serviços"
           />
 
@@ -159,6 +242,10 @@ export default function CatalogoServicos() {
             <Search size={20} />
           </button>
         </form>
+
+        {/* ======================================
+            BOTÃO FILTROS MOBILE
+        ====================================== */}
 
         <button
           className="mobile-filter-button"
@@ -169,12 +256,23 @@ export default function CatalogoServicos() {
           Filtros
         </button>
 
+        {/* ======================================
+            LAYOUT
+        ====================================== */}
+
         <div className="catalog-layout">
+          {/* ====================================
+              FILTROS
+          ==================================== */}
+
           <aside
             className={`catalog-filters ${
               mobileFiltersOpen ? "catalog-filters--open" : ""
             }`}
+            aria-label="Filtros do catálogo"
           >
+            {/* HEADER MOBILE */}
+
             <div className="filters-mobile-header">
               <h2>Filtros</h2>
 
@@ -187,6 +285,8 @@ export default function CatalogoServicos() {
               </button>
             </div>
 
+            {/* HEADER DESKTOP */}
+
             <div className="filters-header">
               <h2>Filtros</h2>
 
@@ -195,88 +295,145 @@ export default function CatalogoServicos() {
               </button>
             </div>
 
-            <FilterSelect
+            {/* ==================================
+                CATEGORIA
+            ================================== */}
+
+            <MultiSelect
               label="Categoria"
               name="category"
+              width="100%"
               value={filters.category}
               onChange={handleFilterChange}
               defaultOption="Todas as categorias"
-              options={SERVICE_CATEGORIES}
+              options={getCategoryOptions(services)}
             />
 
-            <FilterSelect
+            {/* ==================================
+                MODALIDADE
+            ================================== */}
+
+            <MultiSelect
               label="Modalidade"
               name="modality"
+              width="100%"
               value={filters.modality}
               onChange={handleFilterChange}
-              defaultOption="Todas"
-              options={SERVICE_MODALITIES}
+              defaultOption="Todas as modalidades"
+              options={getModalityOptions(services)}
             />
 
-            <FilterSelect
-              label="Cidade"
-              name="city"
-              value={filters.city}
+            {/* ==================================
+                LOCALIZAÇÃO
+            ================================== */}
+
+            <MultiSelect
+              label="Localização"
+              name="locations"
+              width="100%"
+              value={filters.locations}
               onChange={handleFilterChange}
-              defaultOption="Todas as cidades"
-              options={["Belo Horizonte", "Contagem", "Betim"]}
+              defaultOption="Todas as localizações"
+              options={getLocationOptions(services)}
             />
 
-            <FilterSelect
-              label="Bairro"
-              name="neighborhood"
-              value={filters.neighborhood}
+            {/* ==================================
+                ESTADO
+            ================================== */}
+
+            <MultiSelect
+              label="Estado"
+              name="state"
+              width="100%"
+              value={filters.state}
               onChange={handleFilterChange}
-              defaultOption="Todos os bairros"
-              options={[
-                "Centro",
-                "Savassi",
-                "Pampulha",
-                "Venda Nova",
-                "Barreiro",
-                "Eldorado",
-              ]}
+              defaultOption="Todos os estados"
+              options={getStateOptions(services)}
             />
 
-            <FilterSelect
-              label="Tipo de responsável"
-              name="providerType"
-              value={filters.providerType}
+            {/* ==================================
+                TIPO DE LOCALIZAÇÃO
+            ================================== */}
+
+            <MultiSelect
+              label="Tipo de localização"
+              name="typeLocalization"
+              width="100%"
+              value={filters.typeLocalization}
               onChange={handleFilterChange}
-              defaultOption="Todos"
-              options={PROFILE_TYPES}
+              defaultOption="Todos os tipos"
+              options={getLocationTypeOptions(services)}
+            />
+            <MultiSelect
+              label="Gênero"
+              name="genero"
+              width="100%"
+              value={filters.genero}
+              onChange={handleFilterChange}
+              defaultOption="Todos os gêneros"
+              options={getGenderOptions(services)}
+            />
+            <MultiSelect
+              label="Dia da semana"
+              name="diaDaSemana"
+              width="100%"
+              value={filters.diaDaSemana}
+              onChange={handleFilterChange}
+              defaultOption="Todos os dias"
+              options={getDayWeekOptions(services)}
             />
 
-            <FilterSelect
-              label="Data de publicação"
-              name="publicationDate"
-              value={filters.publicationDate}
+            <MultiSelect
+              label="Turno"
+              name="turno"
+              width="100%"
+              value={filters.turno}
               onChange={handleFilterChange}
-              defaultOption="Qualquer data"
-              options={[
-                {
-                  label: "Últimos 7 dias",
-                  value: "7",
-                },
-                {
-                  label: "Últimos 30 dias",
-                  value: "30",
-                },
-                {
-                  label: "Últimos 90 dias",
-                  value: "90",
-                },
-              ]}
+              defaultOption="Todos os turnos"
+              options={getShiftOptions(services)}
             />
+
+            <MultiSelect
+              label="Avaliação"
+              name="avaliacao"
+              width="100%"
+              value={filters.avaliacao}
+              onChange={handleFilterChange}
+              defaultOption="Todas as avaliações"
+              options={getScoreOptions()}
+            />
+
+            {/* ==================================
+                IDADE DO OFERTANTE
+            ================================== */}
+
+            <MultiSelect
+              label="Idade do Ofertante"
+              name="dataNascimento"
+              width="100%"
+              value={filters.dataNascimento}
+              onChange={handleFilterChange}
+              defaultOption="Todas as idades"
+              options={getAge(services)}
+            />
+
+            {/* ==================================
+                APLICAR FILTROS MOBILE
+            ================================== */}
 
             <button
               className="apply-filters-button"
               type="button"
               onClick={() => setMobileFiltersOpen(false)}
             >
-              Aplicar filtros
+              Ver {filteredServices.length}{" "}
+              {filteredServices.length === 1 ? "serviço" : "serviços"}
             </button>
           </aside>
+
+          {/* ====================================
+              OVERLAY MOBILE
+          ==================================== */}
 
           {mobileFiltersOpen && (
             <button
@@ -287,7 +444,13 @@ export default function CatalogoServicos() {
             />
           )}
 
-          <section className="services-results">
+          {/* ====================================
+              RESULTADOS
+          ==================================== */}
+
+          <section className="services-results" aria-live="polite">
+            {/* HEADER DOS RESULTADOS */}
+
             <div className="results-header">
               <p>
                 <strong>{filteredServices.length}</strong>{" "}
@@ -296,58 +459,58 @@ export default function CatalogoServicos() {
                   : "serviços encontrados"}
               </p>
 
+              {/* ORDENAÇÃO */}
+
               <label className="sort-select">
-                <span>Ordenar por:</span>
+                <span>Ordenar:</span>
 
                 <select
                   value={sortOrder}
                   onChange={(event) => setSortOrder(event.target.value)}
                 >
-                  <option value="recent">Mais recentes</option>
-                  <option value="oldest">Mais antigos</option>
-                  <option value="alphabetical">Ordem alfabética</option>
+                  <option value="alphabetical">A–Z</option>
+
+                  <option value="reverseAlphabetical">Z–A</option>
+
+                  <option value="rating">Melhor avaliação</option>
                 </select>
 
                 <ChevronDown size={16} />
               </label>
             </div>
 
-            {filteredServices.length > 0 ? (
+            {/* ==================================
+                CARDS
+            ================================== */}
+
+            {visibleServices.length ? (
               <>
                 <div className="services-grid">
-                  {filteredServices.slice(start, end).map((service) => (
-                    <ServiceCard
-                      key={service.id}
-                      service={service}
-                      isFavorite={favorites.includes(String(service.id))}
-                      onFavorite={() => toggleFavorite(service.id)}
-                    />
+                  {visibleServices.map((service) => (
+                    <ServiceCard key={service.id} service={service} />
                   ))}
                 </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    marginTop: "2rem",
-                  }}
-                >
+
+                <div className="catalog-pagination-wrapper">
                   <BasicPagination
                     page={page}
                     onPageChange={setPage}
-                    itemsPerPage={8}
+                    itemsPerPage={ITEMS_PER_PAGE}
                     totalItems={filteredServices.length}
                   />
                 </div>
               </>
             ) : (
+              /* ==================================
+                 NENHUM RESULTADO
+              ================================== */
+
               <div className="empty-results">
                 <Search size={36} />
 
                 <h2>Nenhum serviço encontrado</h2>
 
-                <p>
-                  Tente alterar os filtros ou buscar usando outras palavras.
-                </p>
+                <p>Tente alterar os filtros ou usar outra busca.</p>
 
                 <button type="button" onClick={clearFilters}>
                   Limpar busca e filtros

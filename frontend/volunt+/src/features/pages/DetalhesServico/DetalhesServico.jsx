@@ -1,28 +1,27 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+
 import {
   ArrowLeft,
   CalendarDays,
   Clock3,
   ExternalLink,
-  Flag,
   Globe,
-  Heart,
   Instagram,
   Mail,
   MapPin,
   MessageCircle,
   Monitor,
-  Share2,
   UserRound,
-  X,
 } from "lucide-react";
 
 import { Header } from "../../../components";
 import Footer from "../../../layouts/Footer/Footer";
-import { servicesMock } from "./constants/forms/serviceMock";
-import { useServiceDetails } from "../../pages/DetalhesServico/hook/DetalhesServico";
+import Button from "components/Button/Button";
+import { ServiceNotFound } from "../../pages/DetalhesServico/components/ServiceNotFound/ServiceNotFound";
+
 import { InfoItem } from "../CadastrarServico/components/InfoItem/InfoItem";
+
 import {
   buildInstagramLink,
   buildWhatsAppLink,
@@ -31,81 +30,125 @@ import {
   formatLocation,
   formatPhone,
 } from "./Utils/DetalhesServicoUtils";
-import { useNavigate } from "react-router-dom";
+
+import { useService } from "hook/useService";
+
+import { SERVICE_MODALITIES } from "../../../types/enum/Modalities";
+import { DiaSemana } from "../../../types/enum/DiaSemana";
+import { Turno } from "../../../types/enum/Turno";
+
 import "./DetalhesServico.css";
-import { ServiceNotFound } from "../../pages/DetalhesServico/components/ServiceNotFound/ServiceNotFound";
 import "../../../styles/global.css";
 
 export default function DetalhesServico() {
   const { id } = useParams();
-  console.log(id);
-
   const navigate = useNavigate();
-  const service = servicesMock.find(
-    (currentService) => String(currentService.id) === String(id),
-  );
-  const {
-    isFavorite,
-    setIsFavorite,
 
-    reportModalOpen,
-    setReportModalOpen,
+  const { service, loading, error } = useService(id);
 
-    reportReason,
-    setReportReason,
+  if (loading) {
+    return (
+      <main className="service-details-page">
+        <Header />
 
-    reportDescription,
-    setReportDescription,
+        <div className="service-details-container">
+          <p>Carregando serviço...</p>
+        </div>
 
-    reportSent,
+        <Footer />
+      </main>
+    );
+  }
 
-    handleShare,
-    handleReportSubmit,
-  } = useServiceDetails(service);
-
-  if (!service) {
+  if (error || !service) {
     return <ServiceNotFound />;
   }
+
+  const serviceId = service.id;
+
+  const modalityLabel =
+    SERVICE_MODALITIES.find(
+      (item) => String(item.value) === String(service.modalities),
+    )?.label ?? "Não informado";
+
+  const whatsapp = service.contato?.telefone;
+  const instagram = service.contato?.instagram;
+  const website = service.contato?.site;
+  const email = service.usuario?.email;
+
+  const image =
+    service.providerImage ||
+    `https://picsum.photos/600/400?random=${serviceId}`;
+
+  const schedule = service.agendamentos?.length
+    ? service.agendamentos
+        .map((agendamento) => {
+          const dayLabel =
+            DiaSemana.find(
+              (item) => String(item.value) === String(agendamento.diaSemana),
+            )?.label ?? String(agendamento.diaSemana);
+
+          const shiftLabel =
+            Turno.find(
+              (item) => String(item.value) === String(agendamento.turno),
+            )?.label ?? String(agendamento.turno);
+
+          return `${dayLabel} - ${shiftLabel}`;
+        })
+        .join(", ")
+    : "Combine diretamente com o responsável";
 
   return (
     <main className="service-details-page">
       <Header />
 
       <div className="service-details-container">
-        <button
-          className="back-button"
-          type="button"
-          onClick={() => navigate("/")}
+        <Button
+          className="catalog-back-button"
+          variant="ghost"
+          size="small"
+          onClick={() => navigate(-1)}
+          icon={<ArrowLeft size={18} />}
         >
-          <ArrowLeft size={18} />
           Voltar
-        </button>
+        </Button>
         <nav className="service-breadcrumb" aria-label="Navegação estrutural">
           <Link to="/">Início</Link>
+
           <span>/</span>
-          <Link to="/explorar">Serviços</Link>
+
+          <Link to="/catalogo-servicos">Serviços</Link>
+
           <span>/</span>
-          <span>{service.category}</span>
+
+          <span>{service.categoria?.nome ?? "Serviço"}</span>
         </nav>
 
         <section className="service-hero">
           <div className="service-main-image">
-            <img src={service.image} alt={service.title} />
+            <img src={image} alt={service.name} />
 
-            <span className="service-image-category">{service.category}</span>
+            <span className="service-image-category">
+              {service.categoria?.nome ?? "Outros"}
+            </span>
           </div>
 
           <aside className="service-summary">
             <span className="service-status">Serviço voluntário gratuito</span>
 
-            <h1>{service.title}</h1>
+            <h1>{service.name}</h1>
 
-            <p className="service-short-description">{service.description}</p>
+            <p className="service-short-description">
+              {service.descricao || "Nenhuma descrição informada."}
+            </p>
 
             <div className="service-provider-summary">
               <div className="provider-avatar">
                 {service.providerImage ? (
-                  <img src={service.providerImage} alt={service.provider} />
+                  <img
+                    src={service.providerImage}
+                    alt={service.usuario?.fullName ?? "Ofertante"}
+                  />
                 ) : (
                   <UserRound size={24} />
                 )}
@@ -113,52 +156,28 @@ export default function DetalhesServico() {
 
               <div>
                 <span>Oferecido por</span>
-                <strong>{service.provider}</strong>
-                <small>{service.providerType || "Projeto voluntário"}</small>
+
+                <strong>{service.usuario?.fullName ?? "Não informado"}</strong>
+
+                <small>
+                  {service.usuario?.tipoUsuario ?? "Projeto voluntário"}
+                </small>
               </div>
             </div>
 
-            <div className="service-summary-actions">
-              <a
-                className="primary-contact-button"
-                href={buildWhatsAppLink(service.whatsapp, service.title)}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <MessageCircle size={20} />
-                Entrar em contato
-              </a>
-
-              <button
-                type="button"
-                className={`secondary-icon-button ${
-                  isFavorite ? "secondary-icon-button--favorite" : ""
-                }`}
-                onClick={() => setIsFavorite((current) => !current)}
-                aria-label={
-                  isFavorite
-                    ? "Remover dos favoritos"
-                    : "Adicionar aos favoritos"
-                }
-                title={
-                  isFavorite
-                    ? "Remover dos favoritos"
-                    : "Adicionar aos favoritos"
-                }
-              >
-                <Heart size={21} fill={isFavorite ? "currentColor" : "none"} />
-              </button>
-
-              <button
-                type="button"
-                className="secondary-icon-button"
-                onClick={handleShare}
-                aria-label="Compartilhar serviço"
-                title="Compartilhar"
-              >
-                <Share2 size={21} />
-              </button>
-            </div>
+            {whatsapp && (
+              <div className="service-summary-actions">
+                <a
+                  className="primary-contact-button"
+                  href={buildWhatsAppLink(whatsapp, service.name)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <MessageCircle size={20} />
+                  Entrar em contato
+                </a>
+              </div>
+            )}
 
             <p className="contact-warning">
               A plataforma apenas divulga o serviço. Confirme as informações
@@ -172,7 +191,7 @@ export default function DetalhesServico() {
             <section className="details-section">
               <h2>Sobre o serviço</h2>
 
-              <p>{service.fullDescription || service.description}</p>
+              <p>{service.descricao || "Nenhuma descrição informada."}</p>
             </section>
 
             <section className="details-section">
@@ -182,7 +201,7 @@ export default function DetalhesServico() {
                 <InfoItem
                   icon={<Monitor size={21} />}
                   label="Modalidade"
-                  value={service.modality}
+                  value={modalityLabel}
                 />
 
                 <InfoItem
@@ -194,33 +213,28 @@ export default function DetalhesServico() {
                 <InfoItem
                   icon={<Clock3 size={21} />}
                   label="Horários"
-                  value={
-                    service.schedule || "Combine diretamente com o responsável"
-                  }
+                  value={schedule}
                 />
 
                 <InfoItem
                   icon={<CalendarDays size={21} />}
                   label="Publicado em"
-                  value={formatDate(service.publishedAt)}
+                  value={formatDate(service.publicationDate)}
                 />
               </div>
             </section>
 
-            {service.requirements && (
-              <section className="details-section">
-                <h2>Quem pode participar</h2>
-                <p>{service.requirements}</p>
-              </section>
-            )}
-
+            {/* OFERTANTE */}
             <section className="details-section">
               <h2>Sobre quem oferece</h2>
 
               <div className="provider-card">
                 <div className="provider-card-avatar">
                   {service.providerImage ? (
-                    <img src={service.providerImage} alt={service.provider} />
+                    <img
+                      src={service.providerImage}
+                      alt={service.usuario?.fullName ?? "Ofertante"}
+                    />
                   ) : (
                     <UserRound size={30} />
                   )}
@@ -228,34 +242,26 @@ export default function DetalhesServico() {
 
                 <div className="provider-card-content">
                   <div>
-                    <h3>{service.provider}</h3>
+                    <h3>{service.usuario?.fullName ?? "Não informado"}</h3>
 
-                    <span>{service.providerType || "Projeto voluntário"}</span>
+                    <span>
+                      {service.usuario?.tipoUsuario ?? "Projeto voluntário"}
+                    </span>
                   </div>
 
                   <p>
-                    {service.providerDescription ||
-                      "Responsável por oferecer este serviço voluntário para a comunidade."}
+                    Responsável por oferecer este serviço voluntário para a
+                    comunidade.
                   </p>
 
-                  <Link to={`/perfil/${service.providerId || 1}`}>
+                  <Link to={`/perfil/${service.idUsuario}`}>
                     Ver perfil
                     <ExternalLink size={15} />
                   </Link>
                 </div>
               </div>
             </section>
-
-            <button
-              type="button"
-              className="report-service-button"
-              onClick={() => navigate(`/denunciar/${service.id}`)}
-            >
-              <Flag size={17} />
-              Reportar informação incorreta
-            </button>
           </div>
-
           <aside className="service-contact-card">
             <h2>Informações de contato</h2>
 
@@ -264,156 +270,59 @@ export default function DetalhesServico() {
             </p>
 
             <div className="contact-list">
-              {service.whatsapp && (
+              {whatsapp && (
                 <InfoItem
                   icon={<MessageCircle size={20} />}
                   label="WhatsApp"
-                  value={formatPhone(service.whatsapp)}
-                  href={buildWhatsAppLink(service.whatsapp, service.title)}
+                  value={formatPhone(whatsapp)}
+                  href={buildWhatsAppLink(whatsapp, service.name)}
                 />
               )}
 
-              {service.instagram && (
+              {instagram && (
                 <InfoItem
                   icon={<Instagram size={20} />}
                   label="Instagram"
-                  value={formatInstagram(service.instagram)}
-                  href={buildInstagramLink(service.instagram)}
+                  value={formatInstagram(instagram)}
+                  href={buildInstagramLink(instagram)}
                 />
               )}
 
-              {service.email && (
+              {email && (
                 <InfoItem
                   icon={<Mail size={20} />}
                   label="E-mail"
-                  value={service.email}
-                  href={`mailto:${service.email}`}
+                  value={email}
+                  href={`mailto:${email}`}
                 />
               )}
 
-              {service.website && (
+              {website && (
                 <InfoItem
                   icon={<Globe size={20} />}
                   label="Site"
                   value="Acessar site"
-                  href={service.website}
+                  href={website}
                 />
               )}
             </div>
 
-            {!service.whatsapp &&
-              !service.instagram &&
-              !service.email &&
-              !service.website && (
-                <p className="no-contact-message">
-                  Nenhum contato foi informado.
-                </p>
-              )}
+            {!whatsapp && !instagram && !email && !website && (
+              <p className="no-contact-message">
+                Nenhum contato foi informado.
+              </p>
+            )}
 
             <div className="service-update-information">
               <span>Última atualização</span>
-              <strong>
-                {formatDate(service.updatedAt || service.publishedAt)}
-              </strong>
+
+              <strong>{formatDate(service.publicationDate)}</strong>
             </div>
           </aside>
         </div>
       </div>
 
       <Footer />
-
-      {reportModalOpen && (
-        <div className="report-modal-overlay">
-          <div
-            className="report-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="report-modal-title"
-          >
-            <div className="report-modal-header">
-              <div>
-                <h2 id="report-modal-title">Reportar serviço</h2>
-                <p>
-                  Conte o que está errado para que nossa equipe possa revisar.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setReportModalOpen(false)}
-                aria-label="Fechar denúncia"
-              >
-                <X size={22} />
-              </button>
-            </div>
-
-            {reportSent ? (
-              <div className="report-success">
-                <strong>Denúncia enviada com sucesso.</strong>
-                <p>O serviço será analisado pela equipe responsável.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleReportSubmit}>
-                <label className="report-field">
-                  <span>Motivo da denúncia</span>
-
-                  <select
-                    value={reportReason}
-                    onChange={(event) => setReportReason(event.target.value)}
-                    required
-                  >
-                    <option value="">Selecione um motivo</option>
-                    <option value="invalid-contact">
-                      Contato não funciona
-                    </option>
-                    <option value="service-unavailable">
-                      Serviço não existe mais
-                    </option>
-                    <option value="incorrect-information">
-                      Informação incorreta
-                    </option>
-                    <option value="commercial-content">
-                      Conteúdo comercial
-                    </option>
-                    <option value="inappropriate-content">
-                      Conteúdo inadequado
-                    </option>
-                    <option value="possible-fraud">Possível fraude</option>
-                    <option value="other">Outro</option>
-                  </select>
-                </label>
-
-                <label className="report-field">
-                  <span>Descreva o problema</span>
-
-                  <textarea
-                    value={reportDescription}
-                    onChange={(event) =>
-                      setReportDescription(event.target.value)
-                    }
-                    placeholder="Explique o que você encontrou..."
-                    rows={5}
-                  />
-                </label>
-
-                <div className="report-modal-actions">
-                  <button
-                    type="button"
-                    className="cancel-report-button"
-                    onClick={() => setReportModalOpen(false)}
-                  >
-                    Cancelar
-                  </button>
-
-                  <button type="submit" className="submit-report-button">
-                    Enviar denúncia
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
     </main>
   );
 }
