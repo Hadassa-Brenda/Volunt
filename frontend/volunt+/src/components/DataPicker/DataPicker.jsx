@@ -1,20 +1,24 @@
 import * as React from "react";
 
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
 
+import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 
 export default function DataPicker({
   width = "400px",
   height = "50px",
   label,
+  value = "",
+  onChange,
 }) {
-  const [value, setValue] = React.useState(null);
   const [cleared, setCleared] = React.useState(false);
 
   React.useEffect(() => {
@@ -26,6 +30,8 @@ export default function DataPicker({
 
     return () => clearTimeout(timeout);
   }, [cleared]);
+
+  const pickerValue = value ? dayjs(value) : null;
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
@@ -40,22 +46,30 @@ export default function DataPicker({
       >
         <DatePicker
           label={label}
-          value={value}
+          value={pickerValue}
           onChange={(newValue) => {
-            setValue(newValue);
+            if (!newValue || !newValue.isValid()) {
+              onChange?.("");
+              return;
+            }
+
+            const formattedDate = newValue.format("YYYY-MM-DD");
+
+            onChange?.(formattedDate);
           }}
           format="DD/MM/YYYY"
           slotProps={{
             field: {
               clearable: true,
+
               onClear: () => {
-                setValue(null);
+                onChange?.("");
                 setCleared(true);
               },
             },
           }}
           sx={{
-            width: width,
+            width,
             "& .MuiPickersOutlinedInput-root": {
               height: "50px",
             },

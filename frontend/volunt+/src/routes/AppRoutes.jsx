@@ -9,6 +9,7 @@ import AboutVolunteering from "features/pages/AboutVolunteering/AboutVolunteerin
 import CatalogoServicos from "features/pages/CatalogoServicos/CatalogoServicos";
 import UserProfilePage from "../features/pages/UserProfilePage/UserProfilePage";
 import MyServicesPage from "../features/pages/MyServicesPage/MyServicesPage";
+import EditServicePage from "features/pages/MyServicesPage/EditServicePage/EditServicePage";
 
 export default function AppRoutes() {
   return (
@@ -25,6 +26,7 @@ export default function AppRoutes() {
       <Route path="/perfil" element={<UserProfilePage />} />
       <Route path="/perfil/:id" element={<UserProfilePage />} />
       <Route path="/meus-servicos" element={<MyServicesPage />} />
+      <Route path="/editar-servico/:id" element={<EditServicePage />} />
       <Route path="*" element={<h1>Página não encontrada</h1>} />
     </Routes>
   );

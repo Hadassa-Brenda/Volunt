@@ -11,6 +11,7 @@ export const userDTO = [
     genero: GENDER_OPTIONS[0].value,
     dataNascimento: "2004-02-21T00:00:00.000Z",
     perfilUsuario: PROFILE_TYPES[0].value,
+    password: "12981922",
   },
 
   {
@@ -21,6 +22,7 @@ export const userDTO = [
     genero: GENDER_OPTIONS[1].value,
     dataNascimento: "1998-08-15T00:00:00.000Z",
     perfilUsuario: PROFILE_TYPES[0].value,
+    password: "12981922",
   },
 
   {
@@ -31,6 +33,7 @@ export const userDTO = [
     genero: GENDER_OPTIONS[0].value,
     dataNascimento: "1992-11-03T00:00:00.000Z",
     perfilUsuario: PROFILE_TYPES[0].value,
+    password: "12981922",
   },
 
   {
@@ -41,6 +44,7 @@ export const userDTO = [
     genero: GENDER_OPTIONS[1].value,
     dataNascimento: "2001-04-27T00:00:00.000Z",
     perfilUsuario: PROFILE_TYPES[0].value,
+    password: "12981922",
   },
 
   {
@@ -51,6 +55,7 @@ export const userDTO = [
     genero: GENDER_OPTIONS[0].value,
     dataNascimento: "1987-01-10T00:00:00.000Z",
     perfilUsuario: PROFILE_TYPES[0].value,
+    password: "12981922",
   },
 
   {
@@ -61,5 +66,6 @@ export const userDTO = [
     genero: GENDER_OPTIONS[1].value,
     dataNascimento: "1995-06-19T00:00:00.000Z",
     perfilUsuario: PROFILE_TYPES[0].value,
+    password: "12981922",
   },
 ];

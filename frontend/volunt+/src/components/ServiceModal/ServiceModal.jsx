@@ -1,7 +1,7 @@
 import React from "react";
 import { X } from "lucide-react";
 
-import MultiSelect from "../MultiSelect.tsx/MultiSelect";
+import MultiSelect from "../MultiSelect/MultiSelect";
 import Button from "../Button/Button";
 
 import {

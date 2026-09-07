@@ -1,22 +1,23 @@
 export const initialFormData = {
-  title: "",
-  category: "",
-  description: "",
-  image: null,
-  imagePreview: "",
+  name: "",
+  descricao: "",
+  modalities: "",
+  categorias: "",
 
-  modality: "",
-  city: "",
-  neighborhood: "",
-  schedule: "",
+  image: "",
 
-  whatsapp: "",
+  cep: "",
+  estado: "",
+  cidade: "",
+  bairro: "",
+
+  diaSemana: "",
+  turno: "",
+
+  site: "",
   instagram: "",
-  email: "",
-  website: "",
-
-  freeService: false,
-  acceptTerms: false,
+  whatsapp: "",
+  telefone: "",
 };
 
 export const steps = [
@@ -48,16 +49,4 @@ export const reviewTexts = {
   title: "Revise seu serviço",
 
   description: "Confira as informações antes de enviar para análise.",
-
-  freeService: "Declaro que este serviço é gratuito ou voluntário.",
-
-  acceptTerms:
-    "Confirmo que as informações são verdadeiras e aceito os termos de uso da plataforma.",
-
-  warning: {
-    title: "O que acontece depois?",
-
-    description:
-      "O serviço será enviado para moderação com o status 'Pendente'. Ele só ficará disponível publicamente após a aprovação.",
-  },
 };

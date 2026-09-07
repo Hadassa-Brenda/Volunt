@@ -19,12 +19,22 @@ export default function Header({ onCreateUser, onOpenLogin }) {
         <Link to="/about-volunteering" className="header__nav-link">
           Sobre
         </Link>
+
+        <Link to="/cadastrar-servico" className="header__nav-link">
+          Criar Serviço
+        </Link>
+        <Link to="/catalogo-servicos" className="header__nav-link">
+          Catalógo de Serviços
+        </Link>
+        <Link to="/meus-servicos" className="header__nav-link">
+          Meus Serviços
+        </Link>
       </nav>
 
       <div className="header__actions">
         {user ? (
           <>
-            <Link className="header__profile" to="/meus-servicos">
+            <Link className="header__profile" to={`/perfil/${user.id}`}>
               <span className="header__avatar">
                 {(user.fullName || user.name || "U").slice(0, 1).toUpperCase()}
               </span>

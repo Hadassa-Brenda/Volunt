@@ -28,7 +28,7 @@ import {
   getStateOptions,
   getLocationTypeOptions,
 } from "../../../utils/optionsUtils";
-import MultiSelect from "../../../components/MultiSelect.tsx/MultiSelect";
+import MultiSelect from "../../../components/MultiSelect/MultiSelect";
 import { initialFilters } from "./constants/initialFilters";
 
 import "./CatalogoServicos.css";
@@ -203,7 +203,7 @@ export default function CatalogoServicos() {
           className="catalog-back-button"
           variant="ghost"
           size="small"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/")}
           icon={<ArrowLeft size={18} />}
         >
           Voltar

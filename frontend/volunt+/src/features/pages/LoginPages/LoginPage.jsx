@@ -1,10 +1,13 @@
 import { ArrowLeft, Lock, Mail, Search } from "lucide-react";
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { login } from "./services/authService";
+
+import { Link, useNavigate } from "react-router-dom";
+
 import "./LoginPages.css";
 import "../../../styles/global.css";
+
+import { userDTO } from "../../../types/DTOs/userDTO";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -15,22 +18,29 @@ export default function LoginPage() {
   });
 
   function updateField(field, value) {
-    setForm((currentForm) => ({
-      ...currentForm,
+    setForm((current) => ({
+      ...current,
       [field]: value,
     }));
   }
 
-  async function handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
 
-    try {
-      const data = await login(form.email, form.password);
-      sessionStorage.setItem("token", data.token);
-      navigate("/");
-    } catch (error) {
+    const user = userDTO.find(
+      (item) => item.email === form.email && item.password === form.password,
+    );
+
+    if (!user) {
       alert("E-mail ou senha inválidos.");
+      return;
     }
+
+  
+    localStorage.setItem("volunt-user", JSON.stringify(user));
+
+    
+    navigate("/");
   }
 
   return (
@@ -46,8 +56,10 @@ export default function LoginPage() {
             Voltar
           </button>
         </header>
+
         <Link className="header__brand" to="/" aria-label="Voluntá+ início">
           <span className="header__brand-icon">♡</span>
+
           <strong>Voluntá+</strong>
         </Link>
 
@@ -70,6 +82,7 @@ export default function LoginPage() {
 
           <div>
             <strong>Conecte-se com propósito</strong>
+
             <span>Encontre e ofereça ajuda de forma simples.</span>
           </div>
         </div>
@@ -79,7 +92,9 @@ export default function LoginPage() {
         <form className="login-card" onSubmit={handleSubmit}>
           <div className="login-card__header">
             <span>Login</span>
+
             <h2>Acessar conta</h2>
+
             <p>Informe seus dados para entrar na plataforma.</p>
           </div>
 
@@ -114,6 +129,7 @@ export default function LoginPage() {
               />
             </div>
           </label>
+
           <button className="login-card__button" type="submit">
             Entrar
           </button>

@@ -3,7 +3,6 @@ const wait = (value) =>
 
 export async function register(
   bairro,
-  cep,
   city,
   email,
   profileType,
@@ -19,7 +18,7 @@ export async function register(
   }
   const user = {
     bairro,
-    cep,
+
     city,
     email,
     profileType,

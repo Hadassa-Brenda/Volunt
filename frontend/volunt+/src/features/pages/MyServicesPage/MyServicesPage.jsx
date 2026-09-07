@@ -4,102 +4,361 @@ import {
   Eye,
   Trash2,
   Plus,
-  Settings,
   UserRound,
   LogOut,
+  ArrowLeft,
 } from "lucide-react";
+
 import { Link, useNavigate } from "react-router-dom";
+
+import { useEffect, useMemo, useState } from "react";
+
+import Button from "../../../components/Button/Button";
+
 import { servicesDTO } from "../../../types/DTOs/serviceDTO";
-import "./MyServicesPage.css";
 import { SERVICE_STATUS } from "../../../types/enum/Status";
+
+import "./MyServicesPage.css";
 
 export default function MyServicesPage() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("volunt-user") || "null");
-  const name = user?.fullName || user?.name || "Maria Silva";
+
+
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    try {
+      const storedUser = JSON.parse(
+        localStorage.getItem("volunt-user") || "null",
+      );
+
+      setUser(storedUser);
+    } catch {
+      setUser(null);
+    }
+  }, []);
+
+  const name = user?.fullName || user?.name || "Usuário";
+
+
+
+  const [services, setServices] = useState([]);
+
+  useEffect(() => {
+    try {
+      const storedServices = localStorage.getItem("volunt-services");
+
+      if (storedServices) {
+        const parsedServices = JSON.parse(storedServices);
+
+        if (Array.isArray(parsedServices)) {
+          setServices(parsedServices);
+          return;
+        }
+      }
+
+
+      localStorage.setItem("volunt-services", JSON.stringify(servicesDTO));
+
+      setServices(servicesDTO);
+    } catch {
+      setServices(servicesDTO);
+    }
+  }, []);
+
+ 
+
+  const [activeTab, setActiveTab] = useState("todos");
+
+ 
+
+  const myServices = useMemo(() => {
+    if (!user?.id) {
+      return [];
+    }
+
+    return services.filter(
+      (service) => Number(service.idUsuario) === Number(user.id),
+    );
+  }, [services, user]);
+
+
+  const totalServices = myServices.length;
+
+  const activeServices = myServices.filter(
+    (service) => service.status === SERVICE_STATUS[0].value,
+  ).length;
+
+  const inactiveServices = myServices.filter(
+    (service) => service.status === SERVICE_STATUS[1].value,
+  ).length;
+
+
+
+  const filteredServices = useMemo(() => {
+    if (activeTab === "ativos") {
+      return myServices.filter(
+        (service) => service.status === SERVICE_STATUS[0].value,
+      );
+    }
+
+    if (activeTab === "inativos") {
+      return myServices.filter(
+        (service) => service.status === SERVICE_STATUS[1].value,
+      );
+    }
+
+    return myServices;
+  }, [myServices, activeTab]);
+
+  
+  function handleDelete(serviceId) {
+    const confirmed = window.confirm(
+      "Tem certeza que deseja excluir este serviço?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const updatedServices = services.filter(
+      (service) => Number(service.id) !== Number(serviceId),
+    );
+
+    setServices(updatedServices);
+
+    localStorage.setItem("volunt-services", JSON.stringify(updatedServices));
+  }
+
+  
+
+  function handleLogout() {
+    localStorage.removeItem("volunt-user");
+
+    navigate("/");
+  }
+
+  
+
+  function getStatusLabel(status) {
+    return (
+      SERVICE_STATUS.find((item) => item.value === status)?.label ||
+      "Não informado"
+    );
+  }
+
+  
+
+  function getStatusClass(status) {
+    return `status-${String(status).toLowerCase().replace(/\s+/g, "-")}`;
+  }
+
+ 
   return (
     <main className="user-dashboard">
+  
       <aside className="user-sidebar">
-        <Link className="user-sidebar-brand" to="/">
-          ♡ <strong>Voluntá+</strong>
-        </Link>
+        <Button
+          className="catalog-back-button"
+          variant="ghost"
+          size="small"
+          onClick={() => navigate("/")}
+          icon={<ArrowLeft size={18} />}
+        >
+          Voltar
+        </Button>
+
         <div className="user-summary">
-          <div>{name.slice(0, 2).toUpperCase()}</div>
+          <div className="user-avatar">{name.slice(0, 2).toUpperCase()}</div>
+
           <strong>{name}</strong>
+
           <Link to="/perfil">Ver perfil</Link>
         </div>
+
         <nav>
           <Link to="/perfil">
-            <UserRound />
+            <UserRound size={20} />
             Meu perfil
           </Link>
+
           <Link className="active" to="/meus-servicos">
-            <BarChart3 />
+            <BarChart3 size={20} />
             Meus serviços
           </Link>
+
           <Link to="/cadastrar-servico">
-            <Plus />
+            <Plus size={20} />
             Criar serviço
           </Link>
-          <Link to="/configuracoes">
-            <LogOut />
+
+          <button
+            type="button"
+            className="sidebar-logout"
+            onClick={handleLogout}
+          >
+            <LogOut size={20} />
             Sair
-          </Link>
+          </button>
         </nav>
       </aside>
+
+  
       <section className="user-dashboard-main">
-        <header>
+   
+        <header className="dashboard-header">
           <div>
             <h1>Meus serviços</h1>
+
             <p>Gerencie os serviços que você cadastrou.</p>
           </div>
-          <Link to="/cadastrar-servico">
-            <Plus />
+
+          <Link className="new-service-button" to="/cadastrar-servico">
+            <Plus size={18} />
             Novo serviço
           </Link>
         </header>
-        <div className="service-tabs">
-          <button className="active">Todos</button>
-          <button>Ativo</button>
-          <button>Inativo</button>
+
+        <div className="services-summary">
+          <div className="summary-card">
+            <strong>{totalServices}</strong>
+
+            <span>Total</span>
+          </div>
+
+          <div className="summary-card">
+            <strong>{activeServices}</strong>
+
+            <span>Ativos</span>
+          </div>
+
+          <div className="summary-card">
+            <strong>{inactiveServices}</strong>
+
+            <span>Inativos</span>
+          </div>
         </div>
+
+   
+        <div className="service-tabs">
+          <button
+            type="button"
+            className={activeTab === "todos" ? "active" : ""}
+            onClick={() => setActiveTab("todos")}
+          >
+            Todos
+            <span>{totalServices}</span>
+          </button>
+
+          <button
+            type="button"
+            className={activeTab === "ativos" ? "active" : ""}
+            onClick={() => setActiveTab("ativos")}
+          >
+            Ativos
+            <span>{activeServices}</span>
+          </button>
+
+          <button
+            type="button"
+            className={activeTab === "inativos" ? "active" : ""}
+            onClick={() => setActiveTab("inativos")}
+          >
+            Inativos
+            <span>{inactiveServices}</span>
+          </button>
+        </div>
+
+     
         <section className="management-list">
-          {servicesDTO.slice(0, 4).map((service, index) => (
-            <article key={service.id}>
-              <img src={service.image} alt="" />
-              <div className="management-info">
-                <h2>{service.name}</h2>
-                <p>
-                  Publicado em{" "}
-                  {new Date(service.publishedAt).toLocaleDateString("pt-BR")}
-                </p>
-              </div>
-              <span className={`status-${service.status}`}>
-                {
-                  SERVICE_STATUS.find(
-                    (status) => status.value === service.status,
-                  )?.label
-                }
-              </span>
-              <div className="management-actions">
-                <button
-                  style={{ background: " #8240f1", color: "white" }}
-                  onClick={() => navigate(`/detalhes-servico/${service.id}`)}
-                >
-                  <Eye />
-                  Ver
-                </button>
-                <button style={{ background: " #8240f1", color: "white" }}>
-                  <Edit3 />
-                  Editar
-                </button>
-                <button style={{ background: " #8240f1", color: "white" }}>
-                  <Trash2 />
-                  Excluir
-                </button>
-              </div>
-            </article>
-          ))}
+          {filteredServices.length === 0 ? (
+            <div className="management-empty">
+              <BarChart3 size={40} />
+
+              <h2>
+                {activeTab === "todos"
+                  ? "Nenhum serviço cadastrado"
+                  : activeTab === "ativos"
+                    ? "Nenhum serviço ativo"
+                    : "Nenhum serviço inativo"}
+              </h2>
+
+              <p>
+                {activeTab === "todos"
+                  ? "Você ainda não publicou nenhum serviço."
+                  : "Não existem serviços nesta categoria."}
+              </p>
+
+              {activeTab === "todos" && (
+                <Link to="/cadastrar-servico">
+                  <Plus size={17} />
+                  Criar meu primeiro serviço
+                </Link>
+              )}
+            </div>
+          ) : (
+            filteredServices.map((service) => (
+              <article className="management-card" key={service.id}>
+           
+                <div className="management-image">
+                  {service.providerImage ? (
+                    <img src={service.providerImage} alt={service.name} />
+                  ) : (
+                    <UserRound size={30} />
+                  )}
+                </div>
+
+           
+                <div className="management-info">
+                  <h2>{service.name}</h2>
+
+                  <p>
+                    Publicado em{" "}
+                    {service.publicationDate
+                      ? new Date(service.publicationDate).toLocaleDateString(
+                          "pt-BR",
+                        )
+                      : "Não informado"}
+                  </p>
+                </div>
+
+                <span className={getStatusClass(service.status)}>
+                  {getStatusLabel(service.status)}
+                </span>
+
+                <div className="management-actions">
+             
+
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/detalhes-servico/${service.id}`)}
+                  >
+                    <Eye size={17} />
+                    Ver
+                  </button>
+
+              
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/editar-servico/${service.id}`)}
+                  >
+                    <Edit3 size={17} />
+                    Editar
+                  </button>
+
+         
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(service.id)}
+                  >
+                    <Trash2 size={17} />
+                    Excluir
+                  </button>
+                </div>
+              </article>
+            ))
+          )}
         </section>
       </section>
     </main>

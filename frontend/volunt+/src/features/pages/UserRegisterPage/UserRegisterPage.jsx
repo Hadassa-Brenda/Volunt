@@ -1,28 +1,25 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import {
-  ArrowLeft,
-  LockKeyhole,
-  Mail,
-  MapPin,
-  ShieldCheck,
-  UserPlus,
-  UserRound,
-} from "lucide-react";
+import { ArrowLeft, ShieldCheck, UserPlus } from "lucide-react";
 
 import FieldError from "../../../components/FieldError/FieldError";
-import { register } from "../../pages/UserRegisterPage/services/authService";
+
 import {
   INITIAL_USER_REGISTER_FORM,
   REGISTER_IMAGES,
 } from "./types/userRegisterConsts";
-import { GENDER_OPTIONS } from "../../../types/enum/Gender";
 
+import { GENDER_OPTIONS } from "../../../types/enum/Gender";
+import { TipoUsuario } from "types/enum/TipoUsuario";
 import { PROFILE_TYPES } from "types/enum/ProfileTypes";
+
 import "../../../styles/global.css";
+
 import { validateField, validateForm } from "./Utils/userRegisterValidation";
+
 import "./UserRegisterPage.css";
+
 import SingleSelect from "components/SingleSelect.tsx/SingleSelect";
 import GenericTextField from "components/TextField/TextField";
 import DataPicker from "components/DataPicker/DataPicker";
@@ -30,7 +27,10 @@ import DataPicker from "components/DataPicker/DataPicker";
 export default function UserRegisterPage({ onSubmitUser }) {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState(INITIAL_USER_REGISTER_FORM);
+  const [form, setForm] = useState({
+    ...INITIAL_USER_REGISTER_FORM,
+  });
+
   const [errors, setErrors] = useState({});
   const [touchedFields, setTouchedFields] = useState({});
 
@@ -42,64 +42,32 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
     setForm(nextForm);
 
-    setTouchedFields((currentTouchedFields) => ({
-      ...currentTouchedFields,
+    setTouchedFields((current) => ({
+      ...current,
       [field]: true,
     }));
 
     const fieldError = validateField(field, value, nextForm);
 
-    setErrors((currentErrors) => ({
-      ...currentErrors,
+    setErrors((current) => ({
+      ...current,
       [field]: fieldError,
     }));
   }
 
   function handleBlur(field) {
-    setTouchedFields((currentTouchedFields) => ({
-      ...currentTouchedFields,
+    setTouchedFields((current) => ({
+      ...current,
       [field]: true,
     }));
 
     const fieldError = validateField(field, form[field], form);
 
-    setErrors((currentErrors) => ({
-      ...currentErrors,
+    setErrors((current) => ({
+      ...current,
       [field]: fieldError,
     }));
   }
-  // const fetchCep = async (e) => {
-  //   const cep = e.target.value.replace(/\D/g, "");
-
-  //   setForm((prev) => ({
-  //     ...prev,
-  //     cep,
-  //   }));
-
-  //   if (cep.length !== 8) return;
-
-  //   try {
-  //     const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-
-  //     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-  //     const data = await res.json();
-
-  //     if (data.erro) {
-  //       throw new Error("CEP não encontrado");
-  //     }
-
-  //     setForm((prev) => ({
-  //       ...prev,
-  //       cep,
-  //       bairro: data.bairro,
-  //       city: data.localidade,
-  //       state: data.uf,
-  //     }));
-  //   } catch (err) {
-  //     console.error("Erro:", err);
-  //   }
-  // };
 
   function shouldShowError(field) {
     return touchedFields[field] && errors[field];
@@ -109,58 +77,115 @@ export default function UserRegisterPage({ onSubmitUser }) {
     setTouchedFields({
       fullName: true,
       email: true,
-      whatsapp: true,
-      profileType: true,
-      dataNascimento: true,
       gender: true,
+      tipoUsuario: true,
+      perfilUsuario: true,
+      dataNascimento: true,
+      password: true,
       confirmPassword: true,
-      acceptTerms: true,
     });
   }
 
   function resetForm() {
-    setForm(INITIAL_USER_REGISTER_FORM);
+    setForm({
+      ...INITIAL_USER_REGISTER_FORM,
+    });
+
     setErrors({});
     setTouchedFields({});
   }
 
-  async function handleSubmit(event) {
+  
+  function handleSubmit(event) {
     event.preventDefault();
 
+ 
     const validationErrors = validateForm(form);
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       markAllFieldsAsTouched();
+
+      console.log("Erros de validação:", validationErrors);
+
       return;
     }
 
-    try {
-      const data = await register(
-        form.email,
-        form.profileType,
-        form.confirmPassword,
-        form.password,
-        form.fullName,
-        form.dataNascimento,
-        form.gender,
-      );
-      sessionStorage.setItem("token", data.token);
-      if (onSubmitUser) {
-        onSubmitUser(data.user);
-      }
-      navigate("/");
-    } catch (_) {
-      alert("E-mail ou senha inválidos.");
+    
+    const newUser = {
+      id: Date.now(),
+
+      fullName: form.fullName.trim(),
+
+      email: form.email.trim(),
+
+      tipoUsuario: form.tipoUsuario,
+
+      genero: form.gender,
+
+      perfilUsuario: form.perfilUsuario,
+
+      dataNascimento: form.dataNascimento || null,
+
+  
+      password: form.password,
+    };
+
+    console.log("Novo usuário:", newUser);
+
+    const storedUsers = JSON.parse(
+      localStorage.getItem("volunt-users") || "[]",
+    );
+
+    
+    const emailAlreadyExists = storedUsers.some(
+      (user) => user.email.toLowerCase() === newUser.email.toLowerCase(),
+    );
+
+    if (emailAlreadyExists) {
+      setErrors((current) => ({
+        ...current,
+        email: "Este e-mail já está cadastrado.",
+      }));
+
+      setTouchedFields((current) => ({
+        ...current,
+        email: true,
+      }));
+
+      return;
     }
 
+    
+    const updatedUsers = [...storedUsers, newUser];
+
+   
+    localStorage.setItem("volunt-users", JSON.stringify(updatedUsers));
+
+   
+    localStorage.setItem("volunt-user", JSON.stringify(newUser));
+
+    console.log("Usuários salvos:", updatedUsers);
+
+    console.log("Usuário atual:", newUser);
+
+    
+    if (onSubmitUser) {
+      onSubmitUser(newUser);
+    }
+
+    
     alert("Cadastro realizado com sucesso!");
 
+    
     resetForm();
+
+    navigate(`/perfil/${newUser.id}`);
   }
 
   return (
     <main className="user-register-page">
+      
       <div className="user-register-page__background-photo user-register-page__background-photo--left">
         <img src={REGISTER_IMAGES.volunteer} alt="Ação voluntária" />
       </div>
@@ -169,6 +194,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
         <img src={REGISTER_IMAGES.community} alt="Comunidade reunida" />
       </div>
 
+     
       <header className="user-register-page__topbar">
         <button
           className="back-button"
@@ -187,14 +213,22 @@ export default function UserRegisterPage({ onSubmitUser }) {
             alignItems: "center",
           }}
         >
-          <h1 style={{ fontSize: "24px", margin: "0", fontWeight: "bold" }}>
+          <h1
+            style={{
+              fontSize: "24px",
+              margin: "0",
+              fontWeight: "bold",
+            }}
+          >
             Cadastre-se no Voluntá+
           </h1>
         </div>
       </header>
 
+
       <section className="user-register-page__content">
         <form className="user-register-form" onSubmit={handleSubmit} noValidate>
+         
           <div className="user-register-form__title">
             <div>
               <UserPlus size={26} />
@@ -202,6 +236,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
             <div>
               <h2>Informações de cadastro</h2>
+
               <p>
                 Crie uma conta para cadastrar serviços voluntários, encontrar
                 ações sociais e participar da comunidade.
@@ -209,7 +244,9 @@ export default function UserRegisterPage({ onSubmitUser }) {
             </div>
           </div>
 
+  
           <div className="user-register-form__grid">
+     
             <GenericTextField
               label="Nome completo"
               value={form.fullName}
@@ -219,6 +256,8 @@ export default function UserRegisterPage({ onSubmitUser }) {
               error={Boolean(shouldShowError("fullName"))}
               helperText={shouldShowError("fullName")}
             />
+
+
             <GenericTextField
               label="E-mail"
               value={form.email}
@@ -228,11 +267,10 @@ export default function UserRegisterPage({ onSubmitUser }) {
               error={Boolean(shouldShowError("email"))}
               helperText={shouldShowError("email")}
             />
-          </div>
-          <div className="user-register-form_select">
+
             <SingleSelect
               label="Gênero"
-              width="260px"
+              width="400px"
               value={form.gender || ""}
               onChange={(value) => updateField("gender", value)}
               options={GENDER_OPTIONS.map((option) => ({
@@ -242,21 +280,48 @@ export default function UserRegisterPage({ onSubmitUser }) {
               onBlur={() => handleBlur("gender")}
               error={Boolean(shouldShowError("gender"))}
             />
-            <DataPicker label="Data de nascimento" width="260px" />
+
+   
+            <SingleSelect
+              label="Tipo de Usuário"
+              width="400px"
+              value={form.tipoUsuario || ""}
+              onChange={(value) => updateField("tipoUsuario", value)}
+              options={TipoUsuario.map((option) => ({
+                value: option.value,
+                label: option.label,
+              }))}
+              onBlur={() => handleBlur("tipoUsuario")}
+              error={Boolean(shouldShowError("tipoUsuario"))}
+            />
+
+  
+            <DataPicker
+              label="Data de nascimento"
+              width="400px"
+              value={form.dataNascimento}
+              onChange={(value) => updateField("dataNascimento", value)}
+              onBlur={() => handleBlur("dataNascimento")}
+            />
+
+   
             <SingleSelect
               label="Tipo de perfil"
-              value={form.profileType || ""}
-              width="260px"
-              onChange={(value) => updateField("profileType", value)}
+              width="400px"
+              value={form.perfilUsuario || ""}
+              onChange={(value) => updateField("perfilUsuario", value)}
               options={PROFILE_TYPES.map((profileType) => ({
                 value: profileType.value,
                 label: profileType.label,
               }))}
-              onBlur={() => handleBlur("profileType")}
-              error={Boolean(shouldShowError("profileType"))}
+              onBlur={() => handleBlur("perfilUsuario")}
+              error={Boolean(shouldShowError("perfilUsuario"))}
             />
           </div>
+
+  
           <div className="user-register-form__grid">
+    
             <GenericTextField
               label="Senha"
               type="password"
@@ -267,6 +332,8 @@ export default function UserRegisterPage({ onSubmitUser }) {
               error={Boolean(shouldShowError("password"))}
               helperText={shouldShowError("password")}
             />
+
+  
             <GenericTextField
               label="Confirmar senha"
               type="password"
@@ -278,6 +345,8 @@ export default function UserRegisterPage({ onSubmitUser }) {
               helperText={shouldShowError("confirmPassword")}
             />
           </div>
+
+        
           <FieldError
             id="acceptTerms-error"
             message={shouldShowError("acceptTerms")}
@@ -295,13 +364,13 @@ export default function UserRegisterPage({ onSubmitUser }) {
             <button
               className="user-register-form__primary-button"
               type="submit"
-              onClick={handleSubmit}
             >
               <UserPlus size={18} />
               Criar conta
             </button>
           </div>
 
+         
           <div className="user-register-form__safe-message">
             <ShieldCheck size={17} />
             Seus dados serão usados apenas para acesso e contato na plataforma.
