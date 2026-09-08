@@ -1,10 +1,4 @@
-import {
-  ImagePlus,
-  MapPin,
-  Monitor,
-  CalendarDays,
-  Clock3,
-} from "lucide-react";
+import { ImagePlus, MapPin, Monitor, CalendarDays, Clock3 } from "lucide-react";
 
 import { ReviewItem } from "../../../../../components/ReviewItem/ReviewItem";
 
@@ -13,53 +7,26 @@ import { ReviewSection } from "../../steps/ReviewSection";
 import { DiaSemana } from "../../../../../types/enum/DiaSemana";
 
 import { Turno } from "../../../../../types/enum/Turno";
-import "./ReviewStep.css"
+import "./ReviewStep.css";
 
-export function ReviewStep({
-  formData,
-  onEditStep,
-  texts,
-}) {
- 
+export function ReviewStep({ formData, onEditStep, texts }) {
   const getOptionLabel = (options, value) => {
-    const option = options.find(
-      (item) =>
-        String(item.value) === String(value),
-    );
+    const option = options.find((item) => String(item.value) === String(value));
 
-    return (
-      option?.label ||
-      value ||
-      "Não informado"
-    );
+    return option?.label || value || "Não informado";
   };
 
+  const modalidade = formData.modalities || "Não informado";
 
-  const modalidade =
-    formData.modalities || "Não informado";
+  const categoria = formData.categorias || "Não informado";
 
-  const categoria =
-    formData.categorias || "Não informado";
+  const diaSemana = getOptionLabel(DiaSemana, formData.diaSemana);
 
-  const diaSemana = getOptionLabel(
-    DiaSemana,
-    formData.diaSemana,
-  );
+  const turno = getOptionLabel(Turno, formData.turno);
 
-  const turno = getOptionLabel(
-    Turno,
-    formData.turno,
-  );
-
-
-  const endereco = [
-    formData.bairro,
-    formData.cidade,
-    formData.estado,
-  ]
+  const endereco = [formData.bairro, formData.cidade, formData.estado]
     .filter(Boolean)
     .join(", ");
-
 
   const imageUrl =
     typeof formData.image === "string"
@@ -70,7 +37,6 @@ export function ReviewStep({
 
   return (
     <section className="form-step review-step">
-   
       <div className="form-step-header">
         <span>{texts.step}</span>
 
@@ -79,19 +45,11 @@ export function ReviewStep({
         <p>{texts.description}</p>
       </div>
 
-
       <div className="review-layout">
-    
         <article className="review-service-card">
           <div className="review-service-image">
             {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt={
-                  formData.name ||
-                  "Imagem do serviço"
-                }
-              />
+              <img src={imageUrl} alt={formData.name || "Imagem do serviço"} />
             ) : (
               <div className="review-image-placeholder">
                 <ImagePlus size={34} />
@@ -100,43 +58,29 @@ export function ReviewStep({
               </div>
             )}
 
-            <span className="review-category">
-              {categoria}
-            </span>
+            <span className="review-category">{categoria}</span>
           </div>
 
           <div className="review-service-content">
-            <h3>
-              {formData.name ||
-                "Nome do serviço"}
-            </h3>
+            <h3>{formData.name || "Nome do serviço"}</h3>
 
-            <p>
-              {formData.descricao ||
-                "Nenhuma descrição informada."}
-            </p>
+            <p>{formData.descricao || "Nenhuma descrição informada."}</p>
 
             <div className="review-service-information">
-             
-
               <span>
                 <Monitor size={16} />
 
                 {modalidade}
               </span>
 
-             
+              {modalidade !== "Online" && endereco && (
+                <span>
+                  <MapPin size={16} />
 
-              {modalidade !== "Online" &&
-                endereco && (
-                  <span>
-                    <MapPin size={16} />
+                  {endereco}
+                </span>
+              )}
 
-                    {endereco}
-                  </span>
-                )}
-
-             
               {formData.diaSemana && (
                 <span>
                   <CalendarDays size={16} />
@@ -144,8 +88,6 @@ export function ReviewStep({
                   {diaSemana}
                 </span>
               )}
-
-             
 
               {formData.turno && (
                 <span>
@@ -158,135 +100,76 @@ export function ReviewStep({
           </div>
         </article>
 
-        
-
         <div className="review-sections">
-       
-
           <ReviewSection
             title="Informações principais"
             onEdit={() => onEditStep(1)}
           >
             <ReviewItem
               label="Título"
-              value={
-                formData.name ||
-                "Não informado"
-              }
+              value={formData.name || "Não informado"}
             />
 
             <ReviewItem
               label="Categoria"
-              value={
-                categoria ||
-                "Não informado"
-              }
+              value={categoria || "Não informado"}
             />
 
             <ReviewItem
               label="Descrição"
-              value={
-                formData.descricao ||
-                "Não informado"
-              }
+              value={formData.descricao || "Não informado"}
             />
           </ReviewSection>
 
-          
-
-          <ReviewSection
-            title="Atendimento"
-            onEdit={() => onEditStep(2)}
-          >
-            <ReviewItem
-              label="Modalidade"
-              value={modalidade}
-            />
+          <ReviewSection title="Atendimento" onEdit={() => onEditStep(2)}>
+            <ReviewItem label="Modalidade" value={modalidade} />
 
             {modalidade !== "Online" && (
               <>
                 <ReviewItem
                   label="CEP"
-                  value={
-                    formData.cep ||
-                    "Não informado"
-                  }
+                  value={formData.cep || "Não informado"}
                 />
 
                 <ReviewItem
                   label="Estado"
-                  value={
-                    formData.estado ||
-                    "Não informado"
-                  }
+                  value={formData.estado || "Não informado"}
                 />
 
                 <ReviewItem
                   label="Cidade"
-                  value={
-                    formData.cidade ||
-                    "Não informado"
-                  }
+                  value={formData.cidade || "Não informado"}
                 />
 
                 <ReviewItem
                   label="Bairro"
-                  value={
-                    formData.bairro ||
-                    "Não informado"
-                  }
+                  value={formData.bairro || "Não informado"}
                 />
               </>
             )}
 
-            <ReviewItem
-              label="Dia da semana"
-              value={diaSemana}
-            />
+            <ReviewItem label="Dia da semana" value={diaSemana} />
 
-            <ReviewItem
-              label="Turno"
-              value={turno}
-            />
+            <ReviewItem label="Turno" value={turno} />
           </ReviewSection>
 
-         
-
-          <ReviewSection
-            title="Contato"
-            onEdit={() => onEditStep(3)}
-          >
+          <ReviewSection title="Contato" onEdit={() => onEditStep(3)}>
             <ReviewItem
               label="WhatsApp"
-              value={
-                formData.whatsapp ||
-                "Não informado"
-              }
+              value={formData.whatsapp || "Não informado"}
             />
 
             <ReviewItem
               label="Telefone"
-              value={
-                formData.telefone ||
-                "Não informado"
-              }
+              value={formData.telefone || "Não informado"}
             />
 
             <ReviewItem
               label="Instagram"
-              value={
-                formData.instagram ||
-                "Não informado"
-              }
+              value={formData.instagram || "Não informado"}
             />
 
-            <ReviewItem
-              label="Site"
-              value={
-                formData.site ||
-                "Não informado"
-              }
-            />
+            <ReviewItem label="Site" value={formData.site || "Não informado"} />
           </ReviewSection>
         </div>
       </div>

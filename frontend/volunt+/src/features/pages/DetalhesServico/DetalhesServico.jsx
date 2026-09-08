@@ -253,7 +253,6 @@ export default function DetalhesServico() {
                     Responsável por oferecer este serviço voluntário para a
                     comunidade.
                   </p>
-
                   <Link to={`/perfil/${service.idUsuario}`}>
                     Ver perfil
                     <ExternalLink size={15} />

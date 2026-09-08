@@ -64,27 +64,21 @@ export default function EditServicePage() {
       setFormData({
         ...initialFormData,
 
-
         title: service.name || "",
 
         description: service.descricao || "",
 
         category: service.categoria?.id ?? service.idCategoria ?? "",
 
-    
         modality: service.modalities ?? "",
 
         city: service.localizacao?.cidade || "",
 
         neighborhood: service.localizacao?.bairro || "",
 
-        
-
         schedule: agendamento
           ? `${agendamento.diaSemana} - ${agendamento.turno}`
           : "",
-
-    
 
         whatsapp: service.contato?.whatsapp || "",
 
@@ -94,13 +88,9 @@ export default function EditServicePage() {
 
         website: service.contato?.website || "",
 
-     
-
         image: null,
 
         imagePreview: service.providerImage || "",
-
-      
 
         freeService: true,
 
@@ -284,15 +274,12 @@ export default function EditServicePage() {
 
           idCategoria: Number(formData.category),
 
-          
           modalities: formData.modality,
 
           status: service.status,
 
-          
           providerImage: formData.imagePreview || service.providerImage,
 
-       
           city: formData.city,
 
           neighborhood: formData.neighborhood,

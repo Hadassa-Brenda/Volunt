@@ -23,8 +23,6 @@ import "./MyServicesPage.css";
 export default function MyServicesPage() {
   const navigate = useNavigate();
 
-
-
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -41,8 +39,6 @@ export default function MyServicesPage() {
 
   const name = user?.fullName || user?.name || "Usuário";
 
-
-
   const [services, setServices] = useState([]);
 
   useEffect(() => {
@@ -58,7 +54,6 @@ export default function MyServicesPage() {
         }
       }
 
-
       localStorage.setItem("volunt-services", JSON.stringify(servicesDTO));
 
       setServices(servicesDTO);
@@ -67,11 +62,7 @@ export default function MyServicesPage() {
     }
   }, []);
 
- 
-
   const [activeTab, setActiveTab] = useState("todos");
-
- 
 
   const myServices = useMemo(() => {
     if (!user?.id) {
@@ -83,7 +74,6 @@ export default function MyServicesPage() {
     );
   }, [services, user]);
 
-
   const totalServices = myServices.length;
 
   const activeServices = myServices.filter(
@@ -93,8 +83,6 @@ export default function MyServicesPage() {
   const inactiveServices = myServices.filter(
     (service) => service.status === SERVICE_STATUS[1].value,
   ).length;
-
-
 
   const filteredServices = useMemo(() => {
     if (activeTab === "ativos") {
@@ -112,7 +100,6 @@ export default function MyServicesPage() {
     return myServices;
   }, [myServices, activeTab]);
 
-  
   function handleDelete(serviceId) {
     const confirmed = window.confirm(
       "Tem certeza que deseja excluir este serviço?",
@@ -131,15 +118,11 @@ export default function MyServicesPage() {
     localStorage.setItem("volunt-services", JSON.stringify(updatedServices));
   }
 
-  
-
   function handleLogout() {
     localStorage.removeItem("volunt-user");
 
     navigate("/");
   }
-
-  
 
   function getStatusLabel(status) {
     return (
@@ -148,16 +131,12 @@ export default function MyServicesPage() {
     );
   }
 
-  
-
   function getStatusClass(status) {
     return `status-${String(status).toLowerCase().replace(/\s+/g, "-")}`;
   }
 
- 
   return (
     <main className="user-dashboard">
-  
       <aside className="user-sidebar">
         <Button
           className="catalog-back-button"
@@ -199,14 +178,12 @@ export default function MyServicesPage() {
             onClick={handleLogout}
           >
             <LogOut size={20} />
-            Sair
+            Sair da conta
           </button>
         </nav>
       </aside>
 
-  
       <section className="user-dashboard-main">
-   
         <header className="dashboard-header">
           <div>
             <h1>Meus serviços</h1>
@@ -240,7 +217,6 @@ export default function MyServicesPage() {
           </div>
         </div>
 
-   
         <div className="service-tabs">
           <button
             type="button"
@@ -270,7 +246,6 @@ export default function MyServicesPage() {
           </button>
         </div>
 
-     
         <section className="management-list">
           {filteredServices.length === 0 ? (
             <div className="management-empty">
@@ -300,7 +275,6 @@ export default function MyServicesPage() {
           ) : (
             filteredServices.map((service) => (
               <article className="management-card" key={service.id}>
-           
                 <div className="management-image">
                   {service.providerImage ? (
                     <img src={service.providerImage} alt={service.name} />
@@ -309,7 +283,6 @@ export default function MyServicesPage() {
                   )}
                 </div>
 
-           
                 <div className="management-info">
                   <h2>{service.name}</h2>
 
@@ -328,8 +301,6 @@ export default function MyServicesPage() {
                 </span>
 
                 <div className="management-actions">
-             
-
                   <button
                     type="button"
                     onClick={() => navigate(`/detalhes-servico/${service.id}`)}
@@ -338,7 +309,6 @@ export default function MyServicesPage() {
                     Ver
                   </button>
 
-              
                   <button
                     type="button"
                     onClick={() => navigate(`/editar-servico/${service.id}`)}
@@ -347,7 +317,6 @@ export default function MyServicesPage() {
                     Editar
                   </button>
 
-         
                   <button
                     type="button"
                     onClick={() => handleDelete(service.id)}

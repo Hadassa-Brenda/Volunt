@@ -95,11 +95,9 @@ export default function UserRegisterPage({ onSubmitUser }) {
     setTouchedFields({});
   }
 
-  
   function handleSubmit(event) {
     event.preventDefault();
 
- 
     const validationErrors = validateForm(form);
 
     if (Object.keys(validationErrors).length > 0) {
@@ -111,7 +109,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
       return;
     }
 
-    
     const newUser = {
       id: Date.now(),
 
@@ -127,7 +124,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
       dataNascimento: form.dataNascimento || null,
 
-  
       password: form.password,
     };
 
@@ -137,7 +133,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
       localStorage.getItem("volunt-users") || "[]",
     );
 
-    
     const emailAlreadyExists = storedUsers.some(
       (user) => user.email.toLowerCase() === newUser.email.toLowerCase(),
     );
@@ -156,28 +151,22 @@ export default function UserRegisterPage({ onSubmitUser }) {
       return;
     }
 
-    
     const updatedUsers = [...storedUsers, newUser];
 
-   
     localStorage.setItem("volunt-users", JSON.stringify(updatedUsers));
 
-   
     localStorage.setItem("volunt-user", JSON.stringify(newUser));
 
     console.log("Usuários salvos:", updatedUsers);
 
     console.log("Usuário atual:", newUser);
 
-    
     if (onSubmitUser) {
       onSubmitUser(newUser);
     }
 
-    
     alert("Cadastro realizado com sucesso!");
 
-    
     resetForm();
 
     navigate(`/perfil/${newUser.id}`);
@@ -185,7 +174,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
   return (
     <main className="user-register-page">
-      
       <div className="user-register-page__background-photo user-register-page__background-photo--left">
         <img src={REGISTER_IMAGES.volunteer} alt="Ação voluntária" />
       </div>
@@ -194,7 +182,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
         <img src={REGISTER_IMAGES.community} alt="Comunidade reunida" />
       </div>
 
-     
       <header className="user-register-page__topbar">
         <button
           className="back-button"
@@ -225,10 +212,8 @@ export default function UserRegisterPage({ onSubmitUser }) {
         </div>
       </header>
 
-
       <section className="user-register-page__content">
         <form className="user-register-form" onSubmit={handleSubmit} noValidate>
-         
           <div className="user-register-form__title">
             <div>
               <UserPlus size={26} />
@@ -244,9 +229,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
             </div>
           </div>
 
-  
           <div className="user-register-form__grid">
-     
             <GenericTextField
               label="Nome completo"
               value={form.fullName}
@@ -256,7 +239,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
               error={Boolean(shouldShowError("fullName"))}
               helperText={shouldShowError("fullName")}
             />
-
 
             <GenericTextField
               label="E-mail"
@@ -281,7 +263,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
               error={Boolean(shouldShowError("gender"))}
             />
 
-   
             <SingleSelect
               label="Tipo de Usuário"
               width="400px"
@@ -295,7 +276,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
               error={Boolean(shouldShowError("tipoUsuario"))}
             />
 
-  
             <DataPicker
               label="Data de nascimento"
               width="400px"
@@ -304,7 +284,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
               onBlur={() => handleBlur("dataNascimento")}
             />
 
-   
             <SingleSelect
               label="Tipo de perfil"
               width="400px"
@@ -319,9 +298,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
             />
           </div>
 
-  
           <div className="user-register-form__grid">
-    
             <GenericTextField
               label="Senha"
               type="password"
@@ -333,7 +310,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
               helperText={shouldShowError("password")}
             />
 
-  
             <GenericTextField
               label="Confirmar senha"
               type="password"
@@ -346,7 +322,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
             />
           </div>
 
-        
           <FieldError
             id="acceptTerms-error"
             message={shouldShowError("acceptTerms")}
@@ -370,7 +345,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
             </button>
           </div>
 
-         
           <div className="user-register-form__safe-message">
             <ShieldCheck size={17} />
             Seus dados serão usados apenas para acesso e contato na plataforma.

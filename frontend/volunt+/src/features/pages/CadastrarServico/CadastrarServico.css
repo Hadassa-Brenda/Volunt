@@ -92,7 +92,6 @@
   line-height: 1.55;
 }
 
-
 .form-fields-grid {
   width: 100%;
   min-width: 0;
@@ -112,7 +111,6 @@
 .form-field--full {
   grid-column: 1 / -1;
 }
-
 
 .form-field > span {
   display: block;
@@ -191,7 +189,6 @@
   color: #a3a8b4;
 }
 
-
 .form-field .input-error {
   border-color: #e34b6e;
 }
@@ -218,7 +215,6 @@
   font-size: 0.78rem;
 }
 
-
 .textarea-information {
   display: flex;
   justify-content: space-between;
@@ -231,7 +227,6 @@
   color: #989eae;
   font-size: 0.68rem;
 }
-
 
 .modality-options {
   width: 100%;
@@ -247,7 +242,6 @@
   min-width: 0;
   box-sizing: border-box;
 }
-
 
 .image-upload-area {
   min-height: 210px;
@@ -669,8 +663,6 @@
   font-size: 0.75rem;
   line-height: 1.55;
 }
-
-
 
 .service-success {
   max-width: 660px;
