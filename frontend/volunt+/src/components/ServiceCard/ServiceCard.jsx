@@ -1,4 +1,10 @@
-import { ExternalLink, MapPin, MessageCircle } from "lucide-react";
+import {
+  ExternalLink,
+  MapPin,
+  MessageCircle,
+  MessageSquare,
+  Star,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { SERVICE_MODALITIES } from "../../types/enum/Modalities";
@@ -30,6 +36,8 @@ export function ServiceCard({ service }) {
   const handleCardClick = () => {
     navigate(`/detalhes-servico/${service.id}`);
   };
+  const rating = Number(service.avaliacaoMedia || 0);
+  const reviewsCount = Number(service.quantidadeAvaliacoes || 0);
 
   return (
     <article
@@ -66,7 +74,24 @@ export function ServiceCard({ service }) {
         <h3>{service.name}</h3>
 
         <p>{service.descricao}</p>
+        <div
+          className="service-card__rating"
+          aria-label={`Avaliação ${rating.toFixed(1)} de 5`}
+        >
+          <span className="service-card__rating-score">
+            <Star size={16} fill="currentColor" aria-hidden="true" />
 
+            <strong>{reviewsCount ? rating.toFixed(1) : "Novo"}</strong>
+          </span>
+
+          <span className="service-card__rating-count">
+            <MessageSquare size={14} aria-hidden="true" />
+
+            {reviewsCount
+              ? `${reviewsCount} ${reviewsCount === 1 ? "avaliação" : "avaliações"}`
+              : "Sem avaliações"}
+          </span>
+        </div>
         <div className="service-card__location">
           <MapPin size={15} />
           {locationLabel}

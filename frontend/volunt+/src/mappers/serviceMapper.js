@@ -7,27 +7,49 @@ export function mapServices({
   avaliacoes,
   agendamentos,
 }) {
-  return services.map((service) => ({
-    ...service,
+  return services.map((service) => {
+    const serviceReviews = avaliacoes.filter(
+      (avaliacao) => String(avaliacao.idServico) === String(service.id),
+    );
 
-    usuario: usuarios.find((usuario) => usuario.id === service.idUsuario),
+    const ratingSum = serviceReviews.reduce(
+      (sum, avaliacao) => sum + Number(avaliacao.nota || 0),
+      0,
+    );
 
-    categoria: categorias.find(
-      (categoria) => categoria.id === service.idCategoria,
-    ),
+    const ratingAverage = serviceReviews.length
+      ? Number((ratingSum / serviceReviews.length).toFixed(1))
+      : 0;
 
-    localizacao: localizacoes.find(
-      (localizacao) => localizacao.id === service.idLocalizacao,
-    ),
+    return {
+      ...service,
 
-    contato: contatos.find((contato) => contato.idServico === service.id),
+      usuario: usuarios.find(
+        (usuario) => String(usuario.id) === String(service.idUsuario),
+      ),
 
-    avaliacoes: avaliacoes.filter(
-      (avaliacao) => avaliacao.idServico === service.id,
-    ),
+      categoria: categorias.find(
+        (categoria) => String(categoria.id) === String(service.idCategoria),
+      ),
 
-    agendamentos: agendamentos.filter(
-      (agendamento) => agendamento.idServico === service.id,
-    ),
-  }));
+      localizacao: localizacoes.find(
+        (localizacao) =>
+          String(localizacao.id) === String(service.idLocalizacao),
+      ),
+
+      contato: contatos.find(
+        (contato) => String(contato.idServico) === String(service.id),
+      ),
+
+      avaliacoes: serviceReviews,
+
+      avaliacaoMedia: ratingAverage,
+
+      quantidadeAvaliacoes: serviceReviews.length,
+
+      agendamentos: agendamentos.filter(
+        (agendamento) => String(agendamento.idServico) === String(service.id),
+      ),
+    };
+  });
 }

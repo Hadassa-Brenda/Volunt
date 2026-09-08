@@ -2,11 +2,11 @@ import { SERVICE_MODALITIES } from "types/enum/Modalities";
 import { DiaSemana } from "types/enum/DiaSemana";
 import { Turno } from "types/enum/Turno";
 import { LocalizacaoDTO } from "./localizacaoDTO";
-import { Nota } from "types/enum/Nota";
 import { CategoriaDTO } from "./categoriaDTO";
 import { userDTO } from "./userDTO";
 import { SERVICE_STATUS } from "types/enum/Status";
 import { ContatoDTO } from "./contatoDTO";
+import { AvaliacaoDTO } from "./avaliacaoDTO";
 
 export const servicesDTO = [
   {
@@ -21,7 +21,7 @@ export const servicesDTO = [
     providerImage: "",
     diaDaSemana: DiaSemana[0].value, //segunda
     turno: Turno[0].value, //manha
-    avaliacao: Nota[0], //1
+    avaliacao: AvaliacaoDTO[0], //1
     publicationDate: new Date(),
     contato: ContatoDTO[0],
   },
@@ -38,7 +38,7 @@ export const servicesDTO = [
     providerImage: "",
     diaDaSemana: DiaSemana[1].value,
     turno: Turno[1].value,
-    avaliacao: Nota[0],
+    avaliacao: AvaliacaoDTO[1], //1
     publicationDate: new Date(),
     contato: ContatoDTO[1],
   },
@@ -55,8 +55,9 @@ export const servicesDTO = [
     providerImage: "",
     diaDaSemana: DiaSemana[2].value,
     turno: Turno[2].value,
-    avaliacao: Nota[2],
+    avaliacao: AvaliacaoDTO[2],
     publicationDate: new Date(),
+    avaliacao: AvaliacaoDTO[2], //1
     contato: ContatoDTO[1],
   },
 
@@ -72,7 +73,7 @@ export const servicesDTO = [
     providerImage: "",
     diaDaSemana: DiaSemana[3].value,
     turno: Turno[0].value,
-    avaliacao: Nota[3],
+    avaliacao: AvaliacaoDTO[3], //1
     publicationDate: new Date(),
     contato: ContatoDTO[2],
   },
@@ -89,7 +90,7 @@ export const servicesDTO = [
     providerImage: "",
     diaDaSemana: DiaSemana[4].value,
     turno: Turno[1].value,
-    avaliacao: Nota[4],
+    avaliacao: AvaliacaoDTO[4], //1
     publicationDate: new Date(),
     contato: ContatoDTO[1],
   },
@@ -106,7 +107,8 @@ export const servicesDTO = [
     providerImage: "",
     diaDaSemana: DiaSemana[0].value,
     turno: Turno[2].value,
-    avaliacao: Nota[0],
+    avaliacao: AvaliacaoDTO[4], //1
+
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -119,11 +121,12 @@ export const servicesDTO = [
     idCategoria: CategoriaDTO[3].id,
     idUsuario: userDTO[0].id,
     idLocalizacao: LocalizacaoDTO[6].id,
+    avaliacao: AvaliacaoDTO[4], //1
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[1].value,
     turno: Turno[0].value,
-    avaliacao: Nota[1],
+
     publicationDate: new Date(),
     contato: ContatoDTO[6],
   },
@@ -134,13 +137,13 @@ export const servicesDTO = [
     descricao: "Treinos de futebol para crianças e adolescentes.",
     modalities: SERVICE_MODALITIES[0].value,
     idCategoria: CategoriaDTO[3].id,
+    avaliacao: AvaliacaoDTO[4], //1
     idUsuario: userDTO[1].id,
     idLocalizacao: LocalizacaoDTO[7].id,
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[2].value,
     turno: Turno[1].value,
-    avaliacao: Nota[2],
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -152,12 +155,13 @@ export const servicesDTO = [
     modalities: SERVICE_MODALITIES[1].value,
     idCategoria: CategoriaDTO[9].id,
     idUsuario: userDTO[2].id,
+    avaliacao: AvaliacaoDTO[4], //1
     idLocalizacao: LocalizacaoDTO[0].id,
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[3].value,
     turno: Turno[2].value,
-    avaliacao: Nota[3],
+
     publicationDate: new Date(),
     contato: ContatoDTO[5],
   },
@@ -169,12 +173,13 @@ export const servicesDTO = [
     modalities: SERVICE_MODALITIES[2].value,
     idCategoria: CategoriaDTO[0].id,
     idUsuario: userDTO[3].id,
+    avaliacao: AvaliacaoDTO[4], //1
     idLocalizacao: LocalizacaoDTO[1].id,
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[4].value,
     turno: Turno[0].value,
-    avaliacao: Nota[4],
+
     publicationDate: new Date(),
     contato: ContatoDTO[1],
   },
@@ -186,12 +191,13 @@ export const servicesDTO = [
     modalities: SERVICE_MODALITIES[0].value,
     idCategoria: CategoriaDTO[0].id,
     idUsuario: userDTO[4].id,
+    avaliacao: AvaliacaoDTO[4], //1
     idLocalizacao: LocalizacaoDTO[2].id,
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[5].value,
     turno: Turno[1].value,
-    avaliacao: Nota[0],
+
     publicationDate: new Date(),
     contato: ContatoDTO[0],
   },
@@ -202,13 +208,14 @@ export const servicesDTO = [
     descricao: "Arrecadação e distribuição de alimentos para famílias.",
     modalities: SERVICE_MODALITIES[0].value,
     idCategoria: CategoriaDTO[5].id,
+    avaliacao: AvaliacaoDTO[4], //1
     idUsuario: userDTO[5].id,
     idLocalizacao: LocalizacaoDTO[3].id,
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[6].value,
     turno: Turno[2].value,
-    avaliacao: Nota[1],
+
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -219,13 +226,14 @@ export const servicesDTO = [
     descricao: "Atendimento e acolhimento psicológico gratuito.",
     modalities: SERVICE_MODALITIES[1].value,
     idCategoria: CategoriaDTO[6].id,
+    avaliacao: AvaliacaoDTO[4], //1
     idUsuario: userDTO[0].id,
     idLocalizacao: LocalizacaoDTO[4].id,
     status: SERVICE_STATUS[1].value,
     providerImage: "",
     diaDaSemana: DiaSemana[0].value,
     turno: Turno[1].value,
-    avaliacao: Nota[2],
+
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -238,11 +246,12 @@ export const servicesDTO = [
     idCategoria: CategoriaDTO[6].id,
     idUsuario: userDTO[1].id,
     idLocalizacao: LocalizacaoDTO[5].id,
+    avaliacao: AvaliacaoDTO[4], //1
     status: SERVICE_STATUS[1].value,
     providerImage: "",
     diaDaSemana: DiaSemana[1].value,
     turno: Turno[0].value,
-    avaliacao: Nota[3],
+
     publicationDate: new Date(),
     contato: ContatoDTO[1],
   },
@@ -255,11 +264,12 @@ export const servicesDTO = [
     idCategoria: CategoriaDTO[7].id,
     idUsuario: userDTO[2].id,
     idLocalizacao: LocalizacaoDTO[6].id,
+    avaliacao: AvaliacaoDTO[4], //1
     status: SERVICE_STATUS[1].value,
     providerImage: "",
     diaDaSemana: DiaSemana[2].value,
     turno: Turno[1].value,
-    avaliacao: Nota[4],
+
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -272,11 +282,12 @@ export const servicesDTO = [
     idCategoria: CategoriaDTO[7].id,
     idUsuario: userDTO[3].id,
     idLocalizacao: LocalizacaoDTO[7].id,
+    avaliacao: AvaliacaoDTO[4], //1
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[3].value,
     turno: Turno[2].value,
-    avaliacao: Nota[0],
+
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -287,13 +298,14 @@ export const servicesDTO = [
     descricao: "Pequenos reparos e manutenção em residências.",
     modalities: SERVICE_MODALITIES[0].value,
     idCategoria: CategoriaDTO[8].id,
+    avaliacao: AvaliacaoDTO[4], //1
     idUsuario: userDTO[4].id,
     idLocalizacao: LocalizacaoDTO[0].id,
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[4].value,
     turno: Turno[0].value,
-    avaliacao: Nota[1],
+
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -307,10 +319,11 @@ export const servicesDTO = [
     idUsuario: userDTO[5].id,
     idLocalizacao: LocalizacaoDTO[1].id,
     status: SERVICE_STATUS[0].value,
+    avaliacao: AvaliacaoDTO[4], //1
     providerImage: "",
     diaDaSemana: DiaSemana[5].value,
     turno: Turno[1].value,
-    avaliacao: Nota[2],
+
     publicationDate: new Date(),
     contato: ContatoDTO[0],
   },
@@ -322,12 +335,13 @@ export const servicesDTO = [
     modalities: SERVICE_MODALITIES[0].value,
     idCategoria: CategoriaDTO[4].id,
     idUsuario: userDTO[0].id,
+    avaliacao: AvaliacaoDTO[4], //1
     idLocalizacao: LocalizacaoDTO[2].id,
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[6].value,
     turno: Turno[2].value,
-    avaliacao: Nota[3],
+
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -339,12 +353,13 @@ export const servicesDTO = [
     modalities: SERVICE_MODALITIES[2].value,
     idCategoria: CategoriaDTO[10].id,
     idUsuario: userDTO[1].id,
+    avaliacao: AvaliacaoDTO[4], //1
     idLocalizacao: LocalizacaoDTO[3].id,
     status: SERVICE_STATUS[1].value,
     providerImage: "",
     diaDaSemana: DiaSemana[0].value,
     turno: Turno[0].value,
-    avaliacao: Nota[4],
+
     publicationDate: new Date(),
   },
 ];
