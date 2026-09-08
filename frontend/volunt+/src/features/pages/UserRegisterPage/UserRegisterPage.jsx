@@ -3,26 +3,22 @@ import { useNavigate } from "react-router-dom";
 
 import { ArrowLeft, ShieldCheck, UserPlus } from "lucide-react";
 
-import FieldError from "../../../components/FieldError/FieldError";
-
 import {
-  INITIAL_USER_REGISTER_FORM,
   REGISTER_IMAGES,
+  INITIAL_USER_REGISTER_FORM,
 } from "./types/userRegisterConsts";
-
-import { GENDER_OPTIONS } from "../../../types/enum/Gender";
-import { TipoUsuario } from "types/enum/TipoUsuario";
-import { PROFILE_TYPES } from "types/enum/ProfileTypes";
 
 import "../../../styles/global.css";
 
 import { validateField, validateForm } from "./Utils/userRegisterValidation";
 
 import "./UserRegisterPage.css";
-
-import SingleSelect from "components/SingleSelect.tsx/SingleSelect";
 import GenericTextField from "components/TextField/TextField";
+import SingleSelect from "components/SingleSelect.tsx/SingleSelect";
 import DataPicker from "components/DataPicker/DataPicker";
+import { GENDER_OPTIONS } from "../../../types/enum/Gender";
+import { TipoUsuario } from "types/enum/TipoUsuario";
+import { PROFILE_TYPES } from "types/enum/ProfileTypes";
 
 export default function UserRegisterPage({ onSubmitUser }) {
   const navigate = useNavigate();
@@ -33,6 +29,15 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
   const [errors, setErrors] = useState({});
   const [touchedFields, setTouchedFields] = useState({});
+
+  const isPessoaJuridica =
+    form.tipoUsuario?.toString().toUpperCase() === "PJ";
+
+  const profileOptions = isPessoaJuridica
+    ? PROFILE_TYPES.filter(
+        (profileType) => profileType.value === "PF"
+      )
+    : PROFILE_TYPES;
 
   function updateField(field, value) {
     const nextForm = {
@@ -55,13 +60,47 @@ export default function UserRegisterPage({ onSubmitUser }) {
     }));
   }
 
+  function handleTipoUsuarioChange(value) {
+    const isPJ =
+      value?.toString().toUpperCase() === "PJ";
+
+    const nextForm = {
+      ...form,
+      tipoUsuario: value,
+      perfilUsuario: isPJ ? "PF" : form.perfilUsuario,
+      dataNascimento: isPJ ? "" : form.dataNascimento,
+    };
+
+    setForm(nextForm);
+
+    setTouchedFields((current) => ({
+      ...current,
+      tipoUsuario: true,
+    }));
+
+    setErrors((current) => ({
+      ...current,
+      tipoUsuario: validateField(
+        "tipoUsuario",
+        value,
+        nextForm
+      ),
+      perfilUsuario: "",
+      dataNascimento: "",
+    }));
+  }
+
   function handleBlur(field) {
     setTouchedFields((current) => ({
       ...current,
       [field]: true,
     }));
 
-    const fieldError = validateField(field, form[field], form);
+    const fieldError = validateField(
+      field,
+      form[field],
+      form
+    );
 
     setErrors((current) => ({
       ...current,
@@ -80,7 +119,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
       gender: true,
       tipoUsuario: true,
       perfilUsuario: true,
-      dataNascimento: true,
+      dataNascimento: !isPessoaJuridica,
       password: true,
       confirmPassword: true,
     });
@@ -103,9 +142,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       markAllFieldsAsTouched();
-
-      console.log("Erros de validação:", validationErrors);
-
       return;
     }
 
@@ -120,21 +156,25 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
       genero: form.gender,
 
-      perfilUsuario: form.perfilUsuario,
+      perfilUsuario: isPessoaJuridica
+        ? "PF"
+        : form.perfilUsuario,
 
-      dataNascimento: form.dataNascimento || null,
+      dataNascimento: isPessoaJuridica
+        ? null
+        : form.dataNascimento || null,
 
       password: form.password,
     };
 
-    console.log("Novo usuário:", newUser);
-
     const storedUsers = JSON.parse(
-      localStorage.getItem("volunt-users") || "[]",
+      localStorage.getItem("volunt-users") || "[]"
     );
 
     const emailAlreadyExists = storedUsers.some(
-      (user) => user.email.toLowerCase() === newUser.email.toLowerCase(),
+      (user) =>
+        (user.email || "").toLowerCase() ===
+        newUser.email.toLowerCase()
     );
 
     if (emailAlreadyExists) {
@@ -151,15 +191,20 @@ export default function UserRegisterPage({ onSubmitUser }) {
       return;
     }
 
-    const updatedUsers = [...storedUsers, newUser];
+    const updatedUsers = [
+      ...storedUsers,
+      newUser,
+    ];
 
-    localStorage.setItem("volunt-users", JSON.stringify(updatedUsers));
+    localStorage.setItem(
+      "volunt-users",
+      JSON.stringify(updatedUsers)
+    );
 
-    localStorage.setItem("volunt-user", JSON.stringify(newUser));
-
-    console.log("Usuários salvos:", updatedUsers);
-
-    console.log("Usuário atual:", newUser);
+    localStorage.setItem(
+      "volunt-user",
+      JSON.stringify(newUser)
+    );
 
     if (onSubmitUser) {
       onSubmitUser(newUser);
@@ -169,17 +214,23 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
     resetForm();
 
-    navigate(`/perfil/${newUser.id}`);
+    navigate("/");
   }
 
   return (
     <main className="user-register-page">
       <div className="user-register-page__background-photo user-register-page__background-photo--left">
-        <img src={REGISTER_IMAGES.volunteer} alt="Ação voluntária" />
+        <img
+          src={REGISTER_IMAGES.volunteer}
+          alt="Ação voluntária"
+        />
       </div>
 
       <div className="user-register-page__background-photo user-register-page__background-photo--right">
-        <img src={REGISTER_IMAGES.community} alt="Comunidade reunida" />
+        <img
+          src={REGISTER_IMAGES.community}
+          alt="Comunidade reunida"
+        />
       </div>
 
       <header className="user-register-page__topbar">
@@ -213,7 +264,11 @@ export default function UserRegisterPage({ onSubmitUser }) {
       </header>
 
       <section className="user-register-page__content">
-        <form className="user-register-form" onSubmit={handleSubmit} noValidate>
+        <form
+          className="user-register-form"
+          onSubmit={handleSubmit}
+          noValidate
+        >
           <div className="user-register-form__title">
             <div>
               <UserPlus size={26} />
@@ -223,8 +278,9 @@ export default function UserRegisterPage({ onSubmitUser }) {
               <h2>Informações de cadastro</h2>
 
               <p>
-                Crie uma conta para cadastrar serviços voluntários, encontrar
-                ações sociais e participar da comunidade.
+                Crie uma conta para cadastrar serviços
+                voluntários, encontrar ações sociais e
+                participar da comunidade.
               </p>
             </div>
           </div>
@@ -233,20 +289,28 @@ export default function UserRegisterPage({ onSubmitUser }) {
             <GenericTextField
               label="Nome completo"
               value={form.fullName}
-              onChange={(value) => updateField("fullName", value)}
+              onChange={(value) =>
+                updateField("fullName", value)
+              }
               onBlur={() => handleBlur("fullName")}
               placeholder="Ex: Luiz Carlos dos Santos"
-              error={Boolean(shouldShowError("fullName"))}
+              error={Boolean(
+                shouldShowError("fullName")
+              )}
               helperText={shouldShowError("fullName")}
             />
 
             <GenericTextField
               label="E-mail"
               value={form.email}
-              onChange={(value) => updateField("email", value)}
+              onChange={(value) =>
+                updateField("email", value)
+              }
               onBlur={() => handleBlur("email")}
               placeholder="Ex: seuemail@gmail.com"
-              error={Boolean(shouldShowError("email"))}
+              error={Boolean(
+                shouldShowError("email")
+              )}
               helperText={shouldShowError("email")}
             />
 
@@ -254,47 +318,78 @@ export default function UserRegisterPage({ onSubmitUser }) {
               label="Gênero"
               width="400px"
               value={form.gender || ""}
-              onChange={(value) => updateField("gender", value)}
+              onChange={(value) =>
+                updateField("gender", value)
+              }
               options={GENDER_OPTIONS.map((option) => ({
                 value: option.value,
                 label: option.label,
               }))}
               onBlur={() => handleBlur("gender")}
-              error={Boolean(shouldShowError("gender"))}
+              error={Boolean(
+                shouldShowError("gender")
+              )}
             />
 
             <SingleSelect
               label="Tipo de Usuário"
               width="400px"
               value={form.tipoUsuario || ""}
-              onChange={(value) => updateField("tipoUsuario", value)}
+              onChange={handleTipoUsuarioChange}
               options={TipoUsuario.map((option) => ({
                 value: option.value,
                 label: option.label,
               }))}
-              onBlur={() => handleBlur("tipoUsuario")}
-              error={Boolean(shouldShowError("tipoUsuario"))}
+              onBlur={() =>
+                handleBlur("tipoUsuario")
+              }
+              error={Boolean(
+                shouldShowError("tipoUsuario")
+              )}
             />
 
-            <DataPicker
-              label="Data de nascimento"
-              width="400px"
-              value={form.dataNascimento}
-              onChange={(value) => updateField("dataNascimento", value)}
-              onBlur={() => handleBlur("dataNascimento")}
-            />
+            {!isPessoaJuridica && (
+              <DataPicker
+                label="Data de nascimento"
+                width="400px"
+                value={form.dataNascimento}
+                onChange={(value) =>
+                  updateField(
+                    "dataNascimento",
+                    value
+                  )
+                }
+                onBlur={() =>
+                  handleBlur("dataNascimento")
+                }
+              />
+            )}
 
             <SingleSelect
               label="Tipo de perfil"
               width="400px"
               value={form.perfilUsuario || ""}
-              onChange={(value) => updateField("perfilUsuario", value)}
-              options={PROFILE_TYPES.map((profileType) => ({
-                value: profileType.value,
-                label: profileType.label,
-              }))}
-              onBlur={() => handleBlur("perfilUsuario")}
-              error={Boolean(shouldShowError("perfilUsuario"))}
+              onChange={(value) =>
+                updateField(
+                  "perfilUsuario",
+                  value
+                )
+              }
+              options={profileOptions.map(
+                (profileType) => ({
+                  value: profileType.value,
+                  label: profileType.label,
+                })
+              )}
+              onBlur={() =>
+                handleBlur("perfilUsuario")
+              }
+              error={Boolean(
+                shouldShowError(
+                  "perfilUsuario"
+                )
+              )}
+              disabled={isPessoaJuridica}
             />
           </div>
 
@@ -303,10 +398,16 @@ export default function UserRegisterPage({ onSubmitUser }) {
               label="Senha"
               type="password"
               value={form.password}
-              onChange={(value) => updateField("password", value)}
-              onBlur={() => handleBlur("password")}
+              onChange={(value) =>
+                updateField("password", value)
+              }
+              onBlur={() =>
+                handleBlur("password")
+              }
               placeholder="Mínimo 8 caracteres"
-              error={Boolean(shouldShowError("password"))}
+              error={Boolean(
+                shouldShowError("password")
+              )}
               helperText={shouldShowError("password")}
             />
 
@@ -314,18 +415,26 @@ export default function UserRegisterPage({ onSubmitUser }) {
               label="Confirmar senha"
               type="password"
               value={form.confirmPassword}
-              onChange={(value) => updateField("confirmPassword", value)}
-              onBlur={() => handleBlur("confirmPassword")}
+              onChange={(value) =>
+                updateField(
+                  "confirmPassword",
+                  value
+                )
+              }
+              onBlur={() =>
+                handleBlur("confirmPassword")
+              }
               placeholder="Mínimo 8 caracteres"
-              error={Boolean(shouldShowError("confirmPassword"))}
-              helperText={shouldShowError("confirmPassword")}
+              error={Boolean(
+                shouldShowError(
+                  "confirmPassword"
+                )
+              )}
+              helperText={shouldShowError(
+                "confirmPassword"
+              )}
             />
           </div>
-
-          <FieldError
-            id="acceptTerms-error"
-            message={shouldShowError("acceptTerms")}
-          />
 
           <div className="user-register-form__actions">
             <button
@@ -347,7 +456,8 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
           <div className="user-register-form__safe-message">
             <ShieldCheck size={17} />
-            Seus dados serão usados apenas para acesso e contato na plataforma.
+            Seus dados serão usados apenas para
+            acesso e contato na plataforma.
           </div>
         </form>
       </section>

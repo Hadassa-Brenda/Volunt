@@ -2,10 +2,6 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function getOnlyNumbers(value) {
-  return String(value || "").replace(/\D/g, "");
-}
-
 export function validateField(field, value, form) {
   const textValue = String(value || "").trim();
 
@@ -24,23 +20,33 @@ export function validateField(field, value, form) {
 
       return "";
 
-    case "whatsapp": {
-      const numbers = getOnlyNumbers(textValue);
-
-      if (!numbers) {
-        return "Informe um WhatsApp para contato.";
-      }
-
-      if (numbers.length < 10 || numbers.length > 13) {
-        return "Informe um WhatsApp válido com DDD.";
+    case "gender":
+      if (!textValue) {
+        return "Selecione o gênero.";
       }
 
       return "";
-    }
 
-    case "profileType":
+    case "tipoUsuario":
+      if (!textValue) {
+        return "Selecione o tipo de usuário.";
+      }
+
+      return "";
+
+    case "perfilUsuario":
       if (!textValue) {
         return "Selecione o tipo de perfil.";
+      }
+
+      return "";
+
+    case "dataNascimento":
+      if (
+        form.tipoUsuario?.toString().toUpperCase() !== "PJ" &&
+        !textValue
+      ) {
+        return "Informe sua data de nascimento.";
       }
 
       return "";
@@ -50,7 +56,10 @@ export function validateField(field, value, form) {
         return "A senha deve ter pelo menos 8 caracteres.";
       }
 
-      if (!/[A-Za-z]/.test(textValue) || !/[0-9]/.test(textValue)) {
+      if (
+        !/[A-Za-z]/.test(textValue) ||
+        !/[0-9]/.test(textValue)
+      ) {
         return "A senha deve ter letras e números.";
       }
 
@@ -59,13 +68,6 @@ export function validateField(field, value, form) {
     case "confirmPassword":
       if (textValue !== form.password) {
         return "As senhas não conferem.";
-      }
-
-      return "";
-
-    case "acceptTerms":
-      if (!value) {
-        return "Você precisa aceitar os termos para continuar.";
       }
 
       return "";
@@ -79,7 +81,11 @@ export function validateForm(form) {
   const errors = {};
 
   Object.keys(form).forEach((field) => {
-    const error = validateField(field, form[field], form);
+    const error = validateField(
+      field,
+      form[field],
+      form
+    );
 
     if (error) {
       errors[field] = error;

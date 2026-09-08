@@ -1,31 +1,43 @@
 const wait = (value) =>
-  new Promise((resolve) => setTimeout(() => resolve(value), 350));
+  new Promise((resolve) =>
+    setTimeout(() => resolve(value), 350)
+  );
 
 export async function register(
-  bairro,
-  city,
+  name,
   email,
-  profileType,
-  confirmPassword,
+  gender,
+  tipoUsuario,
+  perfilUsuario,
+  dataNascimento,
   password,
-  whatsapp,
-  fullName,
-  state,
-  acceptTerms,
+  confirmPassword
 ) {
-  if (!email || !password || password !== confirmPassword || !acceptTerms) {
-    throw new Error("Dados de cadastro inválidos");
+  if (!name || !email || !password || !confirmPassword) {
+    throw new Error("Preencha todos os campos obrigatórios.");
   }
-  const user = {
-    bairro,
 
-    city,
+  if (password !== confirmPassword) {
+    throw new Error("As senhas não coincidem.");
+  }
+
+  const user = {
+    id: Date.now(),
+    name,
     email,
-    profileType,
-    whatsapp,
-    fullName,
-    state,
+    gender,
+    tipoUsuario,
+    perfilUsuario,
+    dataNascimento,
   };
-  localStorage.setItem("volunt-user", JSON.stringify(user));
-  return wait({ token: `mvp-${Date.now()}`, user });
+
+  localStorage.setItem(
+    "volunt-user",
+    JSON.stringify(user)
+  );
+
+  return wait({
+    token: `mvp-${Date.now()}`,
+    user,
+  });
 }
