@@ -79,9 +79,9 @@ export function buildWhatsAppLink(phone, serviceTitle) {
 
 export function formatLocation(service) {
   const location = [
-    service.neighborhood,
-    service.city,
-    service.state || "MG",
+    service.localizacao?.bairro,
+    service.localizacao?.cidade,
+    service.localizacao?.estado,
   ].filter(Boolean);
 
   return location.join(", ");

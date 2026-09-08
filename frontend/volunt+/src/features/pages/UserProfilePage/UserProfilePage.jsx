@@ -3,7 +3,9 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Check,
+  CircleAlert,
   Edit3,
+  LogOut,
   Mail,
   MapPin,
   Plus,
@@ -33,10 +35,14 @@ import "./UserProfileEdit.css";
 
 export default function UserProfilePage() {
   const navigate = useNavigate();
+
   const { id } = useParams();
 
   const profileId = id ? Number(id) : null;
 
+  /*
+   * Usuário atualmente logado.
+   */
   const storedUser = useMemo(() => {
     try {
       return JSON.parse(localStorage.getItem("volunt-user") || "null");
@@ -45,16 +51,27 @@ export default function UserProfilePage() {
     }
   }, []);
 
+  /*
+   * Verifica se o perfil visualizado pertence
+   * ao usuário atualmente logado.
+   */
   const isOwnProfile =
     !profileId || Number(storedUser?.id) === Number(profileId);
 
-
+  /*
+   * Busca o usuário que será exibido na página.
+   */
   const profileUser = useMemo(() => {
-    
+    /*
+     * Se for o próprio perfil, utiliza o usuário logado.
+     */
     if (isOwnProfile && storedUser) {
       return storedUser;
     }
 
+    /*
+     * Procura primeiro nos usuários armazenados localmente.
+     */
     try {
       const localUsers = JSON.parse(
         localStorage.getItem("volunt-users") || "[]",
@@ -67,11 +84,12 @@ export default function UserProfilePage() {
       if (localUser) {
         return localUser;
       }
-    } catch {
-     
-    }
+    } catch {}
 
-   
+    /*
+     * Caso não encontre no localStorage,
+     * procura no DTO de usuários.
+     */
     return userDTO.find((user) => Number(user.id) === Number(profileId));
   }, [profileId, isOwnProfile, storedUser]);
 
@@ -81,7 +99,13 @@ export default function UserProfilePage() {
 
   const [saved, setSaved] = useState(false);
 
- 
+  /*
+   * Formulário de edição.
+   *
+   * O tipoUsuario continua armazenado no estado
+   * apenas para exibição/controle interno.
+   * Ele NÃO será alterado no saveProfile.
+   */
   const [form, setForm] = useState({
     fullName: profileUser?.fullName || "",
 
@@ -98,12 +122,16 @@ export default function UserProfilePage() {
       : "",
   });
 
+  /*
+   * Atualiza o usuário exibido.
+   */
   useEffect(() => {
     setUser(profileUser);
   }, [profileUser]);
 
-  
-
+  /*
+   * Atualiza o formulário quando o usuário muda.
+   */
   useEffect(() => {
     if (!profileUser) {
       return;
@@ -126,30 +154,72 @@ export default function UserProfilePage() {
     });
   }, [profileUser]);
 
-  
-
+  /*
+   * Verifica o tipo de perfil atual.
+   *
+   * BF = Beneficiário
+   * PF = Ofertante
+   */
   const isBeneficiario = user?.perfilUsuario === "BF";
 
   const isOfertante = user?.perfilUsuario === "PF";
 
+  /*
+   * Verifica se o usuário é Pessoa Jurídica.
+   */
+  const isPessoaJuridica = user?.tipoUsuario === "PJ";
 
+  /*
+   * Opções disponíveis para o tipo de perfil.
+   *
+   * Pessoa Física:
+   * - Beneficiário
+   * - Ofertante
+   *
+   * Pessoa Jurídica:
+   * - Somente Ofertante
+   */
+  const profileOptions = useMemo(() => {
+    if (isPessoaJuridica) {
+      return PROFILE_TYPES.filter((option) => option.value === "PF").map(
+        (option) => ({
+          value: option.value,
+          label: option.label,
+        }),
+      );
+    }
+
+    return PROFILE_TYPES.map((option) => ({
+      value: option.value,
+      label: option.label,
+    }));
+  }, [isPessoaJuridica]);
+
+  /*
+   * Serviços cadastrados.
+   */
   const allServices = useMemo(() => {
     return getServices();
   }, []);
 
+  /*
+   * Serviços publicados pelo usuário.
+   *
+   * Somente ofertantes possuem serviços.
+   */
   const publishedServices = useMemo(() => {
-  
-    if (!user?.id || isBeneficiario) {
+    if (!user?.id || !isOfertante) {
       return [];
     }
 
     return allServices.filter(
       (service) => Number(service.idUsuario) === Number(user.id),
     );
-  }, [allServices, user?.id, isBeneficiario]);
+  }, [allServices, user?.id, isOfertante]);
 
-  
-
+  /*
+   * Atualiza campos do formulário.
+   */
   function updateField(field, value) {
     setForm((current) => ({
       ...current,
@@ -157,8 +227,20 @@ export default function UserProfilePage() {
     }));
   }
 
- 
+  /*
+   * Logout.
+   */
+  function handleLogout() {
+    localStorage.removeItem("volunt-user");
 
+    setUser(null);
+
+    navigate("/");
+  }
+
+  /*
+   * Salva as alterações do perfil.
+   */
   function saveProfile(event) {
     event.preventDefault();
 
@@ -166,6 +248,13 @@ export default function UserProfilePage() {
       return;
     }
 
+    /*
+     * Pessoa Jurídica sempre será ofertante.
+     *
+     * Pessoa Física pode manter o perfil selecionado.
+     *
+     * tipoUsuario NÃO é alterado.
+     */
     const updatedUser = {
       ...user,
 
@@ -173,21 +262,28 @@ export default function UserProfilePage() {
 
       email: form.email,
 
-      tipoUsuario: form.tipoUsuario,
+      /*
+       * O tipoUsuario original é preservado.
+       */
+      tipoUsuario: user.tipoUsuario,
 
       genero: form.genero,
 
-      perfilUsuario: form.perfilUsuario,
+      perfilUsuario: user.tipoUsuario === "PJ" ? "PF" : form.perfilUsuario,
 
       dataNascimento: form.dataNascimento
         ? `${form.dataNascimento}T00:00:00.000Z`
         : null,
     };
 
-    
+    /*
+     * Atualiza o usuário logado.
+     */
     localStorage.setItem("volunt-user", JSON.stringify(updatedUser));
 
-    
+    /*
+     * Atualiza a lista de usuários.
+     */
     try {
       const users = JSON.parse(localStorage.getItem("volunt-users") || "[]");
 
@@ -195,34 +291,37 @@ export default function UserProfilePage() {
         (item) => Number(item.id) === Number(updatedUser.id),
       );
 
-      let updatedUsers;
-
-      if (userExists) {
-        updatedUsers = users.map((item) =>
-          Number(item.id) === Number(updatedUser.id) ? updatedUser : item,
-        );
-      } else {
-        updatedUsers = [...users, updatedUser];
-      }
+      const updatedUsers = userExists
+        ? users.map((item) =>
+            Number(item.id) === Number(updatedUser.id) ? updatedUser : item,
+          )
+        : [...users, updatedUser];
 
       localStorage.setItem("volunt-users", JSON.stringify(updatedUsers));
     } catch {
       localStorage.setItem("volunt-users", JSON.stringify([updatedUser]));
     }
 
+    /*
+     * Atualiza o estado da página.
+     */
     setUser(updatedUser);
 
     setEditing(false);
 
     setSaved(true);
 
+    /*
+     * Esconde a mensagem depois de 2,5 segundos.
+     */
     window.setTimeout(() => {
       setSaved(false);
     }, 2500);
   }
 
-  
-
+  /*
+   * Usuário não encontrado.
+   */
   if (!user) {
     return (
       <main className="profile-page">
@@ -245,8 +344,9 @@ export default function UserProfilePage() {
     );
   }
 
-  
-
+  /*
+   * Labels para exibição.
+   */
   const tipoUsuarioLabel =
     TipoUsuario.find((item) => item.value === user.tipoUsuario)?.label ??
     "Não informado";
@@ -261,19 +361,17 @@ export default function UserProfilePage() {
 
   const name = user.fullName || "Usuário Voluntá+";
 
-  
-
   const formattedBirthDate = user.dataNascimento
     ? user.dataNascimento.split("T")[0].split("-").reverse().join("/")
     : "Não informado";
 
- 
   return (
     <main className="profile-page">
       <Header />
 
       <div className="profile-container">
-      
+        {/* VOLTAR */}
+
         <button
           className="back-button"
           type="button"
@@ -283,7 +381,8 @@ export default function UserProfilePage() {
           Voltar
         </button>
 
-     
+        {/* CABEÇALHO DO PERFIL */}
+
         <section className="profile-cover">
           <div className="profile-avatar">{name.slice(0, 2).toUpperCase()}</div>
 
@@ -298,27 +397,41 @@ export default function UserProfilePage() {
               {user.email && (
                 <span>
                   <Mail size={16} />
+
                   {user.email}
                 </span>
               )}
             </div>
           </div>
 
+          {/* AÇÕES DO PERFIL */}
 
           {isOwnProfile && (
-            <button
-              className="profile-outline-button"
-              type="button"
-              onClick={() => setEditing(true)}
-            >
-              <Edit3 size={17} />
-              Editar perfil
-            </button>
+            <div className="profile-actions">
+              <button
+                className="profile-outline-button"
+                type="button"
+                onClick={() => setEditing(true)}
+              >
+                <Edit3 size={17} />
+                Editar perfil
+              </button>
+
+              <button
+                className="profile-logout-button"
+                type="button"
+                onClick={handleLogout}
+              >
+                <LogOut size={17} />
+                Sair
+              </button>
+            </div>
           )}
         </section>
 
-      
-        {!isBeneficiario && (
+        {/* ESTATÍSTICAS */}
+
+        {isOfertante && (
           <section className="profile-stats">
             <div>
               <strong>{publishedServices.length}</strong>
@@ -334,15 +447,18 @@ export default function UserProfilePage() {
           </section>
         )}
 
+        {/* CONTEÚDO */}
+
         <div
           className={
-            isBeneficiario
-              ? "profile-content-grid profile-content-grid-single"
-              : "profile-content-grid"
+            isOfertante
+              ? "profile-content-grid"
+              : "profile-content-grid profile-content-grid-single"
           }
         >
-       
-          {!isBeneficiario && (
+          {/* SERVIÇOS DO OFERTANTE */}
+
+          {isOfertante && (
             <section className="profile-panel">
               <div className="profile-panel-title">
                 <div>
@@ -353,7 +469,7 @@ export default function UserProfilePage() {
                   <p>Serviços cadastrados por este usuário.</p>
                 </div>
 
-                {isOwnProfile && isOfertante && (
+                {isOwnProfile && (
                   <Link to="/cadastrar-servico">
                     <Plus size={17} />
                     Novo serviço
@@ -365,9 +481,15 @@ export default function UserProfilePage() {
                 {publishedServices.length > 0 ? (
                   publishedServices.map((service) => {
                     const location = service.localizacao
-                      ? [service.localizacao.bairro, service.localizacao.cidade]
+                      ? [
+                          service.localizacao.bairro,
+
+                          service.localizacao.cidade,
+
+                          service.localizacao.estado,
+                        ]
                           .filter(Boolean)
-                          .join(", ")
+                          .join(" • ")
                       : "Localização não informada";
 
                     return (
@@ -390,7 +512,7 @@ export default function UserProfilePage() {
                           </p>
                         </div>
 
-                        <Link to={`/servicos/${service.id}`}>Ver</Link>
+                        <Link to={`/detalhes-servico/${service.id}`}>Ver</Link>
                       </article>
                     );
                   })
@@ -402,6 +524,8 @@ export default function UserProfilePage() {
               </div>
             </section>
           )}
+
+          {/* INFORMAÇÕES DO PERFIL */}
 
           <aside className="profile-side">
             <section>
@@ -428,6 +552,8 @@ export default function UserProfilePage() {
           </aside>
         </div>
 
+        {/* MENSAGEM DE SUCESSO */}
+
         {saved && (
           <div className="profile-toast">
             <Check size={18} />
@@ -437,6 +563,8 @@ export default function UserProfilePage() {
       </div>
 
       <Footer />
+
+      {/* MODAL DE EDIÇÃO */}
 
       {editing && isOwnProfile && (
         <div
@@ -450,7 +578,8 @@ export default function UserProfilePage() {
             aria-labelledby="edit-profile-title"
             onMouseDown={(event) => event.stopPropagation()}
           >
-       
+            {/* CABEÇALHO DO MODAL */}
+
             <header>
               <div>
                 <span>MINHA CONTA</span>
@@ -469,8 +598,10 @@ export default function UserProfilePage() {
               </button>
             </header>
 
+            {/* FORMULÁRIO */}
+
             <form onSubmit={saveProfile}>
-         
+              {/* NOME */}
 
               <GenericTextField
                 width="300px"
@@ -480,7 +611,7 @@ export default function UserProfilePage() {
                 placeholder="Ex: Luiz Carlos dos Santos"
               />
 
-         
+              {/* E-MAIL */}
 
               <GenericTextField
                 width="300px"
@@ -490,17 +621,18 @@ export default function UserProfilePage() {
                 placeholder="Ex: seuemail@gmail.com"
               />
 
-          
               <SingleSelect
-                label="Tipo de usuário"
+                label="Tipo de Usuário"
                 width="310px"
                 value={form.tipoUsuario}
-                onChange={(value) => updateField("tipoUsuario", value)}
+                onChange={() => {}}
                 options={TipoUsuario.map((option) => ({
                   value: option.value,
                   label: option.label,
                 }))}
+                disabled={isPessoaJuridica}
               />
+              {/* GÊNERO */}
 
               <SingleSelect
                 label="Gênero"
@@ -513,18 +645,18 @@ export default function UserProfilePage() {
                 }))}
               />
 
+              {/* TIPO DE PERFIL */}
+
               <SingleSelect
                 label="Tipo de perfil"
                 width="310px"
                 value={form.perfilUsuario}
                 onChange={(value) => updateField("perfilUsuario", value)}
-                options={PROFILE_TYPES.map((option) => ({
-                  value: option.value,
-                  label: option.label,
-                }))}
+                options={profileOptions}
+                disabled={isPessoaJuridica}
               />
 
-      
+              {/* DATA DE NASCIMENTO */}
 
               <DataPicker
                 label="Data de nascimento"
@@ -532,8 +664,20 @@ export default function UserProfilePage() {
                 value={form.dataNascimento}
                 onChange={(value) => updateField("dataNascimento", value)}
               />
+              {isPessoaJuridica && (
+                <div className="profile-notification-container">
+                  <div className="profile-info-message">
+                    <CircleAlert size={20} />
+                    <span>
+                      Contas de Pessoa Jurídica podem atuar somente como
+                      ofertante. Para atuar como beneficiário, será necessário
+                      criar uma nova conta como Pessoa Física.
+                    </span>
+                  </div>
+                </div>
+              )}
+              {/* AÇÕES */}
 
-  
               <div className="profile-edit-actions profile-edit-full">
                 <button type="button" onClick={() => setEditing(false)}>
                   Cancelar

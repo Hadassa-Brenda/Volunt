@@ -2,7 +2,7 @@ export const ContatoDTO = [
   {
     id: 1,
     telefone: "(31) 99999-1111",
-    instagram: "@projetoaprender",
+    instagram: "",
     site: "",
     idServico: 1,
   },

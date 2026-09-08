@@ -36,10 +36,8 @@ export default function LoginPage() {
       return;
     }
 
-  
     localStorage.setItem("volunt-user", JSON.stringify(user));
 
-    
     navigate("/");
   }
 

@@ -47,7 +47,6 @@ export default function MultiSelect({
 
   const labelId = `${selectId}-label`;
 
- 
   const selectedValues = Array.isArray(value) ? value : [];
 
   const optionValues = React.useMemo(
@@ -55,14 +54,12 @@ export default function MultiSelect({
     [options],
   );
 
- 
   const allSelected =
     optionValues.length > 0 &&
     optionValues.every((optionValue) => selectedValues.includes(optionValue));
 
   const hasSomeSelected = selectedValues.length > 0 && !allSelected;
 
-  
   function updateSelectedValues(nextValue) {
     if (onChange) {
       onChange({
@@ -76,51 +73,40 @@ export default function MultiSelect({
     }
   }
 
- 
   function handleChange(event) {
     const nextValue = event.target.value;
 
-   
     const normalizedValue =
       typeof nextValue === "string" ? nextValue.split(",") : nextValue;
 
-   
     if (normalizedValue.includes(SELECT_ALL_VALUE)) {
-     
       if (allSelected) {
         updateSelectedValues([]);
       } else {
-       
         updateSelectedValues(optionValues);
       }
 
       return;
     }
 
-    
     updateSelectedValues(normalizedValue);
   }
 
-  
   function renderSelectedValue(selected) {
-   
     if (selected.length === 0) {
       return (
         <span className="multiple-select__placeholder">{placeholder}</span>
       );
     }
 
-  
     if (allSelected) {
       return "Todas";
     }
 
- 
     if (selected.length > 2) {
       return `${selected.length} selecionadas`;
     }
 
-    
     return selected
       .map((selectedValue) => {
         const option = options.find((option) => option.value === selectedValue);

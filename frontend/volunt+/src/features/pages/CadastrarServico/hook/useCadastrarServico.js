@@ -15,18 +15,13 @@ export function useCadastrarServico() {
 
   const [submitted, setSubmitted] = useState(false);
 
-
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
-
 
     if (name === "cep") {
       const cepLimpo = value.replace(/\D/g, "").slice(0, 8);
 
-      const cepFormatado = cepLimpo.replace(
-        /^(\d{5})(\d{0,3})$/,
-        "$1-$2",
-      );
+      const cepFormatado = cepLimpo.replace(/^(\d{5})(\d{0,3})$/, "$1-$2");
 
       setFormData((current) => ({
         ...current,
@@ -38,7 +33,6 @@ export function useCadastrarServico() {
         cep: "",
       }));
 
-    
       if (cepLimpo.length < 8) {
         setFormData((current) => ({
           ...current,
@@ -55,7 +49,6 @@ export function useCadastrarServico() {
 
       return;
     }
-
 
     setFormData((current) => ({
       ...current,
@@ -105,10 +98,7 @@ export function useCadastrarServico() {
       setFormData((current) => ({
         ...current,
 
-        cep: cepLimpo.replace(
-          /^(\d{5})(\d{3})$/,
-          "$1-$2",
-        ),
+        cep: cepLimpo.replace(/^(\d{5})(\d{3})$/, "$1-$2"),
 
         estado: data.uf || "",
 
@@ -142,124 +132,88 @@ export function useCadastrarServico() {
 
       const descricao = formData.descricao || "";
 
-    
       if (!name.trim()) {
         newErrors.name = "Informe o título.";
       }
 
-     
       if (!formData.categorias) {
-        newErrors.categorias =
-          "Selecione uma categoria.";
+        newErrors.categorias = "Selecione uma categoria.";
       }
 
       if (descricao.trim().length < 30) {
-        newErrors.descricao =
-          "Descrição deve possuir no mínimo 30 caracteres.";
+        newErrors.descricao = "Descrição deve possuir no mínimo 30 caracteres.";
       }
     }
 
     if (currentStep === 2) {
-
       if (!formData.modalities) {
-        newErrors.modalities =
-          "Selecione uma modalidade.";
+        newErrors.modalities = "Selecione uma modalidade.";
       }
 
-      const isOnline =
-        formData.modalities === "Online";
+      const isOnline = formData.modalities === "Online";
 
       if (!isOnline) {
         const cep = (formData.cep || "").trim();
 
-        const estado =
-          (formData.estado || "").trim();
+        const estado = (formData.estado || "").trim();
 
-        const cidade =
-          (formData.cidade || "").trim();
+        const cidade = (formData.cidade || "").trim();
 
-        const bairro =
-          (formData.bairro || "").trim();
+        const bairro = (formData.bairro || "").trim();
 
         if (!cep) {
           newErrors.cep = "Informe o CEP.";
         }
 
         if (!estado) {
-          newErrors.estado =
-            "Informe o CEP para preencher o estado.";
+          newErrors.estado = "Informe o CEP para preencher o estado.";
         }
 
         if (!cidade) {
-          newErrors.cidade =
-            "Informe o CEP para preencher a cidade.";
+          newErrors.cidade = "Informe o CEP para preencher a cidade.";
         }
 
         if (!bairro) {
-          newErrors.bairro =
-            "Informe o CEP para preencher o bairro.";
+          newErrors.bairro = "Informe o CEP para preencher o bairro.";
         }
       }
 
       if (!formData.diaSemana) {
-        newErrors.diaSemana =
-          "Selecione o dia da semana.";
+        newErrors.diaSemana = "Selecione o dia da semana.";
       }
 
       if (!formData.turno) {
-        newErrors.turno =
-          "Selecione o turno.";
+        newErrors.turno = "Selecione o turno.";
       }
     }
-
 
     if (currentStep === 3) {
-      const whatsapp =
-        (formData.whatsapp || "").trim();
+      const whatsapp = (formData.whatsapp || "").trim();
 
-      const instagram =
-        (formData.instagram || "").trim();
+      const instagram = (formData.instagram || "").trim();
 
-      const telefone =
-        (formData.telefone || "").trim();
+      const telefone = (formData.telefone || "").trim();
 
-      const site =
-        (formData.site || "").trim();
+      const site = (formData.site || "").trim();
 
-      const hasContact =
-        whatsapp ||
-        instagram ||
-        telefone ||
-        site;
+      const hasContact = whatsapp || instagram || telefone || site;
 
       if (!hasContact) {
-        newErrors.contact =
-          "Informe pelo menos um contato.";
+        newErrors.contact = "Informe pelo menos um contato.";
       }
     }
 
-    
     setErrors(newErrors);
 
-    console.log(
-      "Validação da etapa:",
-      currentStep,
-    );
+    console.log("Validação da etapa:", currentStep);
 
-    console.log(
-      "formData:",
-      formData,
-    );
+    console.log("formData:", formData);
 
-    console.log(
-      "erros:",
-      newErrors,
-    );
+    console.log("erros:", newErrors);
 
     return Object.keys(newErrors).length === 0;
   };
 
- 
   const nextStep = () => {
     const isValid = validateStep();
 
@@ -267,21 +221,14 @@ export function useCadastrarServico() {
       return;
     }
 
-    setCurrentStep((step) =>
-      Math.min(step + 1, steps.length),
-    );
+    setCurrentStep((step) => Math.min(step + 1, steps.length));
   };
 
- 
   const previousStep = () => {
     setErrors({});
 
-    setCurrentStep((step) =>
-      Math.max(step - 1, 1),
-    );
+    setCurrentStep((step) => Math.max(step - 1, 1));
   };
-
-  
 
   const handleImageChange = (event) => {
     const file = event.target.files?.[0];
@@ -290,12 +237,10 @@ export function useCadastrarServico() {
       return;
     }
 
-  
     if (!file.type.startsWith("image/")) {
       setErrors((current) => ({
         ...current,
-        image:
-          "Selecione um arquivo de imagem válido.",
+        image: "Selecione um arquivo de imagem válido.",
       }));
 
       return;
@@ -304,8 +249,7 @@ export function useCadastrarServico() {
     if (file.size > 5 * 1024 * 1024) {
       setErrors((current) => ({
         ...current,
-        image:
-          "A imagem deve ter no máximo 5 MB.",
+        image: "A imagem deve ter no máximo 5 MB.",
       }));
 
       return;
@@ -334,66 +278,45 @@ export function useCadastrarServico() {
     }));
   };
 
-  
   const salvarServico = () => {
     try {
-      
-      const storedServices =
-        localStorage.getItem(
-          "volunt-services",
-        );
+      const storedServices = localStorage.getItem("volunt-services");
 
       let services = [];
 
       if (storedServices) {
-        const parsedServices =
-          JSON.parse(storedServices);
+        const parsedServices = JSON.parse(storedServices);
 
         if (Array.isArray(parsedServices)) {
           services = parsedServices;
         }
       }
 
-  
       const storedUser = JSON.parse(
-        localStorage.getItem("volunt-user") ||
-          "null",
+        localStorage.getItem("volunt-user") || "null",
       );
 
       const idUsuario = storedUser?.id;
 
-  
       if (!idUsuario) {
         setErrors((current) => ({
           ...current,
-          submit:
-            "Usuário não identificado. Faça login novamente.",
+          submit: "Usuário não identificado. Faça login novamente.",
         }));
 
-        console.error(
-          "Nenhum usuário encontrado em volunt-user.",
-        );
+        console.error("Nenhum usuário encontrado em volunt-user.");
 
         return null;
       }
 
-    
       const ids = [
-        ...services.map(
-          (service) =>
-            Number(service.id) || 0,
-        ),
+        ...services.map((service) => Number(service.id) || 0),
 
-        ...servicesDTO.map(
-          (service) =>
-            Number(service.id) || 0,
-        ),
+        ...servicesDTO.map((service) => Number(service.id) || 0),
       ];
 
-      const nextId =
-        Math.max(...ids, 0) + 1;
+      const nextId = Math.max(...ids, 0) + 1;
 
-  
       const novoServico = {
         id: nextId,
 
@@ -403,11 +326,9 @@ export function useCadastrarServico() {
 
         modalities: formData.modalities,
 
-        idCategoria:
-          Number(formData.categorias),
+        idCategoria: Number(formData.categorias),
 
-        idUsuario:
-          Number(idUsuario),
+        idUsuario: Number(idUsuario),
 
         idLocalizacao: null,
 
@@ -415,18 +336,14 @@ export function useCadastrarServico() {
 
         providerImage: "",
 
-        diaDaSemana:
-          formData.diaSemana,
+        diaDaSemana: formData.diaSemana,
 
-        turno:
-          formData.turno,
+        turno: formData.turno,
 
         avaliacao: 0,
 
-        publicationDate:
-          new Date().toISOString(),
+        publicationDate: new Date().toISOString(),
 
-    
         cep: formData.cep || "",
 
         estado: formData.estado || "",
@@ -435,53 +352,30 @@ export function useCadastrarServico() {
 
         bairro: formData.bairro || "",
 
-      
-        whatsapp:
-          formData.whatsapp || "",
+        whatsapp: formData.whatsapp || "",
 
-        telefone:
-          formData.telefone || "",
+        telefone: formData.telefone || "",
 
-        instagram:
-          formData.instagram || "",
+        instagram: formData.instagram || "",
 
-        site:
-          formData.site || "",
+        site: formData.site || "",
       };
 
-   
-      const updatedServices = [
-        ...services,
-        novoServico,
-      ];
+      const updatedServices = [...services, novoServico];
 
-   
-      localStorage.setItem(
-        "volunt-services",
-        JSON.stringify(updatedServices),
-      );
+      localStorage.setItem("volunt-services", JSON.stringify(updatedServices));
 
-      console.log(
-        "Serviço salvo com sucesso:",
-        novoServico,
-      );
+      console.log("Serviço salvo com sucesso:", novoServico);
 
-      console.log(
-        "Usuário responsável:",
-        idUsuario,
-      );
+      console.log("Usuário responsável:", idUsuario);
 
       return novoServico;
     } catch (error) {
-      console.error(
-        "Erro ao salvar serviço:",
-        error,
-      );
+      console.error("Erro ao salvar serviço:", error);
 
       setErrors((current) => ({
         ...current,
-        submit:
-          "Não foi possível salvar o serviço.",
+        submit: "Não foi possível salvar o serviço.",
       }));
 
       return null;
@@ -497,8 +391,7 @@ export function useCadastrarServico() {
       return;
     }
 
-    const novoServico =
-      salvarServico();
+    const novoServico = salvarServico();
 
     if (!novoServico) {
       return;
@@ -512,7 +405,6 @@ export function useCadastrarServico() {
     });
   };
 
- 
   const resetForm = () => {
     setFormData({
       ...initialFormData,

@@ -7,11 +7,11 @@ export const userDTO = [
     id: 1,
     fullName: "João da Silva",
     email: "joao@email.com",
-    tipoUsuario: TipoUsuario[0].value,
+    tipoUsuario: TipoUsuario[1].value,
     genero: GENDER_OPTIONS[0].value,
     dataNascimento: "2004-02-21T00:00:00.000Z",
     perfilUsuario: PROFILE_TYPES[0].value,
-    password: "12981922",
+    password: "123456",
   },
 
   {
@@ -43,7 +43,7 @@ export const userDTO = [
     tipoUsuario: TipoUsuario[0].value,
     genero: GENDER_OPTIONS[1].value,
     dataNascimento: "2001-04-27T00:00:00.000Z",
-    perfilUsuario: PROFILE_TYPES[0].value,
+    perfilUsuario: PROFILE_TYPES[1].value,
     password: "12981922",
   },
 
@@ -54,7 +54,7 @@ export const userDTO = [
     tipoUsuario: TipoUsuario[0].value,
     genero: GENDER_OPTIONS[0].value,
     dataNascimento: "1987-01-10T00:00:00.000Z",
-    perfilUsuario: PROFILE_TYPES[0].value,
+    perfilUsuario: PROFILE_TYPES[1].value,
     password: "12981922",
   },
 

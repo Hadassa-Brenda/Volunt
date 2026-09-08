@@ -66,8 +66,6 @@ export default function CadastrarServico() {
         ) : (
           <>
             <header className="create-service-heading">
-              <span>Cadastro de serviço</span>
-
               <h1>Cadastre um serviço voluntário</h1>
 
               <p>
@@ -76,15 +74,9 @@ export default function CadastrarServico() {
               </p>
             </header>
 
-            <Stepper
-              currentStep={currentStep}
-              steps={steps}
-            />
+            <Stepper currentStep={currentStep} steps={steps} />
 
-            <form
-              className="create-service-form"
-              onSubmit={handleSubmit}
-            >
+            <form className="create-service-form" onSubmit={handleSubmit}>
               <div className="create-service-card">
                 <FormStepContent
                   currentStep={currentStep}
@@ -121,10 +113,7 @@ export default function CadastrarServico() {
                     <ArrowRight size={18} />
                   </button>
                 ) : (
-                  <button
-                    type="submit"
-                    className="primary-action-button"
-                  >
+                  <button type="submit" className="primary-action-button">
                     <Check size={18} />
                     Salvar serviço
                   </button>
@@ -132,9 +121,7 @@ export default function CadastrarServico() {
               </div>
 
               {errors.submit && (
-                <div className="general-form-error">
-                  {errors.submit}
-                </div>
+                <div className="general-form-error">{errors.submit}</div>
               )}
             </form>
           </>

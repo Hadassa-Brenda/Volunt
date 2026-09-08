@@ -19,6 +19,7 @@ import { Header } from "../../../components";
 import Footer from "../../../layouts/Footer/Footer";
 import Button from "components/Button/Button";
 import { ServiceNotFound } from "../../pages/DetalhesServico/components/ServiceNotFound/ServiceNotFound";
+import { ServiceReviews } from "components/ServiceReviews/ServiceReviews";
 
 import { InfoItem } from "../CadastrarServico/components/InfoItem/InfoItem";
 
@@ -63,6 +64,12 @@ export default function DetalhesServico() {
   if (error || !service) {
     return <ServiceNotFound />;
   }
+
+  const serviceReviews = Array.isArray(service.avaliacao)
+    ? service.avaliacao
+    : service.avaliacao
+      ? [service.avaliacao]
+      : [];
 
   const serviceId = service.id;
 
@@ -253,7 +260,6 @@ export default function DetalhesServico() {
                     Responsável por oferecer este serviço voluntário para a
                     comunidade.
                   </p>
-
                   <Link to={`/perfil/${service.idUsuario}`}>
                     Ver perfil
                     <ExternalLink size={15} />
@@ -261,6 +267,15 @@ export default function DetalhesServico() {
                 </div>
               </div>
             </section>
+            <ServiceReviews
+              reviews={service.avaliacoes ?? []}
+              onSubmitReview={async (review) => {
+                console.log({
+                  idServico: service.id,
+                  ...review,
+                });
+              }}
+            />
           </div>
           <aside className="service-contact-card">
             <h2>Informações de contato</h2>

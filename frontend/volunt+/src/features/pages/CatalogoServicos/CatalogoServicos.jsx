@@ -69,6 +69,24 @@ export default function CatalogoServicos() {
    * FILTRAGEM + ORDENAÇÃO
    * ========================================
    */
+  const getServiceRating = (service) => {
+    const evaluations = Array.isArray(service.avaliacao)
+      ? service.avaliacao
+      : service.avaliacao
+        ? [service.avaliacao]
+        : [];
+
+    if (!evaluations.length) {
+      return 0;
+    }
+
+    const total = evaluations.reduce(
+      (sum, evaluation) => sum + Number(evaluation.nota || 0),
+      0,
+    );
+
+    return total / evaluations.length;
+  };
 
   const filteredServices = useMemo(() => {
     const filtersToApply = {
@@ -91,9 +109,8 @@ export default function CatalogoServicos() {
 
       // Melhor avaliação
       if (sortOrder === "rating") {
-        return Number(b.avaliacao || 0) - Number(a.avaliacao || 0);
+        return Number(b.avaliacaoMedia || 0) - Number(a.avaliacaoMedia || 0);
       }
-
       return 0;
     });
   }, [services, filters, searchTerm, sortOrder]);
