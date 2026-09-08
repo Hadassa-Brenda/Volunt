@@ -20,7 +20,6 @@ import Footer from "../../../layouts/Footer/Footer";
 import Button from "components/Button/Button";
 import { ServiceNotFound } from "../../pages/DetalhesServico/components/ServiceNotFound/ServiceNotFound";
 import { ServiceReviews } from "components/ServiceReviews/ServiceReviews";
-
 import { InfoItem } from "../CadastrarServico/components/InfoItem/InfoItem";
 
 import {
@@ -65,45 +64,113 @@ export default function DetalhesServico() {
     return <ServiceNotFound />;
   }
 
-  const serviceReviews = Array.isArray(service.avaliacao)
-    ? service.avaliacao
-    : service.avaliacao
-      ? [service.avaliacao]
-      : [];
+  /*
+   * Avaliações
+   *
+   * Aceita tanto:
+   * - service.avaliacoes
+   * - service.avaliacao
+   */
+  const serviceReviews = Array.isArray(service.avaliacoes)
+    ? service.avaliacoes
+    : Array.isArray(service.avaliacao)
+      ? service.avaliacao
+      : service.avaliacao
+        ? [service.avaliacao]
+        : [];
 
   const serviceId = service.id;
 
+  /*
+   * Modalidade
+   */
   const modalityLabel =
     SERVICE_MODALITIES.find(
       (item) => String(item.value) === String(service.modalities),
-    )?.label ?? "Não informado";
+    )?.label ??
+    service.modalities ??
+    "Não informado";
 
+  /*
+   * Contatos
+   */
   const whatsapp = service.contato?.telefone;
   const instagram = service.contato?.instagram;
   const website = service.contato?.site;
   const email = service.usuario?.email;
 
+  /*
+   * Imagem do serviço
+   */
   const image =
     service.providerImage ||
     `https://picsum.photos/600/400?random=${serviceId}`;
 
-  const schedule = service.agendamentos?.length
+  /*
+   * Agendamentos
+   *
+   * O DTO atual utiliza:
+   * AgendarServico
+   *
+   * Caso o backend utilize:
+   * agendamentos
+   *
+   * os dois formatos são aceitos.
+   */
+  const rawSchedules = service.agendamentos?.length
     ? service.agendamentos
-        .map((agendamento) => {
-          const dayLabel =
-            DiaSemana.find(
-              (item) => String(item.value) === String(agendamento.diaSemana),
-            )?.label ?? String(agendamento.diaSemana);
+    : service.AgendarServico
+      ? service.AgendarServico
+      : [];
 
-          const shiftLabel =
-            Turno.find(
-              (item) => String(item.value) === String(agendamento.turno),
-            )?.label ?? String(agendamento.turno);
+  const schedules = Array.isArray(rawSchedules) ? rawSchedules : [rawSchedules];
 
-          return `${dayLabel} - ${shiftLabel}`;
-        })
-        .join(", ")
-    : "Combine diretamente com o responsável";
+  const schedule =
+    schedules.length > 0
+      ? schedules
+          .map((agendamento) => {
+            if (!agendamento) {
+              return null;
+            }
+
+            const dayValue =
+              agendamento.diaSemana ??
+              agendamento.diaDaSemana ??
+              agendamento.dia ??
+              "";
+
+            const shiftValue = agendamento.turno ?? agendamento.horario ?? "";
+
+            const dayLabel =
+              DiaSemana.find(
+                (item) =>
+                  String(item.value).toLowerCase() ===
+                  String(dayValue).toLowerCase(),
+              )?.label ?? dayValue;
+
+            const shiftLabel =
+              Turno.find(
+                (item) =>
+                  String(item.value).toLowerCase() ===
+                  String(shiftValue).toLowerCase(),
+              )?.label ?? shiftValue;
+
+            if (dayLabel && shiftLabel) {
+              return `${dayLabel}, Turno: ${shiftLabel}`;
+            }
+            if (dayLabel) {
+              return String(dayLabel);
+            }
+
+            if (shiftLabel) {
+              return String(shiftLabel);
+            }
+
+            return null;
+          })
+          .filter(Boolean)
+          .join(", ") || "Combine diretamente com o responsável"
+      : "Combine diretamente com o responsável";
 
   return (
     <main className="service-details-page">
@@ -119,6 +186,7 @@ export default function DetalhesServico() {
         >
           Voltar
         </Button>
+
         <nav className="service-breadcrumb" aria-label="Navegação estrutural">
           <Link to="/">Início</Link>
 
@@ -133,7 +201,7 @@ export default function DetalhesServico() {
 
         <section className="service-hero">
           <div className="service-main-image">
-            <img src={image} alt={service.name} />
+            <img src={image} alt={service.name ?? "Imagem do serviço"} />
 
             <span className="service-image-category">
               {service.categoria?.nome ?? "Outros"}
@@ -214,7 +282,7 @@ export default function DetalhesServico() {
                 <InfoItem
                   icon={<MapPin size={21} />}
                   label="Localização"
-                  value={formatLocation(service)}
+                  value={formatLocation(service) || "Não informado"}
                 />
 
                 <InfoItem
@@ -226,12 +294,11 @@ export default function DetalhesServico() {
                 <InfoItem
                   icon={<CalendarDays size={21} />}
                   label="Publicado em"
-                  value={formatDate(service.publicationDate)}
+                  value={formatDate(service.publicationDate) || "Não informado"}
                 />
               </div>
             </section>
 
-            {/* OFERTANTE */}
             <section className="details-section">
               <h2>Sobre quem oferece</h2>
 
@@ -260,15 +327,19 @@ export default function DetalhesServico() {
                     Responsável por oferecer este serviço voluntário para a
                     comunidade.
                   </p>
-                  <Link to={`/perfil/${service.idUsuario}`}>
-                    Ver perfil
-                    <ExternalLink size={15} />
-                  </Link>
+
+                  {service.idUsuario && (
+                    <Link to={`/perfil/${service.idUsuario}`}>
+                      Ver perfil
+                      <ExternalLink size={15} />
+                    </Link>
+                  )}
                 </div>
               </div>
             </section>
+
             <ServiceReviews
-              reviews={service.avaliacoes ?? []}
+              reviews={serviceReviews}
               onSubmitReview={async (review) => {
                 console.log({
                   idServico: service.id,
@@ -277,6 +348,7 @@ export default function DetalhesServico() {
               }}
             />
           </div>
+
           <aside className="service-contact-card">
             <h2>Informações de contato</h2>
 

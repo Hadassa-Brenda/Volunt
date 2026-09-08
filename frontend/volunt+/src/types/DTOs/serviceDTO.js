@@ -1,12 +1,12 @@
 import { SERVICE_MODALITIES } from "types/enum/Modalities";
 import { DiaSemana } from "types/enum/DiaSemana";
-import { Turno } from "types/enum/Turno";
 import { LocalizacaoDTO } from "./localizacaoDTO";
 import { CategoriaDTO } from "./categoriaDTO";
 import { userDTO } from "./userDTO";
 import { SERVICE_STATUS } from "types/enum/Status";
 import { ContatoDTO } from "./contatoDTO";
 import { AvaliacaoDTO } from "./avaliacaoDTO";
+import { AgendarServico } from "./agendarServicoDTO";
 
 export const servicesDTO = [
   {
@@ -20,7 +20,7 @@ export const servicesDTO = [
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[0].value, //segunda
-    turno: Turno[0].value, //manha
+    AgendarServico: AgendarServico[0], //manha
     avaliacao: AvaliacaoDTO[0], //1
     publicationDate: new Date(),
     contato: ContatoDTO[0],
@@ -37,7 +37,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[1].value,
-    turno: Turno[1].value,
+
+    AgendarServico: AgendarServico[1],
     avaliacao: AvaliacaoDTO[1], //1
     publicationDate: new Date(),
     contato: ContatoDTO[1],
@@ -54,9 +55,10 @@ export const servicesDTO = [
     status: SERVICE_STATUS[1].value,
     providerImage: "",
     diaDaSemana: DiaSemana[2].value,
-    turno: Turno[2].value,
+
     avaliacao: AvaliacaoDTO[2],
     publicationDate: new Date(),
+    AgendarServico: AgendarServico[3],
     avaliacao: AvaliacaoDTO[2], //1
     contato: ContatoDTO[1],
   },
@@ -72,8 +74,9 @@ export const servicesDTO = [
     status: SERVICE_STATUS[1].value,
     providerImage: "",
     diaDaSemana: DiaSemana[3].value,
-    turno: Turno[0].value,
+
     avaliacao: AvaliacaoDTO[3], //1
+    AgendarServico: AgendarServico[1],
     publicationDate: new Date(),
     contato: ContatoDTO[2],
   },
@@ -89,7 +92,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[1].value,
     providerImage: "",
     diaDaSemana: DiaSemana[4].value,
-    turno: Turno[1].value,
+
+    AgendarServico: AgendarServico[3],
     avaliacao: AvaliacaoDTO[4], //1
     publicationDate: new Date(),
     contato: ContatoDTO[1],
@@ -106,9 +110,9 @@ export const servicesDTO = [
     status: SERVICE_STATUS[1].value,
     providerImage: "",
     diaDaSemana: DiaSemana[0].value,
-    turno: Turno[2].value,
-    avaliacao: AvaliacaoDTO[4], //1
 
+    avaliacao: AvaliacaoDTO[4], //1
+    AgendarServico: AgendarServico[3],
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -125,8 +129,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[1].value,
-    turno: Turno[0].value,
 
+    AgendarServico: AgendarServico[0],
     publicationDate: new Date(),
     contato: ContatoDTO[6],
   },
@@ -143,7 +147,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[2].value,
-    turno: Turno[1].value,
+
+    AgendarServico: AgendarServico[2],
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -160,8 +165,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[3].value,
-    turno: Turno[2].value,
 
+    AgendarServico: AgendarServico[3],
     publicationDate: new Date(),
     contato: ContatoDTO[5],
   },
@@ -178,8 +183,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[4].value,
-    turno: Turno[0].value,
 
+    AgendarServico: AgendarServico[0],
     publicationDate: new Date(),
     contato: ContatoDTO[1],
   },
@@ -196,8 +201,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[5].value,
-    turno: Turno[1].value,
 
+    AgendarServico: AgendarServico[3],
     publicationDate: new Date(),
     contato: ContatoDTO[0],
   },
@@ -214,8 +219,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[6].value,
-    turno: Turno[2].value,
 
+    AgendarServico: AgendarServico[1],
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -232,8 +237,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[1].value,
     providerImage: "",
     diaDaSemana: DiaSemana[0].value,
-    turno: Turno[1].value,
 
+    AgendarServico: AgendarServico[3],
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -250,8 +255,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[1].value,
     providerImage: "",
     diaDaSemana: DiaSemana[1].value,
-    turno: Turno[0].value,
 
+    AgendarServico: AgendarServico[3],
     publicationDate: new Date(),
     contato: ContatoDTO[1],
   },
@@ -268,8 +273,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[1].value,
     providerImage: "",
     diaDaSemana: DiaSemana[2].value,
-    turno: Turno[1].value,
 
+    AgendarServico: AgendarServico[3],
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -286,8 +291,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[3].value,
-    turno: Turno[2].value,
 
+    AgendarServico: AgendarServico[3],
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -304,8 +309,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[4].value,
-    turno: Turno[0].value,
 
+    AgendarServico: AgendarServico[3],
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -322,8 +327,8 @@ export const servicesDTO = [
     avaliacao: AvaliacaoDTO[4], //1
     providerImage: "",
     diaDaSemana: DiaSemana[5].value,
-    turno: Turno[1].value,
 
+    AgendarServico: AgendarServico[3],
     publicationDate: new Date(),
     contato: ContatoDTO[0],
   },
@@ -340,8 +345,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[0].value,
     providerImage: "",
     diaDaSemana: DiaSemana[6].value,
-    turno: Turno[2].value,
 
+    AgendarServico: AgendarServico[3],
     publicationDate: new Date(),
     contato: ContatoDTO[4],
   },
@@ -358,8 +363,8 @@ export const servicesDTO = [
     status: SERVICE_STATUS[1].value,
     providerImage: "",
     diaDaSemana: DiaSemana[0].value,
-    turno: Turno[0].value,
 
+    AgendarServico: AgendarServico[3],
     publicationDate: new Date(),
   },
 ];

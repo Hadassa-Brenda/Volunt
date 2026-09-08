@@ -42,10 +42,7 @@ export function validateField(field, value, form) {
       return "";
 
     case "dataNascimento":
-      if (
-        form.tipoUsuario?.toString().toUpperCase() !== "PJ" &&
-        !textValue
-      ) {
+      if (form.tipoUsuario?.toString().toUpperCase() !== "PJ" && !textValue) {
         return "Informe sua data de nascimento.";
       }
 
@@ -56,10 +53,7 @@ export function validateField(field, value, form) {
         return "A senha deve ter pelo menos 8 caracteres.";
       }
 
-      if (
-        !/[A-Za-z]/.test(textValue) ||
-        !/[0-9]/.test(textValue)
-      ) {
+      if (!/[A-Za-z]/.test(textValue) || !/[0-9]/.test(textValue)) {
         return "A senha deve ter letras e números.";
       }
 
@@ -81,11 +75,7 @@ export function validateForm(form) {
   const errors = {};
 
   Object.keys(form).forEach((field) => {
-    const error = validateField(
-      field,
-      form[field],
-      form
-    );
+    const error = validateField(field, form[field], form);
 
     if (error) {
       errors[field] = error;

@@ -1,7 +1,5 @@
 const wait = (value) =>
-  new Promise((resolve) =>
-    setTimeout(() => resolve(value), 350)
-  );
+  new Promise((resolve) => setTimeout(() => resolve(value), 350));
 
 export async function register(
   name,
@@ -11,7 +9,7 @@ export async function register(
   perfilUsuario,
   dataNascimento,
   password,
-  confirmPassword
+  confirmPassword,
 ) {
   if (!name || !email || !password || !confirmPassword) {
     throw new Error("Preencha todos os campos obrigatórios.");
@@ -31,10 +29,7 @@ export async function register(
     dataNascimento,
   };
 
-  localStorage.setItem(
-    "volunt-user",
-    JSON.stringify(user)
-  );
+  localStorage.setItem("volunt-user", JSON.stringify(user));
 
   return wait({
     token: `mvp-${Date.now()}`,
