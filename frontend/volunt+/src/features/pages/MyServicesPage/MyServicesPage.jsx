@@ -214,6 +214,16 @@ export default function MyServicesPage() {
       </aside>
 
       <section className="user-dashboard-main">
+        <Button
+          className="dashboard-mobile-back"
+          variant="ghost"
+          size="small"
+          onClick={() => navigate("/")}
+          icon={<ArrowLeft size={18} />}
+        >
+          Voltar
+        </Button>
+
         <header className="dashboard-header">
           <div>
             <h1>Meus serviços</h1>

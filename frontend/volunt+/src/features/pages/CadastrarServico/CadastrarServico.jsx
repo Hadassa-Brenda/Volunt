@@ -50,7 +50,7 @@ export default function CadastrarServico() {
       <div style={{ padding: "10px" }}>
         <Button
           className="back-button"
-          onClick={() => navigate("/meus-servicos")}
+          onClick={() => navigate(-1)}
           icon={<ArrowLeft size={18} />}
         >
           Voltar
