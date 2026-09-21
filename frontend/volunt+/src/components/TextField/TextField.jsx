@@ -27,9 +27,11 @@ export default function GenericTextField({
       sx={{
         "& .MuiOutlinedInput-notchedOutline": {
           border: "none",
-          width: width,
+          width: "100%",
           height: height,
         },
+        width: "100%",
+        maxWidth: width,
       }}
     />
   );

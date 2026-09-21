@@ -79,7 +79,7 @@ export default function SingleSelect({
           value={value}
           onChange={handleChange}
           className="select-generic__select"
-          sx={{ width: width, height: height }}
+          sx={{ width: "100%", height: height, maxWidth: width }}
         >
           {showEmptyOption && (
             <MenuItem className="select-generic__menu-item" value="">

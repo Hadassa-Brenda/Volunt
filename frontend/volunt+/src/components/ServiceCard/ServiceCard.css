@@ -15,7 +15,7 @@
     transform 160ms ease,
     box-shadow 160ms ease,
     border-color 160ms ease;
-  min-width: 300px;
+  min-width: 0;
   min-height: 460px;
 }
 
@@ -298,6 +298,12 @@
 
   .service-card__body {
     padding: 16px;
+  }
+
+  .service-card__body h3,
+  .service-card__body > p,
+  .service-card__category {
+    overflow-wrap: anywhere;
   }
 
   .service-card__rating {

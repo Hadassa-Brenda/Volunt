@@ -1,7 +1,9 @@
 import { CheckCircle2, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export function SuccessContent({ onCreateAnother }) {
+  const navigate = useNavigate();
+
   return (
     <section className="service-success">
       <div className="service-success-icon">
@@ -9,6 +11,9 @@ export function SuccessContent({ onCreateAnother }) {
       </div>
 
       <span>Cadastro concluído</span>
+      <p className="service-success-message">
+        Seu serviço foi publicado com sucesso.
+      </p>
       <div className="service-success-actions">
         <button
           type="button"
@@ -22,6 +27,14 @@ export function SuccessContent({ onCreateAnother }) {
           Ver meus serviços
           <ArrowRight size={18} />
         </Link>
+
+        <button
+          type="button"
+          className="secondary-action-button"
+          onClick={() => navigate("/")}
+        >
+          Voltar para o início
+        </button>
       </div>
     </section>
   );

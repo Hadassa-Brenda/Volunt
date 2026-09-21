@@ -18,12 +18,14 @@ export function ServiceCard({ service }) {
     SERVICE_MODALITIES.find((modality) => modality.value === service.modalities)
       ?.label ?? "Não informado";
 
-  const locationLabel =
-    service.modalities === 2
-      ? "Online"
-      : [service.localizacao?.bairro, service.localizacao?.cidade || "BH"]
-          .filter(Boolean)
-          .join(", ");
+  const isOnline = service.modalities === SERVICE_MODALITIES[1].value;
+
+  const locationLabel = [
+    service.localizacao?.bairro,
+    service.localizacao?.cidade || "BH",
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   const image =
     service.providerImage ||
@@ -59,7 +61,7 @@ export function ServiceCard({ service }) {
       >
         <span
           className={`service-card__badge ${
-            service.modalities === 2 ? "service-card__badge--online" : ""
+            isOnline ? "service-card__badge--online" : ""
           }`}
         >
           {modalityLabel}
@@ -92,10 +94,12 @@ export function ServiceCard({ service }) {
               : "Sem avaliações"}
           </span>
         </div>
-        <div className="service-card__location">
-          <MapPin size={15} />
-          {locationLabel}
-        </div>
+        {!isOnline && (
+          <div className="service-card__location">
+            <MapPin size={15} />
+            {locationLabel}
+          </div>
+        )}
 
         <div className="service-card__contacts">
           <div>

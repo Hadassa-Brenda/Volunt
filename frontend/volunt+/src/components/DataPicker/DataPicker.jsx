@@ -37,7 +37,8 @@ export default function DataPicker({
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
       <Box
         sx={{
-          width,
+          width: "100%",
+          maxWidth: width,
           height,
           display: "flex",
           justifyContent: "center",
@@ -69,7 +70,8 @@ export default function DataPicker({
             },
           }}
           sx={{
-            width,
+            width: "100%",
+            maxWidth: width,
             "& .MuiPickersOutlinedInput-root": {
               height: "50px",
             },
