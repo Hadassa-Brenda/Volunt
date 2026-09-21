@@ -644,6 +644,14 @@
     border-radius: 16px;
   }
 
+  .service-provider-summary {
+    align-items: flex-start;
+  }
+
+  .service-contact-card {
+    padding: 18px;
+  }
+
   .service-summary h1 {
     font-size: 2rem;
   }

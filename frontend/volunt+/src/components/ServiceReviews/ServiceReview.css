@@ -57,6 +57,17 @@
   background: #f8f9fc;
 }
 
+.review-form__restricted {
+  margin: 0 0 28px;
+  padding: 16px 18px;
+  border: 1px solid #e5e7ef;
+  border-radius: 13px;
+  background: #f8f9fc;
+  color: #697187;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
 .review-form fieldset {
   margin: 0 0 17px;
   padding: 0;

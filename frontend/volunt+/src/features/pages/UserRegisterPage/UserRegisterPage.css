@@ -441,6 +441,11 @@
     border-radius: 24px;
   }
 
+  .user-register-form__grid,
+  .user-register-form_select {
+    grid-template-columns: 1fr;
+  }
+
   .user-register-form__title {
     align-items: flex-start;
   }
@@ -465,6 +470,10 @@
 
   .user-register-form {
     padding: 18px;
+  }
+
+  .user-register-form__title {
+    gap: 10px;
   }
 
   .user-register-form__title h2 {

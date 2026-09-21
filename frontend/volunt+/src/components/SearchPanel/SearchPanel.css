@@ -58,6 +58,10 @@
 }
 
 @media (max-width: 768px) {
+  .search-panel {
+    padding: 18px;
+  }
+
   .search-panel__search-field {
     flex: 1 1 100%;
     width: 100%;

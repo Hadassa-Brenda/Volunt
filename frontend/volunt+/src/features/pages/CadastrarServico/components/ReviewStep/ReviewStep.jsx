@@ -7,6 +7,7 @@ import { ReviewSection } from "../../steps/ReviewSection";
 import { DiaSemana } from "../../../../../types/enum/DiaSemana";
 
 import { Turno } from "../../../../../types/enum/Turno";
+import { SERVICE_MODALITIES } from "../../../../../types/enum/Modalities";
 import "./ReviewStep.css";
 
 export function ReviewStep({ formData, onEditStep, texts }) {
@@ -16,7 +17,11 @@ export function ReviewStep({ formData, onEditStep, texts }) {
     return option?.label || value || "Não informado";
   };
 
-  const modalidade = formData.modalities || "Não informado";
+  const modalidade =
+    SERVICE_MODALITIES.find((item) => item.value === formData.modalities)
+      ?.label || "Não informado";
+
+  const isOnline = formData.modalities === SERVICE_MODALITIES[1].value;
 
   const categoria = formData.categorias || "Não informado";
 
@@ -73,7 +78,7 @@ export function ReviewStep({ formData, onEditStep, texts }) {
                 {modalidade}
               </span>
 
-              {modalidade !== "Online" && endereco && (
+              {!isOnline && endereco && (
                 <span>
                   <MapPin size={16} />
 
@@ -124,7 +129,7 @@ export function ReviewStep({ formData, onEditStep, texts }) {
           <ReviewSection title="Atendimento" onEdit={() => onEditStep(2)}>
             <ReviewItem label="Modalidade" value={modalidade} />
 
-            {modalidade !== "Online" && (
+            {!isOnline && (
               <>
                 <ReviewItem
                   label="CEP"

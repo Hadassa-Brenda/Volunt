@@ -70,5 +70,12 @@
 @media (max-width: 760px) {
   .app-content-grid {
     grid-template-columns: 1fr;
+    width: calc(100% - 32px);
+    margin-top: 24px;
+  }
+
+  .home-info-row {
+    width: calc(100% - 32px);
+    gap: 24px;
   }
 }

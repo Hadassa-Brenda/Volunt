@@ -102,6 +102,10 @@
   gap: 22px;
 }
 
+.schedule-fields-grid {
+  margin-top: 22px;
+}
+
 .form-field {
   width: 100%;
   min-width: 0;

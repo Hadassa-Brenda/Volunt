@@ -89,3 +89,14 @@
     padding-bottom: 10px;
   }
 }
+
+@media (max-width: 760px) {
+  .category-list {
+    width: calc(100% - 32px);
+  }
+
+  .category-list__strip {
+    gap: 14px;
+    grid-template-columns: repeat(10, 82px);
+  }
+}

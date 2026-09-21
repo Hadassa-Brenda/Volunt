@@ -49,6 +49,7 @@
 
 .header__nav-link {
   height: 100%;
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   position: relative;
@@ -56,17 +57,6 @@
 
 .header__nav-link--active {
   color: var(--color-primary);
-}
-
-.header__nav-link--active::after {
-  content: "";
-  height: 3px;
-  border-radius: 999px;
-  background: var(--color-primary);
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
 .header__actions {
@@ -157,8 +147,28 @@
   .header__nav {
     order: 3;
     width: 100%;
+    gap: 24px;
     overflow-x: auto;
     padding-top: 10px;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .header__nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .header__actions {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .header__primary-button {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .header__primary-button {

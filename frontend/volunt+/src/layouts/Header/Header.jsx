@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function Header({ onCreateUser, onOpenLogin }) {
   const user = JSON.parse(localStorage.getItem("volunt-user") || "null");
+  const isBeneficiario = user?.perfilUsuario === "BF";
   return (
     <header className="header">
       <Link to="/" className="header__brand" aria-label="Voluntá+ início">
@@ -20,15 +21,19 @@ export default function Header({ onCreateUser, onOpenLogin }) {
           Sobre
         </Link>
 
-        <Link to="/cadastrar-servico" className="header__nav-link">
-          Criar Serviço
-        </Link>
+        {!isBeneficiario && (
+          <Link to="/cadastrar-servico" className="header__nav-link">
+            Criar Serviço
+          </Link>
+        )}
         <Link to="/catalogo-servicos" className="header__nav-link">
           Catalógo de Serviços
         </Link>
-        <Link to="/meus-servicos" className="header__nav-link">
-          Meus Serviços
-        </Link>
+        {!isBeneficiario && (
+          <Link to="/meus-servicos" className="header__nav-link">
+            Meus Serviços
+          </Link>
+        )}
       </nav>
 
       <div className="header__actions">

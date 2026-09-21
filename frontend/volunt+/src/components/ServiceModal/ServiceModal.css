@@ -139,6 +139,10 @@
     border-radius: 22px;
   }
 
+  .advanced-filters-modal__header p {
+    font-size: 14px;
+  }
+
   .advanced-filters-modal__header {
     gap: 16px;
     margin-bottom: 24px;

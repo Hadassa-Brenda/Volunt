@@ -17,6 +17,7 @@ import {
 import { Stepper } from "features/pages/CadastrarServico/components/Stepper/Stepper";
 
 import { FormStepContent } from "features/pages/CadastrarServico/components/FormStepContent/FormStepContent";
+import { SERVICE_MODALITIES } from "../../../../types/enum/Modalities";
 
 import "./EditServicePage.css";
 import "../../../../styles/global.css";
@@ -49,44 +50,42 @@ export default function EditServicePage() {
         return;
       }
 
-      console.log("SERVIÇO MAPEADO:", service);
-
-      console.log("CATEGORIA:", service.categoria);
-
-      console.log("LOCALIZAÇÃO:", service.localizacao);
-
-      console.log("CONTATO:", service.contato);
-
-      console.log("AGENDAMENTOS:", service.agendamentos);
-
       const agendamento = service.agendamentos?.[0];
 
       setFormData({
         ...initialFormData,
 
-        title: service.name || "",
+        name: service.name || "",
 
-        description: service.descricao || "",
+        descricao: service.descricao || "",
 
-        category: service.categoria?.id ?? service.idCategoria ?? "",
+        categorias: [service.categoria?.id ?? service.idCategoria].filter(
+          Boolean,
+        ),
 
-        modality: service.modalities ?? "",
+        modalities: service.modalities ?? "",
 
-        city: service.localizacao?.cidade || "",
+        cep: service.localizacao?.cep || service.cep || "",
 
-        neighborhood: service.localizacao?.bairro || "",
+        estado: service.localizacao?.estado || service.estado || "",
 
-        schedule: agendamento
-          ? `${agendamento.diaSemana} - ${agendamento.turno}`
-          : "",
+        cidade: service.localizacao?.cidade || service.cidade || "",
 
-        whatsapp: service.contato?.whatsapp || "",
+        bairro: service.localizacao?.bairro || service.bairro || "",
+
+        diaSemana: [
+          service.diaDaSemana ?? agendamento?.diaSemana,
+        ].filter(Boolean),
+
+        turno: [service.turno ?? agendamento?.turno].filter(Boolean),
+
+        whatsapp: service.contato?.telefone || service.whatsapp || "",
 
         instagram: service.contato?.instagram || "",
 
-        email: service.contato?.email || "",
+        telefone: service.telefone || "",
 
-        website: service.contato?.website || "",
+        site: service.contato?.site || service.site || "",
 
         image: null,
 
@@ -126,30 +125,33 @@ export default function EditServicePage() {
     const newErrors = {};
 
     if (currentStep === 1) {
-      if (!formData.title?.trim()) {
-        newErrors.title = "Informe o título.";
+      if (!formData.name?.trim()) {
+        newErrors.name = "Informe o título.";
       }
 
-      if (!formData.category) {
-        newErrors.category = "Selecione uma categoria.";
+      if (!formData.categorias?.length) {
+        newErrors.categorias = "Selecione uma categoria.";
       }
 
       if (
-        !formData.description?.trim() ||
-        formData.description.trim().length < 30
+        !formData.descricao?.trim() ||
+        formData.descricao.trim().length < 30
       ) {
-        newErrors.description =
+        newErrors.descricao =
           "Descrição deve possuir no mínimo 30 caracteres.";
       }
     }
 
     if (currentStep === 2) {
-      if (!formData.modality) {
-        newErrors.modality = "Selecione uma modalidade.";
+      if (!formData.modalities) {
+        newErrors.modalities = "Selecione uma modalidade.";
       }
 
-      if (formData.modality !== "Online" && !formData.city?.trim()) {
-        newErrors.city = "Informe a cidade.";
+      if (
+        formData.modalities !== SERVICE_MODALITIES[1].value &&
+        !formData.cidade?.trim()
+      ) {
+        newErrors.cidade = "Informe a cidade.";
       }
     }
 
@@ -157,22 +159,24 @@ export default function EditServicePage() {
       const hasContact =
         formData.whatsapp ||
         formData.instagram ||
-        formData.email ||
-        formData.website;
+        formData.telefone ||
+        formData.site;
 
       if (!hasContact) {
         newErrors.contact = "Informe pelo menos um contato.";
       }
+
+      ["whatsapp", "telefone"].forEach((field) => {
+        const digits = String(formData[field] || "").replace(/\D/g, "");
+
+        if (digits && (digits.length < 10 || digits.length > 11)) {
+          newErrors[field] = "Informe um telefone válido com DDD.";
+        }
+      });
     }
 
     if (currentStep === 4) {
-      if (!formData.freeService) {
-        newErrors.freeService = "Confirme que é gratuito.";
-      }
-
-      if (!formData.acceptTerms) {
-        newErrors.acceptTerms = "Aceite os termos.";
-      }
+      return true;
     }
 
     setErrors(newErrors);
@@ -219,20 +223,22 @@ export default function EditServicePage() {
       return;
     }
 
-    const previewUrl = URL.createObjectURL(file);
+    const reader = new FileReader();
 
-    setFormData((current) => ({
-      ...current,
+    reader.onload = () => {
+      setFormData((current) => ({
+        ...current,
+        image: file,
+        imagePreview: reader.result,
+      }));
 
-      image: file,
+      setErrors((current) => ({
+        ...current,
+        image: "",
+      }));
+    };
 
-      imagePreview: previewUrl,
-    }));
-
-    setErrors((current) => ({
-      ...current,
-      image: "",
-    }));
+    reader.readAsDataURL(file);
   }
 
   function removeImage() {
@@ -268,31 +274,39 @@ export default function EditServicePage() {
           /*
            * Informações básicas
            */
-          name: formData.title,
+          name: formData.name,
 
-          descricao: formData.description,
+          descricao: formData.descricao,
 
-          idCategoria: Number(formData.category),
+          idCategoria: Array.isArray(formData.categorias)
+            ? formData.categorias[0]
+            : formData.categorias,
 
-          modalities: formData.modality,
+          modalities: formData.modalities,
 
           status: service.status,
 
           providerImage: formData.imagePreview || service.providerImage,
 
-          city: formData.city,
+          cep: formData.cep,
 
-          neighborhood: formData.neighborhood,
+          estado: formData.estado,
 
-          schedule: formData.schedule,
+          cidade: formData.cidade,
+
+          bairro: formData.bairro,
+
+          diaDaSemana: formData.diaSemana,
+
+          turno: formData.turno,
 
           whatsapp: formData.whatsapp,
 
           instagram: formData.instagram,
 
-          email: formData.email,
+          telefone: formData.telefone,
 
-          website: formData.website,
+          site: formData.site,
 
           freeService: formData.freeService,
 

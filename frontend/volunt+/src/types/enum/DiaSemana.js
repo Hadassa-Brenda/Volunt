@@ -1,30 +1,30 @@
 export const DiaSemana = [
   {
-    value: 1,
+    value: "SEGUNDA",
     label: "Segunda-feira",
   },
   {
-    value: 2,
+    value: "TERCA",
     label: "Terça-feira",
   },
   {
-    value: 3,
+    value: "QUARTA",
     label: "Quarta-feira",
   },
   {
-    value: 4,
+    value: "QUINTA",
     label: "Quinta-feira",
   },
   {
-    value: 5,
+    value: "SEXTA",
     label: "Sexta-feira",
   },
   {
-    value: 6,
+    value: "SABADO",
     label: "Sabado",
   },
   {
-    value: 7,
+    value: "DOMINGO",
     label: "Domingo",
   },
 ];

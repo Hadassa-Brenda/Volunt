@@ -5,6 +5,7 @@ export const initialFormData = {
   categorias: "",
 
   image: "",
+  imagePreview: "",
 
   cep: "",
   estado: "",

@@ -169,7 +169,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
     resetForm();
 
-    navigate(`/perfil/${newUser.id}`);
+    navigate("/");
   }
 
   return (

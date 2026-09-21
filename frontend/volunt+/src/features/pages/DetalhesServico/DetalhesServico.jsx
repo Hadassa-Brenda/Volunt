@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
@@ -47,6 +47,22 @@ export default function DetalhesServico() {
 
   const { service, loading, error } = useService(id);
 
+  const [reviews, setReviews] = useState([]);
+
+  let storedUser = null;
+
+  try {
+    storedUser = JSON.parse(localStorage.getItem("volunt-user") || "null");
+  } catch {
+    storedUser = null;
+  }
+
+  const canReview = storedUser?.perfilUsuario === "BF";
+
+  useEffect(() => {
+    setReviews(service?.avaliacoes ?? []);
+  }, [service]);
+
   if (loading) {
     return (
       <main className="service-details-page">
@@ -64,12 +80,6 @@ export default function DetalhesServico() {
   if (error || !service) {
     return <ServiceNotFound />;
   }
-
-  const serviceReviews = Array.isArray(service.avaliacao)
-    ? service.avaliacao
-    : service.avaliacao
-      ? [service.avaliacao]
-      : [];
 
   const serviceId = service.id;
 
@@ -268,12 +278,42 @@ export default function DetalhesServico() {
               </div>
             </section>
             <ServiceReviews
-              reviews={service.avaliacoes ?? []}
+              reviews={reviews}
+              canReview={canReview}
               onSubmitReview={async (review) => {
-                console.log({
+                const newReview = {
+                  id: Date.now(),
                   idServico: service.id,
+                  idUsuario: storedUser.id,
+                  usuario: storedUser,
+                  dataAvaliacao: new Date().toISOString(),
+                  dataCriacao: new Date().toISOString(),
                   ...review,
-                });
+                };
+
+                let storedReviews = [];
+
+                try {
+                  const parsedReviews = JSON.parse(
+                    localStorage.getItem("volunt-avaliacoes") || "[]",
+                  );
+
+                  storedReviews = Array.isArray(parsedReviews)
+                    ? parsedReviews
+                    : [];
+                } catch {
+                  storedReviews = [];
+                }
+
+                localStorage.setItem(
+                  "volunt-avaliacoes",
+                  JSON.stringify([...storedReviews, newReview]),
+                );
+
+                setReviews((currentReviews) => [
+                  ...currentReviews,
+                  newReview,
+                ]);
               }}
             />
           </div>

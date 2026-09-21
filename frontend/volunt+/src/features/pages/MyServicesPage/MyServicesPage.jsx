@@ -7,6 +7,7 @@ import {
   UserRound,
   LogOut,
   ArrowLeft,
+  Power,
 } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -49,7 +50,17 @@ export default function MyServicesPage() {
         const parsedServices = JSON.parse(storedServices);
 
         if (Array.isArray(parsedServices)) {
-          setServices(parsedServices);
+          setServices(
+            parsedServices.map((service) => ({
+              ...service,
+              status:
+                service.status === 0
+                  ? SERVICE_STATUS[0].value
+                  : service.status === 1
+                    ? SERVICE_STATUS[1].value
+                    : service.status || SERVICE_STATUS[0].value,
+            })),
+          );
           return;
         }
       }
@@ -115,6 +126,25 @@ export default function MyServicesPage() {
 
     setServices(updatedServices);
 
+    localStorage.setItem("volunt-services", JSON.stringify(updatedServices));
+  }
+
+  function handleToggleStatus(serviceId) {
+    const updatedServices = services.map((service) => {
+      if (Number(service.id) !== Number(serviceId)) {
+        return service;
+      }
+
+      return {
+        ...service,
+        status:
+          service.status === SERVICE_STATUS[0].value
+            ? SERVICE_STATUS[1].value
+            : SERVICE_STATUS[0].value,
+      };
+    });
+
+    setServices(updatedServices);
     localStorage.setItem("volunt-services", JSON.stringify(updatedServices));
   }
 
@@ -315,6 +345,16 @@ export default function MyServicesPage() {
                   >
                     <Edit3 size={17} />
                     Editar
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleToggleStatus(service.id)}
+                  >
+                    <Power size={17} />
+                    {service.status === SERVICE_STATUS[0].value
+                      ? "Desativar"
+                      : "Ativar"}
                   </button>
 
                   <button

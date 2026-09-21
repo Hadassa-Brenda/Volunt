@@ -17,26 +17,52 @@ export default function LoginPage() {
     password: "",
   });
 
+  const [loginError, setLoginError] = useState("");
+
   function updateField(field, value) {
     setForm((current) => ({
       ...current,
       [field]: value,
     }));
+
+    setLoginError("");
   }
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    const user = userDTO.find(
-      (item) => item.email === form.email && item.password === form.password,
+    let storedUsers = [];
+
+    try {
+      const parsedUsers = JSON.parse(
+        localStorage.getItem("volunt-users") || "[]",
+      );
+
+      storedUsers = Array.isArray(parsedUsers) ? parsedUsers : [];
+    } catch {
+      storedUsers = [];
+    }
+
+    const normalizedEmail = form.email.trim().toLowerCase();
+    const users = [...storedUsers, ...userDTO];
+
+    const user = users.find(
+      (item) =>
+        item.email?.trim().toLowerCase() === normalizedEmail &&
+        item.password === form.password,
     );
 
     if (!user) {
-      alert("E-mail ou senha inválidos.");
+      setLoginError("E-mail ou senha inválidos.");
       return;
     }
 
-    localStorage.setItem("volunt-user", JSON.stringify(user));
+    const authenticatedUser = {
+      ...user,
+      email: user.email.trim(),
+    };
+
+    localStorage.setItem("volunt-user", JSON.stringify(authenticatedUser));
 
     navigate("/");
   }
@@ -127,6 +153,12 @@ export default function LoginPage() {
               />
             </div>
           </label>
+
+          {loginError && (
+            <p className="login-card__error" role="alert">
+              {loginError}
+            </p>
+          )}
 
           <button className="login-card__button" type="submit">
             Entrar

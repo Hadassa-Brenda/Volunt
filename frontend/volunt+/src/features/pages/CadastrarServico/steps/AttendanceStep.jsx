@@ -11,9 +11,10 @@ import MultiSelect from "../../../../components/MultiSelect/MultiSelect";
 import { Turno } from "../../../../types/enum/Turno";
 
 import { DiaSemana } from "../../../../types/enum/DiaSemana";
+import { SERVICE_MODALITIES } from "../../../../types/enum/Modalities";
 
 export function AttendanceStep({ formData, errors, onChange }) {
-  const isOnline = formData.modalities === "Online";
+  const isOnline = formData.modalities === "ONLINE";
 
   return (
     <section className="form-step">
@@ -37,8 +38,8 @@ export function AttendanceStep({ formData, errors, onChange }) {
         <div className="modality-options">
           <ModalityOption
             name="modalities"
-            value="Online"
-            checked={formData.modalities === "Online"}
+            value={SERVICE_MODALITIES[1].value}
+            checked={formData.modalities === SERVICE_MODALITIES[1].value}
             onChange={onChange}
             icon={<Monitor size={23} />}
             title="Online"
@@ -47,8 +48,8 @@ export function AttendanceStep({ formData, errors, onChange }) {
 
           <ModalityOption
             name="modalities"
-            value="Presencial"
-            checked={formData.modalities === "Presencial"}
+            value={SERVICE_MODALITIES[0].value}
+            checked={formData.modalities === SERVICE_MODALITIES[0].value}
             onChange={onChange}
             icon={<MapPin size={23} />}
             title="Presencial"
@@ -57,8 +58,8 @@ export function AttendanceStep({ formData, errors, onChange }) {
 
           <ModalityOption
             name="modalities"
-            value="Ambos"
-            checked={formData.modalities === "Ambos"}
+            value={SERVICE_MODALITIES[2].value}
+            checked={formData.modalities === SERVICE_MODALITIES[2].value}
             onChange={onChange}
             icon={<MessageCircle size={23} />}
             title="Ambos"
@@ -126,27 +127,28 @@ export function AttendanceStep({ formData, errors, onChange }) {
             required
             disabled
           />
-          {/* DIA DA SEMANA E TURNO */}
-
-          <MultiSelect
-            label="Dia da semana"
-            name="diaSemana"
-            value={formData.diaSemana || ""}
-            onChange={onChange}
-            options={DiaSemana}
-            width="100%"
-          />
-
-          <MultiSelect
-            label="Turno"
-            name="turno"
-            value={formData.turno || ""}
-            onChange={onChange}
-            options={Turno}
-            width="100%"
-          />
         </div>
       )}
+
+      <div className="form-fields-grid schedule-fields-grid">
+        <MultiSelect
+          label="Dia da semana"
+          name="diaSemana"
+          value={formData.diaSemana || []}
+          onChange={onChange}
+          options={DiaSemana}
+          width="100%"
+        />
+
+        <MultiSelect
+          label="Turno"
+          name="turno"
+          value={formData.turno || []}
+          onChange={onChange}
+          options={Turno}
+          width="100%"
+        />
+      </div>
 
       {/* ERRO DIA DA SEMANA */}
 

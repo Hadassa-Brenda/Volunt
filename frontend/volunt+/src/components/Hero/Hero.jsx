@@ -12,10 +12,9 @@ export default function Hero() {
     <section className="hero" id="top">
       <div className="hero__text">
         <h1>
-          Conectando pessoas <br />
+          Conectando pessoas{" "}
           que <span style={{ color: "#2563eb" }}>querem</span>{" "}
           <span>ajudar</span> <span style={{ color: "#f97316" }}>com</span>{" "}
-          <br />
           quem <span style={{ color: "#16a34a" }}>precisa</span>
         </h1>
 

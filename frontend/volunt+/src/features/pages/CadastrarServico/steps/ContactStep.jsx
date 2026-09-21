@@ -1,6 +1,6 @@
 import { FormField } from "components/FormField/FormField";
 
-function formatPhone(value) {
+export function formatPhone(value) {
   const numbers = value.replace(/\D/g, "").slice(0, 11);
 
   if (numbers.length <= 2) {
@@ -9,6 +9,10 @@ function formatPhone(value) {
 
   if (numbers.length <= 7) {
     return numbers.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
+  }
+
+  if (numbers.length <= 10) {
+    return numbers.replace(/^(\d{2})(\d{0,4})(\d{0,4})/, "($1) $2-$3");
   }
 
   return numbers.replace(/^(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3");
@@ -23,6 +27,19 @@ export function ContactStep({ formData, errors, onChange }) {
       target: {
         ...event.target,
         name: "whatsapp",
+        value: formattedValue,
+      },
+    });
+  };
+
+  const handleLandlineChange = (event) => {
+    const formattedValue = formatPhone(event.target.value);
+
+    onChange({
+      ...event,
+      target: {
+        ...event.target,
+        name: "telefone",
         value: formattedValue,
       },
     });
@@ -49,6 +66,7 @@ export function ContactStep({ formData, errors, onChange }) {
           value={formData.whatsapp || ""}
           onChange={handlePhoneChange}
           placeholder="Ex.: (31) 99999-9999"
+          maxLength={15}
           error={errors.whatsapp}
         />
 
@@ -69,8 +87,9 @@ export function ContactStep({ formData, errors, onChange }) {
           label="Telefone"
           name="telefone"
           value={formData.telefone || ""}
-          onChange={onChange}
+          onChange={handleLandlineChange}
           placeholder="Ex.: (31) 3333-3333"
+          maxLength={15}
           error={errors.telefone}
         />
 

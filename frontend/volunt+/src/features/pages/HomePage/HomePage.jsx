@@ -8,7 +8,7 @@ import SearchPanel from "../../../components/SearchPanel/SearchPanel";
 import ServicesSection from "../../../components/ServicesSection/ServicesSection";
 
 import { filterServices } from "../../../utils/filterServices";
-import { getServices } from "api/servicesApi";
+import { getServices } from "../../../service/serviceService";
 
 import "./HomePage.css";
 

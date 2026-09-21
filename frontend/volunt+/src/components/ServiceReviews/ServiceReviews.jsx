@@ -6,6 +6,7 @@ import "./ServiceReview.css";
 export function ServiceReviews({
   reviews = [],
   onSubmitReview,
+  canReview = false,
   submitting = false,
 }) {
   const [rating, setRating] = useState(0);
@@ -57,7 +58,8 @@ export function ServiceReviews({
         </div>
       </header>
 
-      <form className="review-form" onSubmit={handleSubmit}>
+      {canReview ? (
+        <form className="review-form" onSubmit={handleSubmit}>
         <fieldset>
           <legend>Qual é a sua nota?</legend>
 
@@ -104,7 +106,12 @@ export function ServiceReviews({
             {submitting ? "Publicando..." : "Publicar avaliação"}
           </button>
         </div>
-      </form>
+        </form>
+      ) : (
+        <p className="review-form__restricted">
+          Apenas beneficiários podem avaliar e comentar este serviço.
+        </p>
+      )}
 
       <div className="reviews-list">
         {reviews.length ? (

@@ -1,6 +1,6 @@
 .select-generic {
   width: 100%;
-  min-width: 220px;
+  min-width: 0;
 }
 
 .select-generic__label.MuiInputLabel-root {

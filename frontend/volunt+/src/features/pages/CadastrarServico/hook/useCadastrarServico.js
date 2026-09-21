@@ -3,6 +3,8 @@ import { useState } from "react";
 import { initialFormData, steps } from "../types/CadastrarServicoConst";
 
 import { servicesDTO } from "../../../../types/DTOs/serviceDTO";
+import { SERVICE_STATUS } from "../../../../types/enum/Status";
+import { SERVICE_MODALITIES } from "../../../../types/enum/Modalities";
 
 export function useCadastrarServico() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -136,7 +138,7 @@ export function useCadastrarServico() {
         newErrors.name = "Informe o título.";
       }
 
-      if (!formData.categorias) {
+      if (!formData.categorias?.length) {
         newErrors.categorias = "Selecione uma categoria.";
       }
 
@@ -150,7 +152,7 @@ export function useCadastrarServico() {
         newErrors.modalities = "Selecione uma modalidade.";
       }
 
-      const isOnline = formData.modalities === "Online";
+      const isOnline = formData.modalities === SERVICE_MODALITIES[1].value;
 
       if (!isOnline) {
         const cep = (formData.cep || "").trim();
@@ -178,11 +180,11 @@ export function useCadastrarServico() {
         }
       }
 
-      if (!formData.diaSemana) {
+      if (!formData.diaSemana?.length) {
         newErrors.diaSemana = "Selecione o dia da semana.";
       }
 
-      if (!formData.turno) {
+      if (!formData.turno?.length) {
         newErrors.turno = "Selecione o turno.";
       }
     }
@@ -201,6 +203,14 @@ export function useCadastrarServico() {
       if (!hasContact) {
         newErrors.contact = "Informe pelo menos um contato.";
       }
+
+      ["whatsapp", "telefone"].forEach((field) => {
+        const digits = String(formData[field] || "").replace(/\D/g, "");
+
+        if (digits && (digits.length < 10 || digits.length > 11)) {
+          newErrors[field] = "Informe um telefone válido com DDD.";
+        }
+      });
     }
 
     setErrors(newErrors);
@@ -255,21 +265,29 @@ export function useCadastrarServico() {
       return;
     }
 
-    setFormData((current) => ({
-      ...current,
-      image: file,
-    }));
+    const reader = new FileReader();
 
-    setErrors((current) => ({
-      ...current,
-      image: "",
-    }));
+    reader.onload = () => {
+      setFormData((current) => ({
+        ...current,
+        image: file,
+        imagePreview: reader.result,
+      }));
+
+      setErrors((current) => ({
+        ...current,
+        image: "",
+      }));
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const removeImage = () => {
     setFormData((current) => ({
       ...current,
       image: "",
+      imagePreview: "",
     }));
 
     setErrors((current) => ({
@@ -326,15 +344,17 @@ export function useCadastrarServico() {
 
         modalities: formData.modalities,
 
-        idCategoria: Number(formData.categorias),
+        idCategoria: Array.isArray(formData.categorias)
+          ? formData.categorias[0]
+          : formData.categorias,
 
         idUsuario: Number(idUsuario),
 
         idLocalizacao: null,
 
-        status: 0,
+        status: SERVICE_STATUS[0].value,
 
-        providerImage: "",
+        providerImage: formData.imagePreview || "",
 
         diaDaSemana: formData.diaSemana,
 

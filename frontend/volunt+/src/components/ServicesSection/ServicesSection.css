@@ -49,6 +49,12 @@
 }
 
 @media (max-width: 760px) {
+  .services-section__title {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
   .services-section__grid {
     grid-template-columns: 1fr;
   }
