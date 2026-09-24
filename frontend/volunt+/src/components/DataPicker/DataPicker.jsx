@@ -76,6 +76,9 @@ export default function DataPicker({
           sx={{
             width: "100%",
             maxWidth: width,
+            "& .MuiInputLabel-root": {
+              fontWeight: 400,
+            },
             "& .MuiPickersOutlinedInput-root": {
               height: "50px",
               borderColor: error ? "#dc2626" : undefined,

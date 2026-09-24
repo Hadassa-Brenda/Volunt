@@ -35,6 +35,8 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
   const [errors, setErrors] = useState({});
   const [touchedFields, setTouchedFields] = useState({});
+  const isPessoaJuridica = form.tipoUsuario === "PJ";
+  const isPessoaFisica = form.tipoUsuario === "PF";
 
   function updateField(field, value) {
     const nextForm = {
@@ -131,16 +133,16 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
       tipoUsuario: form.tipoUsuario,
 
-      cnpj: form.tipoUsuario === "PJ"
+      cnpj: isPessoaJuridica
         ? form.cnpj.replace(/\D/g, "")
         : null,
 
-      genero: form.tipoUsuario === "PF" ? form.gender : null,
+      genero: isPessoaFisica ? form.gender : null,
 
       perfilUsuario: form.perfilUsuario,
 
       dataNascimento:
-        form.tipoUsuario === "PF" ? form.dataNascimento || null : null,
+        isPessoaFisica ? form.dataNascimento || null : null,
 
       password: form.password,
     };
@@ -249,8 +251,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
             <SingleSelect
               label="Tipo de Usuário"
-              width="400px"
-              required
               value={form.tipoUsuario || ""}
               onChange={(value) => updateField("tipoUsuario", value)}
               options={TipoUsuario.map((option) => ({
@@ -262,7 +262,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
               helperText={shouldShowError("tipoUsuario")}
             />
 
-            {form.tipoUsuario === "PJ" && (
+            {isPessoaJuridica && (
               <GenericTextField
                 label="CNPJ"
                 value={form.cnpj}
@@ -274,11 +274,10 @@ export default function UserRegisterPage({ onSubmitUser }) {
               />
             )}
 
-            {form.tipoUsuario === "PF" && (
+            {isPessoaFisica && (
               <SingleSelect
                 label="Gênero"
                 width="400px"
-                required
                 value={form.gender || ""}
                 onChange={(value) => updateField("gender", value)}
                 options={GENDER_OPTIONS.map((option) => ({
@@ -291,7 +290,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
               />
             )}
 
-            {form.tipoUsuario === "PF" && (
+            {isPessoaFisica && (
               <DataPicker
                 label="Data de nascimento"
                 width="400px"
@@ -305,8 +304,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
             <SingleSelect
               label="Tipo de perfil"
-              width="400px"
-              required
               value={form.perfilUsuario || ""}
               onChange={(value) => updateField("perfilUsuario", value)}
               options={PROFILE_TYPES.map((profileType) => ({

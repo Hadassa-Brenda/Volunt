@@ -15,7 +15,7 @@ export default function SingleSelect({
   onChange,
   options = [],
   width = "400px",
-  height = "50px",
+  height = "56px",
   placeholder = "Selecione uma opção",
   required = false,
   disabled = false,

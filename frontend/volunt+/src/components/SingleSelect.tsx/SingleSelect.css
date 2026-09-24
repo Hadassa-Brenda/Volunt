@@ -5,8 +5,20 @@
 
 .select-generic__label.MuiInputLabel-root {
   color: var(--color-text-dark);
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-size: 15px;
   font-weight: 600;
+}
+
+.select-generic__label .MuiFormLabel-asterisk {
+  margin-left: 3px;
+  color: var(--color-danger);
+}
+
+.select-generic__form-control {
+  width: 100%;
 }
 
 .select-generic__label.Mui-focused {
@@ -21,11 +33,12 @@
   border-radius: 10px;
   background-color: var(--color-white);
   color: var(--color-text);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .select-generic__select .MuiSelect-select {
-  padding: 12px 14px;
+  min-height: 24px;
+  padding: 15px 14px;
 }
 
 .select-generic__select .MuiOutlinedInput-notchedOutline {

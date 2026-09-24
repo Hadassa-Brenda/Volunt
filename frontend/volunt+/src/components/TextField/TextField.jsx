@@ -27,6 +27,9 @@ export default function GenericTextField({
       variant={variant}
       disabled={disabled}
       sx={{
+        "& .MuiInputLabel-root": {
+          fontWeight: 400,
+        },
         "& .MuiOutlinedInput-notchedOutline": {
           border: "none",
           width: "100%",
