@@ -6,6 +6,42 @@ function getOnlyNumbers(value) {
   return String(value || "").replace(/\D/g, "");
 }
 
+export function formatCnpj(value) {
+  const numbers = getOnlyNumbers(value).slice(0, 14);
+
+  return numbers
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2");
+}
+
+function isValidCnpj(value) {
+  const numbers = getOnlyNumbers(value);
+
+  if (numbers.length !== 14 || /^([0-9])\1{13}$/.test(numbers)) {
+    return false;
+  }
+
+  const calculateDigit = (length) => {
+    const weights = length === 12
+      ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+      : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    const sum = numbers
+      .slice(0, length)
+      .split("")
+      .reduce((total, digit, index) => total + Number(digit) * weights[index], 0);
+    const remainder = sum % 11;
+
+    return remainder < 2 ? 0 : 11 - remainder;
+  };
+
+  return (
+    calculateDigit(12) === Number(numbers[12]) &&
+    calculateDigit(13) === Number(numbers[13])
+  );
+}
+
 export function validateField(field, value, form) {
   const textValue = String(value || "").trim();
 
@@ -24,23 +60,47 @@ export function validateField(field, value, form) {
 
       return "";
 
-    case "whatsapp": {
-      const numbers = getOnlyNumbers(textValue);
-
-      if (!numbers) {
-        return "Informe um WhatsApp para contato.";
+    case "cnpj":
+      if (form.tipoUsuario !== "PJ") {
+        return "";
       }
 
-      if (numbers.length < 10 || numbers.length > 13) {
-        return "Informe um WhatsApp válido com DDD.";
+      if (!textValue) {
+        return "Informe o CNPJ da entidade.";
+      }
+
+      if (!isValidCnpj(value)) {
+        return "Informe um CNPJ válido.";
       }
 
       return "";
-    }
 
-    case "profileType":
+    case "tipoUsuario":
+      return textValue ? "" : "Selecione o tipo de usuário.";
+
+    case "perfilUsuario":
+      return textValue ? "" : "Selecione o tipo de perfil.";
+
+    case "gender":
+      return form.tipoUsuario === "PF" && !textValue
+        ? "Selecione o gênero."
+        : "";
+
+    case "dataNascimento":
+      if (form.tipoUsuario !== "PF") {
+        return "";
+      }
+
       if (!textValue) {
-        return "Selecione o tipo de perfil.";
+        return "Informe a data de nascimento.";
+      }
+
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(textValue)) {
+        return "Informe uma data válida.";
+      }
+
+      if (new Date(`${textValue}T00:00:00`) > new Date()) {
+        return "A data de nascimento não pode ser futura.";
       }
 
       return "";
@@ -59,13 +119,6 @@ export function validateField(field, value, form) {
     case "confirmPassword":
       if (textValue !== form.password) {
         return "As senhas não conferem.";
-      }
-
-      return "";
-
-    case "acceptTerms":
-      if (!value) {
-        return "Você precisa aceitar os termos para continuar.";
       }
 
       return "";

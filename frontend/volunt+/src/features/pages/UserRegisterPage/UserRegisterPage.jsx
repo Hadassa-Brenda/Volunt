@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import { ArrowLeft, ShieldCheck, UserPlus } from "lucide-react";
 
-import FieldError from "../../../components/FieldError/FieldError";
-
 import {
   INITIAL_USER_REGISTER_FORM,
   REGISTER_IMAGES,
@@ -16,7 +14,11 @@ import { PROFILE_TYPES } from "types/enum/ProfileTypes";
 
 import "../../../styles/global.css";
 
-import { validateField, validateForm } from "./Utils/userRegisterValidation";
+import {
+  formatCnpj,
+  validateField,
+  validateForm,
+} from "./Utils/userRegisterValidation";
 
 import "./UserRegisterPage.css";
 
@@ -40,6 +42,15 @@ export default function UserRegisterPage({ onSubmitUser }) {
       [field]: value,
     };
 
+    if (field === "tipoUsuario" && value === "PJ") {
+      nextForm.gender = "";
+      nextForm.dataNascimento = "";
+    }
+
+    if (field === "tipoUsuario" && value === "PF") {
+      nextForm.cnpj = "";
+    }
+
     setForm(nextForm);
 
     setTouchedFields((current) => ({
@@ -47,11 +58,14 @@ export default function UserRegisterPage({ onSubmitUser }) {
       [field]: true,
     }));
 
-    const fieldError = validateField(field, value, nextForm);
+    const fieldError = validateField(field, nextForm[field], nextForm);
 
     setErrors((current) => ({
       ...current,
       [field]: fieldError,
+      ...(field === "tipoUsuario"
+        ? { cnpj: "", gender: "", dataNascimento: "" }
+        : {}),
     }));
   }
 
@@ -77,6 +91,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
     setTouchedFields({
       fullName: true,
       email: true,
+      cnpj: true,
       gender: true,
       tipoUsuario: true,
       perfilUsuario: true,
@@ -104,8 +119,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
       setErrors(validationErrors);
       markAllFieldsAsTouched();
 
-      console.log("Erros de validação:", validationErrors);
-
       return;
     }
 
@@ -118,16 +131,19 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
       tipoUsuario: form.tipoUsuario,
 
-      genero: form.gender,
+      cnpj: form.tipoUsuario === "PJ"
+        ? form.cnpj.replace(/\D/g, "")
+        : null,
+
+      genero: form.tipoUsuario === "PF" ? form.gender : null,
 
       perfilUsuario: form.perfilUsuario,
 
-      dataNascimento: form.dataNascimento || null,
+      dataNascimento:
+        form.tipoUsuario === "PF" ? form.dataNascimento || null : null,
 
       password: form.password,
     };
-
-    console.log("Novo usuário:", newUser);
 
     const storedUsers = JSON.parse(
       localStorage.getItem("volunt-users") || "[]",
@@ -157,10 +173,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
     localStorage.setItem("volunt-user", JSON.stringify(newUser));
 
-    console.log("Usuários salvos:", updatedUsers);
-
-    console.log("Usuário atual:", newUser);
-
     if (onSubmitUser) {
       onSubmitUser(newUser);
     }
@@ -184,7 +196,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
       <header className="user-register-page__topbar">
         <button
-          className="back-button"
+          className="user-register-page__back-button"
           type="button"
           onClick={() => navigate("/")}
         >
@@ -192,24 +204,9 @@ export default function UserRegisterPage({ onSubmitUser }) {
           Voltar
         </button>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <h1
-            style={{
-              fontSize: "24px",
-              margin: "0",
-              fontWeight: "bold",
-            }}
-          >
-            Cadastre-se no Voluntá+
-          </h1>
-        </div>
+        <h1 className="user-register-page__topbar-title">
+          Cadastre-se no Voluntá+
+        </h1>
       </header>
 
       <section className="user-register-page__content">
@@ -251,21 +248,9 @@ export default function UserRegisterPage({ onSubmitUser }) {
             />
 
             <SingleSelect
-              label="Gênero"
-              width="400px"
-              value={form.gender || ""}
-              onChange={(value) => updateField("gender", value)}
-              options={GENDER_OPTIONS.map((option) => ({
-                value: option.value,
-                label: option.label,
-              }))}
-              onBlur={() => handleBlur("gender")}
-              error={Boolean(shouldShowError("gender"))}
-            />
-
-            <SingleSelect
               label="Tipo de Usuário"
               width="400px"
+              required
               value={form.tipoUsuario || ""}
               onChange={(value) => updateField("tipoUsuario", value)}
               options={TipoUsuario.map((option) => ({
@@ -274,19 +259,54 @@ export default function UserRegisterPage({ onSubmitUser }) {
               }))}
               onBlur={() => handleBlur("tipoUsuario")}
               error={Boolean(shouldShowError("tipoUsuario"))}
+              helperText={shouldShowError("tipoUsuario")}
             />
 
-            <DataPicker
-              label="Data de nascimento"
-              width="400px"
-              value={form.dataNascimento}
-              onChange={(value) => updateField("dataNascimento", value)}
-              onBlur={() => handleBlur("dataNascimento")}
-            />
+            {form.tipoUsuario === "PJ" && (
+              <GenericTextField
+                label="CNPJ"
+                value={form.cnpj}
+                onChange={(value) => updateField("cnpj", formatCnpj(value))}
+                onBlur={() => handleBlur("cnpj")}
+                placeholder="00.000.000/0000-00"
+                error={Boolean(shouldShowError("cnpj"))}
+                helperText={shouldShowError("cnpj")}
+              />
+            )}
+
+            {form.tipoUsuario === "PF" && (
+              <SingleSelect
+                label="Gênero"
+                width="400px"
+                required
+                value={form.gender || ""}
+                onChange={(value) => updateField("gender", value)}
+                options={GENDER_OPTIONS.map((option) => ({
+                  value: option.value,
+                  label: option.label,
+                }))}
+                onBlur={() => handleBlur("gender")}
+                error={Boolean(shouldShowError("gender"))}
+                helperText={shouldShowError("gender")}
+              />
+            )}
+
+            {form.tipoUsuario === "PF" && (
+              <DataPicker
+                label="Data de nascimento"
+                width="400px"
+                value={form.dataNascimento}
+                onChange={(value) => updateField("dataNascimento", value)}
+                onBlur={() => handleBlur("dataNascimento")}
+                error={Boolean(shouldShowError("dataNascimento"))}
+                helperText={shouldShowError("dataNascimento")}
+              />
+            )}
 
             <SingleSelect
               label="Tipo de perfil"
               width="400px"
+              required
               value={form.perfilUsuario || ""}
               onChange={(value) => updateField("perfilUsuario", value)}
               options={PROFILE_TYPES.map((profileType) => ({
@@ -295,6 +315,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
               }))}
               onBlur={() => handleBlur("perfilUsuario")}
               error={Boolean(shouldShowError("perfilUsuario"))}
+              helperText={shouldShowError("perfilUsuario")}
             />
           </div>
 
@@ -321,11 +342,6 @@ export default function UserRegisterPage({ onSubmitUser }) {
               helperText={shouldShowError("confirmPassword")}
             />
           </div>
-
-          <FieldError
-            id="acceptTerms-error"
-            message={shouldShowError("acceptTerms")}
-          />
 
           <div className="user-register-form__actions">
             <button

@@ -18,6 +18,9 @@ export default function DataPicker({
   label,
   value = "",
   onChange,
+  onBlur,
+  error = false,
+  helperText = "",
 }) {
   const [cleared, setCleared] = React.useState(false);
 
@@ -39,7 +42,7 @@ export default function DataPicker({
         sx={{
           width: "100%",
           maxWidth: width,
-          height,
+          height: helperText ? "72px" : height,
           display: "flex",
           justifyContent: "center",
           position: "relative",
@@ -62,6 +65,7 @@ export default function DataPicker({
           slotProps={{
             field: {
               clearable: true,
+              onBlur,
 
               onClear: () => {
                 onChange?.("");
@@ -74,9 +78,28 @@ export default function DataPicker({
             maxWidth: width,
             "& .MuiPickersOutlinedInput-root": {
               height: "50px",
+              borderColor: error ? "#dc2626" : undefined,
+            },
+            "& .MuiFormHelperText-root": {
+              color: "#dc2626",
+              marginLeft: 0,
             },
           }}
         />
+
+        {helperText && (
+          <span
+            style={{
+              position: "absolute",
+              top: "52px",
+              left: 0,
+              color: "#dc2626",
+              fontSize: "12px",
+            }}
+          >
+            {helperText}
+          </span>
+        )}
 
         {cleared && (
           <Alert

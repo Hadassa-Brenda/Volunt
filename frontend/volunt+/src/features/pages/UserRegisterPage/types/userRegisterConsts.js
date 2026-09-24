@@ -9,6 +9,7 @@ export const REGISTER_IMAGES = {
 export const INITIAL_USER_REGISTER_FORM = {
   fullName: "",
   email: "",
+  cnpj: "",
   gender: "",
   tipoUsuario: "",
   perfilUsuario: "",

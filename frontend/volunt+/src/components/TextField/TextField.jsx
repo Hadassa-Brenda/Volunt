@@ -5,6 +5,7 @@ export default function GenericTextField({
   type = "text",
   value,
   onChange,
+  onBlur,
   placeholder,
   error,
   variant = "outlined",
@@ -19,6 +20,7 @@ export default function GenericTextField({
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur}
       placeholder={placeholder}
       error={error}
       helperText={helperText}

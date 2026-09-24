@@ -152,6 +152,25 @@
   align-items: center;
 }
 
+.user-register-page__topbar {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 980px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.user-register-page__topbar-title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 24px;
+  font-weight: 900;
+  text-align: center;
+}
+
 .user-register-page__heading {
   max-width: 720px;
   text-align: center;
@@ -227,6 +246,10 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 18px;
   padding-top: 16px;
+}
+
+.user-register-form__grid > * {
+  min-width: 0;
 }
 
 .user-register-form_select {
@@ -428,6 +451,10 @@
     font-size: 24px;
   }
 
+  .user-register-page__topbar-title {
+    font-size: 20px;
+  }
+
   .user-register-page__heading h1 {
     font-size: 32px;
   }
@@ -464,6 +491,16 @@
 }
 
 @media (max-width: 520px) {
+  .user-register-page__topbar {
+    align-items: flex-start;
+  }
+
+  .user-register-page__topbar-title {
+    max-width: 170px;
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
   .user-register-page__back-button {
     padding: 10px 14px;
   }

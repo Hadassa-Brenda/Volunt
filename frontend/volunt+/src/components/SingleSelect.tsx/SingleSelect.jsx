@@ -23,6 +23,7 @@ export default function SingleSelect({
   helperText = "",
   showEmptyOption = true,
   name,
+  onBlur,
   className = "",
 }) {
   const generatedId = React.useId();
@@ -78,6 +79,7 @@ export default function SingleSelect({
           labelId={labelId}
           value={value}
           onChange={handleChange}
+          onBlur={onBlur}
           className="select-generic__select"
           sx={{ width: "100%", height: height, maxWidth: width }}
         >
