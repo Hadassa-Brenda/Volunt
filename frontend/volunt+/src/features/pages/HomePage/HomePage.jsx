@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Footer from "../../../layouts/Footer/Footer";
@@ -8,32 +8,16 @@ import SearchPanel from "../../../components/SearchPanel/SearchPanel";
 import ServicesSection from "../../../components/ServicesSection/ServicesSection";
 
 import { filterServices } from "../../../utils/filterServices";
-import { getServices } from "../../../service/serviceService";
+import { useServices } from "../../../hook/useServices";
+import { initialFilters } from "../CatalogoServicos/constants/initialFilters";
 
 import "./HomePage.css";
-
-const INITIAL_FILTERS = {
-  search: "",
-  location: [],
-  category: [],
-  modality: [],
-  genero: [],
-  diaDaSemana: [],
-  turno: [],
-  avaliacao: [],
-};
 
 export default function HomePage() {
   const navigate = useNavigate();
 
-  const [services, setServices] = useState([]);
-  const [filters, setFilters] = useState(INITIAL_FILTERS);
-
-  useEffect(() => {
-    const data = getServices();
-
-    setServices(data);
-  }, []);
+  const { services = [] } = useServices();
+  const [filters, setFilters] = useState(initialFilters);
 
   const filteredServices = useMemo(() => {
     return filterServices(services, filters);
@@ -47,7 +31,10 @@ export default function HomePage() {
   }
 
   function handleApplyFilters(newFilters) {
-    setFilters(newFilters);
+    setFilters((currentFilters) => ({
+      ...currentFilters,
+      ...newFilters,
+    }));
   }
 
   return (

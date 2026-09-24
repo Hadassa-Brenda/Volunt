@@ -1,6 +1,11 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, Lock } from "lucide-react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 
 import { resetPassword } from "./services/authService";
 
@@ -114,7 +119,9 @@ export default function ResetPasswordPage() {
                     required
                     type="password"
                     value={form.password}
-                    onChange={(event) => updateField("password", event.target.value)}
+                    onChange={(event) =>
+                      updateField("password", event.target.value)
+                    }
                     placeholder="Digite a nova senha"
                   />
                 </div>

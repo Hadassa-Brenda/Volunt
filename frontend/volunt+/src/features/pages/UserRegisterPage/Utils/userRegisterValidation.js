@@ -24,13 +24,17 @@ function isValidCnpj(value) {
   }
 
   const calculateDigit = (length) => {
-    const weights = length === 12
-      ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-      : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    const weights =
+      length === 12
+        ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+        : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
     const sum = numbers
       .slice(0, length)
       .split("")
-      .reduce((total, digit, index) => total + Number(digit) * weights[index], 0);
+      .reduce(
+        (total, digit, index) => total + Number(digit) * weights[index],
+        0,
+      );
     const remainder = sum % 11;
 
     return remainder < 2 ? 0 : 11 - remainder;

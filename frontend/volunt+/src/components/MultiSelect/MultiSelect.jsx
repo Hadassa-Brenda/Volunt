@@ -35,6 +35,7 @@ export default function MultiSelect({
   value = [],
   onChange,
   placeholder = "",
+  defaultOption,
   helperText = "",
   width = "400px",
   height = "50px",
@@ -48,6 +49,7 @@ export default function MultiSelect({
   const labelId = `${selectId}-label`;
 
   const selectedValues = Array.isArray(value) ? value : [];
+  const emptyLabel = defaultOption ?? placeholder;
 
   const optionValues = React.useMemo(
     () => options.map((option) => option.value),
@@ -94,9 +96,7 @@ export default function MultiSelect({
 
   function renderSelectedValue(selected) {
     if (selected.length === 0) {
-      return (
-        <span className="multiple-select__placeholder">{placeholder}</span>
-      );
+      return <span className="multiple-select__placeholder">{emptyLabel}</span>;
     }
 
     if (allSelected) {

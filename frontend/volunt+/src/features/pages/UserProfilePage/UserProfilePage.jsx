@@ -45,8 +45,10 @@ function getOptionLabel(options, value) {
 
   const option = options.find(
     (item) =>
-      String(item.value).toLowerCase() === String(normalizedValue).toLowerCase() ||
-      String(item.label).toLowerCase() === String(normalizedValue).toLowerCase(),
+      String(item.value).toLowerCase() ===
+        String(normalizedValue).toLowerCase() ||
+      String(item.label).toLowerCase() ===
+        String(normalizedValue).toLowerCase(),
   );
 
   return option?.label || String(normalizedValue);
@@ -59,7 +61,6 @@ export default function UserProfilePage() {
 
   const profileId = id ? Number(id) : null;
 
-
   const storedUser = useMemo(() => {
     try {
       return JSON.parse(localStorage.getItem("volunt-user") || "null");
@@ -71,14 +72,11 @@ export default function UserProfilePage() {
   const isOwnProfile =
     !profileId || Number(storedUser?.id) === Number(profileId);
 
-
   const profileUser = useMemo(() => {
-
     if (isOwnProfile && storedUser) {
       return storedUser;
     }
 
-    
     try {
       const localUsers = JSON.parse(
         localStorage.getItem("volunt-users") || "[]",
@@ -93,7 +91,6 @@ export default function UserProfilePage() {
       }
     } catch {}
 
-  
     return userDTO.find((user) => Number(user.id) === Number(profileId));
   }, [profileId, isOwnProfile, storedUser]);
 
@@ -105,7 +102,6 @@ export default function UserProfilePage() {
 
   const [saved, setSaved] = useState(false);
 
-
   const [form, setForm] = useState({
     fullName: profileUser?.fullName || "",
     email: profileUser?.email || "",
@@ -115,11 +111,9 @@ export default function UserProfilePage() {
       : "",
   });
 
-
   useEffect(() => {
     setUser(profileUser);
   }, [profileUser]);
-
 
   useEffect(() => {
     if (!profileUser) {
@@ -136,7 +130,6 @@ export default function UserProfilePage() {
     });
   }, [profileUser]);
 
- 
   const isOfertante = user?.perfilUsuario === "PF";
 
   const isPessoaJuridica = user?.tipoUsuario === "PJ";
@@ -146,11 +139,9 @@ export default function UserProfilePage() {
     label: option.label,
   }));
 
-  
   const allServices = useMemo(() => {
     return getServices();
   }, []);
-
 
   const publishedServices = useMemo(() => {
     if (!user?.id || !isOfertante) {
@@ -162,14 +153,12 @@ export default function UserProfilePage() {
     );
   }, [allServices, user?.id, isOfertante]);
 
-
   function updateField(field, value) {
     setForm((current) => ({
       ...current,
       [field]: value,
     }));
   }
-
 
   function handleLogout() {
     localStorage.removeItem("volunt-user");
@@ -222,7 +211,6 @@ export default function UserProfilePage() {
       return;
     }
 
- 
     const updatedUser = {
       ...user,
 
@@ -237,9 +225,7 @@ export default function UserProfilePage() {
         : null,
     };
 
-  
     localStorage.setItem("volunt-user", JSON.stringify(updatedUser));
-
 
     try {
       const users = JSON.parse(localStorage.getItem("volunt-users") || "[]");
@@ -265,12 +251,10 @@ export default function UserProfilePage() {
 
     setSaved(true);
 
-
     window.setTimeout(() => {
       setSaved(false);
     }, 2500);
   }
-
 
   if (!user) {
     return (
@@ -293,7 +277,6 @@ export default function UserProfilePage() {
       </main>
     );
   }
-
 
   const tipoUsuarioLabel =
     TipoUsuario.find((item) => item.value === user.tipoUsuario)?.label ??
@@ -318,7 +301,6 @@ export default function UserProfilePage() {
       <Header />
 
       <div className="profile-container">
-
         <button
           className="back-button"
           type="button"
@@ -328,7 +310,6 @@ export default function UserProfilePage() {
           Voltar
         </button>
 
-  
         <section className="profile-cover">
           <div className="profile-avatar">{name.slice(0, 2).toUpperCase()}</div>
 

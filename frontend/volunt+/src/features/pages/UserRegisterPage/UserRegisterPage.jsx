@@ -133,16 +133,13 @@ export default function UserRegisterPage({ onSubmitUser }) {
 
       tipoUsuario: form.tipoUsuario,
 
-      cnpj: isPessoaJuridica
-        ? form.cnpj.replace(/\D/g, "")
-        : null,
+      cnpj: isPessoaJuridica ? form.cnpj.replace(/\D/g, "") : null,
 
       genero: isPessoaFisica ? form.gender : null,
 
       perfilUsuario: form.perfilUsuario,
 
-      dataNascimento:
-        isPessoaFisica ? form.dataNascimento || null : null,
+      dataNascimento: isPessoaFisica ? form.dataNascimento || null : null,
 
       password: form.password,
     };

@@ -310,10 +310,7 @@ export default function DetalhesServico() {
                   JSON.stringify([...storedReviews, newReview]),
                 );
 
-                setReviews((currentReviews) => [
-                  ...currentReviews,
-                  newReview,
-                ]);
+                setReviews((currentReviews) => [...currentReviews, newReview]);
               }}
             />
           </div>

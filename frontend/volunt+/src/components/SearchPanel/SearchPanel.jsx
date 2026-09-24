@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { Search, SlidersHorizontal } from "lucide-react";
 
-import { CATEGORIAS } from "../../types/enum/Categories";
-import { SERVICE_MODALITIES } from "../../types/enum/Modalities";
-
 import MultiSelect from "../MultiSelect/MultiSelect";
 import Button from "../Button/Button";
 import ServiceModal from "../ServiceModal/ServiceModal";

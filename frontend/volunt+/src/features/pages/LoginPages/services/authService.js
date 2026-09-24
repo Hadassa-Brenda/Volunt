@@ -6,7 +6,9 @@ const STORAGE_KEYS = {
 };
 
 function normalizeEmail(email) {
-  return String(email || "").trim().toLowerCase();
+  return String(email || "")
+    .trim()
+    .toLowerCase();
 }
 
 export function getStoredUser() {
@@ -45,10 +47,11 @@ export async function login(email, password) {
   try {
     const { data } = await authApi.login(normalizedEmail, password);
     const token = data?.token || data?.accessToken || data?.jwt || "";
-    const user = data?.user || data?.usuario || {
-      email: normalizedEmail,
-      fullName: data?.fullName || data?.name || normalizedEmail.split("@")[0],
-    };
+    const user = data?.user ||
+      data?.usuario || {
+        email: normalizedEmail,
+        fullName: data?.fullName || data?.name || normalizedEmail.split("@")[0],
+      };
 
     if (!user || !token) {
       throw new Error("Resposta inválida do servidor de autenticação.");
@@ -65,7 +68,9 @@ export async function login(email, password) {
     })();
 
     const fallbackUser = [...storedUsers].find(
-      (user) => normalizeEmail(user.email) === normalizedEmail && user.password === password,
+      (user) =>
+        normalizeEmail(user.email) === normalizedEmail &&
+        user.password === password,
     );
 
     if (!fallbackUser) {
@@ -116,7 +121,11 @@ export async function resetPassword({ token, password, confirmPassword }) {
   }
 
   try {
-    const { data } = await authApi.resetPassword(token, password, confirmPassword);
+    const { data } = await authApi.resetPassword(
+      token,
+      password,
+      confirmPassword,
+    );
     return data;
   } catch (error) {
     return {

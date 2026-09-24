@@ -27,24 +27,44 @@ export default function Header({ onCreateUser, onOpenLogin }) {
 
       {user && (
         <nav className="header__nav" aria-label="Menu principal">
-          <Link to="/" className="header__nav-link" onClick={() => setMenuOpen(false)}>
+          <Link
+            to="/"
+            className="header__nav-link"
+            onClick={() => setMenuOpen(false)}
+          >
             Início
           </Link>
 
-          <Link to="/about-volunteering" className="header__nav-link" onClick={() => setMenuOpen(false)}>
+          <Link
+            to="/about-volunteering"
+            className="header__nav-link"
+            onClick={() => setMenuOpen(false)}
+          >
             Sobre
           </Link>
 
           {!isBeneficiario && (
-            <Link to="/cadastrar-servico" className="header__nav-link" onClick={() => setMenuOpen(false)}>
+            <Link
+              to="/cadastrar-servico"
+              className="header__nav-link"
+              onClick={() => setMenuOpen(false)}
+            >
               Criar Serviço
             </Link>
           )}
-          <Link to="/catalogo-servicos" className="header__nav-link" onClick={() => setMenuOpen(false)}>
+          <Link
+            to="/catalogo-servicos"
+            className="header__nav-link"
+            onClick={() => setMenuOpen(false)}
+          >
             Catalógo de Serviços
           </Link>
           {!isBeneficiario && (
-            <Link to="/meus-servicos" className="header__nav-link" onClick={() => setMenuOpen(false)}>
+            <Link
+              to="/meus-servicos"
+              className="header__nav-link"
+              onClick={() => setMenuOpen(false)}
+            >
               Meus Serviços
             </Link>
           )}
@@ -54,7 +74,11 @@ export default function Header({ onCreateUser, onOpenLogin }) {
       <div className="header__actions">
         {user ? (
           <>
-            <Link className="header__profile" to={`/perfil/${user.id}`} onClick={() => setMenuOpen(false)}>
+            <Link
+              className="header__profile"
+              to={`/perfil/${user.id}`}
+              onClick={() => setMenuOpen(false)}
+            >
               <span className="header__avatar">
                 {(user.fullName || user.name || "U").slice(0, 1).toUpperCase()}
               </span>

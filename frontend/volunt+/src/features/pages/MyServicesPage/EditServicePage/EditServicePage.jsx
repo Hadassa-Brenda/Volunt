@@ -73,9 +73,9 @@ export default function EditServicePage() {
 
         bairro: service.localizacao?.bairro || service.bairro || "",
 
-        diaSemana: [
-          service.diaDaSemana ?? agendamento?.diaSemana,
-        ].filter(Boolean),
+        diaSemana: [service.diaDaSemana ?? agendamento?.diaSemana].filter(
+          Boolean,
+        ),
 
         turno: [service.turno ?? agendamento?.turno].filter(Boolean),
 
@@ -137,8 +137,7 @@ export default function EditServicePage() {
         !formData.descricao?.trim() ||
         formData.descricao.trim().length < 30
       ) {
-        newErrors.descricao =
-          "Descrição deve possuir no mínimo 30 caracteres.";
+        newErrors.descricao = "Descrição deve possuir no mínimo 30 caracteres.";
       }
     }
 

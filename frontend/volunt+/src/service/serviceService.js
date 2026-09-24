@@ -54,10 +54,7 @@ function getUserData() {
 }
 
 function getReviewData() {
-  return [
-    ...AvaliacaoDTO,
-    ...getStoredArray("volunt-avaliacoes", []),
-  ];
+  return [...AvaliacaoDTO, ...getStoredArray("volunt-avaliacoes", [])];
 }
 
 function mapStoredServices() {

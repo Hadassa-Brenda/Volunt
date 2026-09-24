@@ -102,7 +102,11 @@ export default function ForgotPasswordPage() {
             </p>
           )}
 
-          <button className="login-card__button" type="submit" disabled={isSubmitting}>
+          <button
+            className="login-card__button"
+            type="submit"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Enviando..." : "Enviar link"}
           </button>
 

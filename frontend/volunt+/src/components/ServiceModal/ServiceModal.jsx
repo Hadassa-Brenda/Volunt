@@ -17,9 +17,9 @@ import {
 import "./ServiceModal.css";
 
 const INITIAL_FILTERS = {
-  estado: [],
-  tipoLocalizacao: [],
-  categoria: [],
+  state: [],
+  typeLocalization: [],
+  category: [],
   genero: [],
   diaDaSemana: [],
   turno: [],
@@ -40,8 +40,6 @@ export default function ServiceModal({
       [field]: value,
     }));
   }
-  console.log(data, "ejdhedheud");
-
   function clearAdvancedFilters() {
     setFilters(INITIAL_FILTERS);
   }
@@ -77,10 +75,11 @@ export default function ServiceModal({
           <MultiSelect
             width="100%"
             label="Estado"
-            value={filters.estado}
+            name="state"
+            value={filters.state}
             options={getStateOptions(data)}
             onChange={(event) =>
-              handleFilterChange("estado", event.target.value)
+              handleFilterChange("state", event.target.value)
             }
           />
 
@@ -88,10 +87,11 @@ export default function ServiceModal({
           <MultiSelect
             width="100%"
             label="Tipo de localização"
-            value={filters.tipoLocalizacao}
+            name="typeLocalization"
+            value={filters.typeLocalization}
             options={getLocationTypeOptions(data)}
             onChange={(event) =>
-              handleFilterChange("tipoLocalizacao", event.target.value)
+              handleFilterChange("typeLocalization", event.target.value)
             }
           />
 
@@ -99,10 +99,11 @@ export default function ServiceModal({
           <MultiSelect
             width="100%"
             label="Categoria"
-            value={filters.categoria}
+            name="category"
+            value={filters.category}
             options={getCategoryOptions(data)}
             onChange={(event) =>
-              handleFilterChange("categoria", event.target.value)
+              handleFilterChange("category", event.target.value)
             }
           />
 

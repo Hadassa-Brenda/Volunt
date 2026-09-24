@@ -32,32 +32,40 @@ export function getUniqueOptions(data = [], { value, label }) {
 
 export function getLocationOptions(data = []) {
   return getUniqueOptions(data, {
-    value: (service) => service.localizacao?.id,
+    value: (service) => service.localizacao?.id ?? service.idLocalizacao,
 
     label: (service) => {
       const localizacao = service.localizacao;
 
       if (!localizacao) return "";
 
-      return `${localizacao.bairro} - ${localizacao.cidade}`;
+      return [localizacao.bairro, localizacao.cidade]
+        .filter(Boolean)
+        .join(" - ");
     },
   });
 }
 
 export function getStateOptions(data = []) {
   return getUniqueOptions(data, {
-    value: (service) => service.localizacao?.estado,
+    value: (service) => service.localizacao?.estado ?? service.estado,
 
-    label: (service) => service.localizacao?.estado,
+    label: (service) => service.localizacao?.estado ?? service.estado,
   });
 }
 
 export function getLocationTypeOptions(data = []) {
   return getUniqueOptions(data, {
-    value: (service) => service.localizacao?.tipoLocalizacao,
+    value: (service) =>
+      service.localizacao?.tipoLocalizacao ??
+      service.tipoLocalizacao ??
+      service.typeLocalization,
 
     label: (service) => {
-      const tipoValue = service.localizacao?.tipoLocalizacao;
+      const tipoValue =
+        service.localizacao?.tipoLocalizacao ??
+        service.tipoLocalizacao ??
+        service.typeLocalization;
 
       const tipo = TIPO_LOCALIZACAO.find(
         (item) => String(item.value) === String(tipoValue),
@@ -70,19 +78,28 @@ export function getLocationTypeOptions(data = []) {
 
 export function getCategoryOptions(data = []) {
   return getUniqueOptions(data, {
-    value: (service) => service.categoria?.id,
+    value: (service) =>
+      service.categoria?.id ?? service.category?.id ?? service.idCategoria,
 
-    label: (service) => service.categoria?.nome || "",
+    label: (service) =>
+      service.categoria?.nome ||
+      service.categoria?.label ||
+      service.category?.nome ||
+      service.category?.name ||
+      "",
   });
 }
 
 export function getModalityOptions(data = []) {
   return getUniqueOptions(data, {
-    value: (service) => service.modalities,
+    value: (service) =>
+      service.modalities ?? service.modality ?? service.modalidade,
 
     label: (service) => {
       const modalidade = SERVICE_MODALITIES.find(
-        (item) => String(item.value) === String(service.modalities),
+        (item) =>
+          String(item.value) ===
+          String(service.modalities ?? service.modality ?? service.modalidade),
       );
 
       return modalidade?.label || "";
@@ -92,10 +109,10 @@ export function getModalityOptions(data = []) {
 
 export function getGenderOptions(data = []) {
   return getUniqueOptions(data, {
-    value: (service) => service.usuario?.genero,
+    value: (service) => service.usuario?.genero ?? service.genero,
 
     label: (service) => {
-      const generoValue = service.usuario?.genero;
+      const generoValue = service.usuario?.genero ?? service.genero;
 
       const genero = GENDER_OPTIONS.find(
         (item) => String(item.value) === String(generoValue),
@@ -155,10 +172,10 @@ export function getScoreOptions() {
 
 export function getAge(services = []) {
   const idades = services
-    .map((service) => calculateAge(service.usuario?.dataNascimento))
+    .map((service) =>
+      calculateAge(service.usuario?.dataNascimento ?? service.dataNascimento),
+    )
     .filter((idade) => idade !== null && idade !== undefined);
-
-  console.log("idades:", idades);
 
   return getUniqueOptions(idades, {
     value: (idade) => idade,

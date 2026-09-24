@@ -1,3 +1,22 @@
+function expandSchedules(schedules = []) {
+  return schedules.flatMap((schedule) => {
+    const days = Array.isArray(schedule.diaSemana)
+      ? schedule.diaSemana
+      : [schedule.diaSemana];
+    const shifts = Array.isArray(schedule.turno)
+      ? schedule.turno
+      : [schedule.turno];
+
+    return days.flatMap((day) =>
+      shifts.map((shift) => ({
+        ...schedule,
+        diaSemana: day,
+        turno: shift,
+      })),
+    );
+  });
+}
+
 export function mapServices({
   services,
   usuarios,
@@ -8,9 +27,13 @@ export function mapServices({
   agendamentos,
 }) {
   return services.map((service) => {
-    const serviceReviews = avaliacoes.filter(
-      (avaliacao) => String(avaliacao.idServico) === String(service.id),
-    );
+    const serviceReviews = Array.isArray(service.avaliacoes)
+      ? service.avaliacoes
+      : Array.isArray(service.reviews)
+        ? service.reviews
+        : avaliacoes.filter(
+            (avaliacao) => String(avaliacao.idServico) === String(service.id),
+          );
 
     const ratingSum = serviceReviews.reduce(
       (sum, avaliacao) => sum + Number(avaliacao.nota || 0),
@@ -26,9 +49,12 @@ export function mapServices({
       (service.cidade || service.estado || service.bairro
         ? {
             cep: service.cep,
+            id: service.idLocalizacao,
             cidade: service.cidade,
             estado: service.estado,
             bairro: service.bairro,
+            tipoLocalizacao:
+              service.tipoLocalizacao || service.typeLocalization,
           }
         : undefined);
 
@@ -42,49 +68,42 @@ export function mapServices({
           }
         : undefined);
 
-    const mappedSchedules = agendamentos.filter(
-      (agendamento) => String(agendamento.idServico) === String(service.id),
-    );
+    const mappedSchedules = Array.isArray(service.agendamentos)
+      ? service.agendamentos
+      : agendamentos.filter(
+          (agendamento) => String(agendamento.idServico) === String(service.id),
+        );
 
-    const serviceSchedules = mappedSchedules.length
-      ? mappedSchedules.map((schedule) => ({
-          ...schedule,
-          diaSemana: Array.isArray(schedule.diaSemana)
-            ? schedule.diaSemana[0]
-            : schedule.diaSemana,
-          turno: Array.isArray(schedule.turno)
-            ? schedule.turno[0]
-            : schedule.turno,
-        }))
-      : service.diaDaSemana || service.turno
-        ? [
-            {
-              diaSemana: Array.isArray(service.diaDaSemana)
-                ? service.diaDaSemana[0]
-                : service.diaDaSemana,
-              turno: Array.isArray(service.turno)
-                ? service.turno[0]
-                : service.turno,
-            },
-          ]
+    const fallbackSchedules =
+      service.diaDaSemana || service.turno
+        ? [{ diaSemana: service.diaDaSemana, turno: service.turno }]
         : [];
+
+    const serviceSchedules = expandSchedules(
+      mappedSchedules.length ? mappedSchedules : fallbackSchedules,
+    );
 
     return {
       ...service,
 
-      usuario: usuarios.find(
-        (usuario) => String(usuario.id) === String(service.idUsuario),
-      ),
+      usuario:
+        service.usuario ||
+        usuarios.find(
+          (usuario) => String(usuario.id) === String(service.idUsuario),
+        ),
 
-      categoria: categorias.find(
-        (categoria) => String(categoria.id) === String(service.idCategoria),
-      ),
+      categoria:
+        service.categoria ||
+        categorias.find(
+          (categoria) => String(categoria.id) === String(service.idCategoria),
+        ),
 
       localizacao:
         mappedLocation ||
+        service.localizacao ||
         localizacoes.find(
-        (localizacao) =>
-          String(localizacao.id) === String(service.idLocalizacao),
+          (localizacao) =>
+            String(localizacao.id) === String(service.idLocalizacao),
         ),
 
       contato:

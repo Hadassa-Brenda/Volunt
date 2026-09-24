@@ -146,7 +146,11 @@ export default function LoginPage() {
             </p>
           )}
 
-          <button className="login-card__button" type="submit" disabled={isSubmitting}>
+          <button
+            className="login-card__button"
+            type="submit"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Entrando..." : "Entrar"}
           </button>
 

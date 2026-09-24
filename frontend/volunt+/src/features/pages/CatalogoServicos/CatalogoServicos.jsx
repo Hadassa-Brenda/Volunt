@@ -49,12 +49,6 @@ export default function CatalogoServicos() {
 
   const [page, setPage] = useState(1);
 
-  /*
-   * ========================================
-   * ALTERAÇÃO DOS FILTROS
-   * ========================================
-   */
-
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
 
@@ -62,30 +56,6 @@ export default function CatalogoServicos() {
       ...previousFilters,
       [name]: value,
     }));
-  };
-
-  /*
-   * ========================================
-   * FILTRAGEM + ORDENAÇÃO
-   * ========================================
-   */
-  const getServiceRating = (service) => {
-    const evaluations = Array.isArray(service.avaliacao)
-      ? service.avaliacao
-      : service.avaliacao
-        ? [service.avaliacao]
-        : [];
-
-    if (!evaluations.length) {
-      return 0;
-    }
-
-    const total = evaluations.reduce(
-      (sum, evaluation) => sum + Number(evaluation.nota || 0),
-      0,
-    );
-
-    return total / evaluations.length;
   };
 
   const filteredServices = useMemo(() => {
@@ -97,17 +67,14 @@ export default function CatalogoServicos() {
     const result = filterServices(services, filtersToApply);
 
     return [...result].sort((a, b) => {
-      // A → Z
       if (sortOrder === "alphabetical") {
         return (a.name || "").localeCompare(b.name || "");
       }
 
-      // Z → A
       if (sortOrder === "reverseAlphabetical") {
         return (b.name || "").localeCompare(a.name || "");
       }
 
-      // Melhor avaliação
       if (sortOrder === "rating") {
         return Number(b.avaliacaoMedia || 0) - Number(a.avaliacaoMedia || 0);
       }
@@ -115,32 +82,13 @@ export default function CatalogoServicos() {
     });
   }, [services, filters, searchTerm, sortOrder]);
 
-  /*
-   * ========================================
-   * VOLTA PARA PÁGINA 1
-   * QUANDO ALGUM FILTRO MUDA
-   * ========================================
-   */
-
   useEffect(() => {
     setPage(1);
   }, [searchTerm, filters, sortOrder]);
 
-  /*
-   * ========================================
-   * PAGINAÇÃO
-   * ========================================
-   */
-
   const start = (page - 1) * ITEMS_PER_PAGE;
 
   const visibleServices = filteredServices.slice(start, start + ITEMS_PER_PAGE);
-
-  /*
-   * ========================================
-   * LIMPAR FILTROS
-   * ========================================
-   */
 
   const clearFilters = () => {
     setFilters(initialFilters);
@@ -149,12 +97,6 @@ export default function CatalogoServicos() {
     setPage(1);
   };
 
-  /*
-   * ========================================
-   * BLOQUEIA SCROLL NO MOBILE
-   * ========================================
-   */
-
   useEffect(() => {
     document.body.style.overflow = mobileFiltersOpen ? "hidden" : "";
 
@@ -162,12 +104,6 @@ export default function CatalogoServicos() {
       document.body.style.overflow = "";
     };
   }, [mobileFiltersOpen]);
-
-  /*
-   * ========================================
-   * LOADING
-   * ========================================
-   */
 
   if (loading) {
     return (
@@ -183,12 +119,6 @@ export default function CatalogoServicos() {
     );
   }
 
-  /*
-   * ========================================
-   * ERRO
-   * ========================================
-   */
-
   if (error) {
     return (
       <main className="catalog-page">
@@ -203,19 +133,11 @@ export default function CatalogoServicos() {
     );
   }
 
-  /*
-   * ========================================
-   * PÁGINA
-   * ========================================
-   */
-
   return (
     <main className="catalog-page">
       <Header />
 
       <section className="catalog-container">
-        {/* VOLTAR */}
-
         <Button
           className="catalog-back-button"
           variant="ghost"
@@ -226,8 +148,6 @@ export default function CatalogoServicos() {
           Voltar
         </Button>
 
-        {/* TÍTULO */}
-
         <header className="catalog-heading">
           <div>
             <h1>Explorar serviços</h1>
@@ -235,10 +155,6 @@ export default function CatalogoServicos() {
             <p>Encontre iniciativas voluntárias perto de você.</p>
           </div>
         </header>
-
-        {/* ======================================
-            BUSCA
-        ====================================== */}
 
         <form
           className="catalog-search"
@@ -260,10 +176,6 @@ export default function CatalogoServicos() {
           </button>
         </form>
 
-        {/* ======================================
-            BOTÃO FILTROS MOBILE
-        ====================================== */}
-
         <button
           className="mobile-filter-button"
           type="button"
@@ -273,15 +185,7 @@ export default function CatalogoServicos() {
           Filtros
         </button>
 
-        {/* ======================================
-            LAYOUT
-        ====================================== */}
-
         <div className="catalog-layout">
-          {/* ====================================
-              FILTROS
-          ==================================== */}
-
           <aside
             className={`catalog-filters ${
               mobileFiltersOpen ? "catalog-filters--open" : ""
@@ -302,8 +206,6 @@ export default function CatalogoServicos() {
               </button>
             </div>
 
-            {/* HEADER DESKTOP */}
-
             <div className="filters-header">
               <h2>Filtros</h2>
 
@@ -311,10 +213,6 @@ export default function CatalogoServicos() {
                 Limpar filtros
               </button>
             </div>
-
-            {/* ==================================
-                CATEGORIA
-            ================================== */}
 
             <MultiSelect
               label="Categoria"
@@ -326,10 +224,6 @@ export default function CatalogoServicos() {
               options={getCategoryOptions(services)}
             />
 
-            {/* ==================================
-                MODALIDADE
-            ================================== */}
-
             <MultiSelect
               label="Modalidade"
               name="modality"
@@ -339,10 +233,6 @@ export default function CatalogoServicos() {
               defaultOption="Todas as modalidades"
               options={getModalityOptions(services)}
             />
-
-            {/* ==================================
-                LOCALIZAÇÃO
-            ================================== */}
 
             <MultiSelect
               label="Localização"
@@ -354,10 +244,6 @@ export default function CatalogoServicos() {
               options={getLocationOptions(services)}
             />
 
-            {/* ==================================
-                ESTADO
-            ================================== */}
-
             <MultiSelect
               label="Estado"
               name="state"
@@ -367,10 +253,6 @@ export default function CatalogoServicos() {
               defaultOption="Todos os estados"
               options={getStateOptions(services)}
             />
-
-            {/* ==================================
-                TIPO DE LOCALIZAÇÃO
-            ================================== */}
 
             <MultiSelect
               label="Tipo de localização"
@@ -420,10 +302,6 @@ export default function CatalogoServicos() {
               options={getScoreOptions()}
             />
 
-            {/* ==================================
-                IDADE DO OFERTANTE
-            ================================== */}
-
             <MultiSelect
               label="Idade do Ofertante"
               name="dataNascimento"
@@ -433,10 +311,6 @@ export default function CatalogoServicos() {
               defaultOption="Todas as idades"
               options={getAge(services)}
             />
-
-            {/* ==================================
-                APLICAR FILTROS MOBILE
-            ================================== */}
 
             <button
               className="apply-filters-button"
@@ -448,10 +322,6 @@ export default function CatalogoServicos() {
             </button>
           </aside>
 
-          {/* ====================================
-              OVERLAY MOBILE
-          ==================================== */}
-
           {mobileFiltersOpen && (
             <button
               className="filters-overlay"
@@ -461,13 +331,7 @@ export default function CatalogoServicos() {
             />
           )}
 
-          {/* ====================================
-              RESULTADOS
-          ==================================== */}
-
           <section className="services-results" aria-live="polite">
-            {/* HEADER DOS RESULTADOS */}
-
             <div className="results-header">
               <p>
                 <strong>{filteredServices.length}</strong>{" "}
@@ -475,8 +339,6 @@ export default function CatalogoServicos() {
                   ? "serviço encontrado"
                   : "serviços encontrados"}
               </p>
-
-              {/* ORDENAÇÃO */}
 
               <label className="sort-select">
                 <span>Ordenar:</span>
@@ -496,10 +358,6 @@ export default function CatalogoServicos() {
               </label>
             </div>
 
-            {/* ==================================
-                CARDS
-            ================================== */}
-
             {visibleServices.length ? (
               <>
                 <div className="services-grid">
@@ -518,10 +376,6 @@ export default function CatalogoServicos() {
                 </div>
               </>
             ) : (
-              /* ==================================
-                 NENHUM RESULTADO
-              ================================== */
-
               <div className="empty-results">
                 <Search size={36} />
 

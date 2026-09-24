@@ -9,8 +9,37 @@ function matchesFilter(selectedValues, serviceValue) {
     return false;
   }
 
-  return selectedValues.some(
-    (selectedValue) => String(selectedValue) === String(serviceValue),
+  const serviceValues = Array.isArray(serviceValue)
+    ? serviceValue
+    : [serviceValue];
+
+  return selectedValues.some((selectedValue) =>
+    serviceValues.some(
+      (currentValue) => String(selectedValue) === String(currentValue),
+    ),
+  );
+}
+
+function getServiceRating(service) {
+  if (service.avaliacaoMedia !== undefined) {
+    return Number(service.avaliacaoMedia) || 0;
+  }
+
+  const evaluations = Array.isArray(service.avaliacao)
+    ? service.avaliacao
+    : service.avaliacao
+      ? [service.avaliacao]
+      : [];
+
+  if (!evaluations.length) {
+    return 0;
+  }
+
+  return (
+    evaluations.reduce(
+      (sum, evaluation) => sum + Number(evaluation.nota || 0),
+      0,
+    ) / evaluations.length
   );
 }
 
@@ -19,9 +48,18 @@ export function filterServices(services = [], filters = {}) {
     if (filters.search?.trim()) {
       const search = filters.search.trim().toLowerCase();
 
-      const matchesSearch =
-        service.name?.toLowerCase().includes(search) ||
-        service.descricao?.toLowerCase().includes(search);
+      const matchesSearch = [
+        service.name,
+        service.descricao,
+        service.categoria?.nome || service.category?.name,
+        service.localizacao?.bairro || service.bairro,
+        service.localizacao?.cidade || service.cidade,
+        service.localizacao?.estado || service.estado,
+      ].some((value) =>
+        String(value || "")
+          .toLowerCase()
+          .includes(search),
+      );
 
       if (!matchesSearch) {
         return false;
@@ -40,39 +78,60 @@ export function filterServices(services = [], filters = {}) {
     if (
       !matchesFilter(
         filters.category,
-        service.categoria?.id ?? service.idCategoria,
+        service.categoria?.id ?? service.category?.id ?? service.idCategoria,
       )
     ) {
       return false;
     }
 
-    if (!matchesFilter(filters.modality, service.modalities)) {
+    if (
+      !matchesFilter(
+        filters.modality,
+        service.modalities ?? service.modality ?? service.modalidade,
+      )
+    ) {
       return false;
     }
 
-    if (!matchesFilter(filters.state, service.localizacao?.estado)) {
+    if (
+      !matchesFilter(
+        filters.state,
+        service.localizacao?.estado ?? service.estado,
+      )
+    ) {
       return false;
     }
 
     if (
       !matchesFilter(
         filters.typeLocalization,
-        service.localizacao?.tipoLocalizacao,
+        service.localizacao?.tipoLocalizacao ??
+          service.tipoLocalizacao ??
+          service.typeLocalization,
       )
     ) {
       return false;
     }
 
-    if (!matchesFilter(filters.genero, service.usuario?.genero)) {
+    if (
+      !matchesFilter(filters.genero, service.usuario?.genero ?? service.genero)
+    ) {
       return false;
     }
 
-    if (!matchesFilter(filters.providerType, service.usuario?.tipoUsuario)) {
+    if (
+      !matchesFilter(
+        filters.providerType,
+        service.usuario?.tipoUsuario ?? service.tipoUsuario,
+      )
+    ) {
       return false;
     }
 
     if (filters.dataNascimento?.length) {
-      const idade = calculateAge(service.usuario?.dataNascimento);
+      const idade = calculateAge(
+        service.usuario?.dataNascimento ?? service.dataNascimento,
+      );
 
       if (!matchesFilter(filters.dataNascimento, idade)) {
         return false;
@@ -80,9 +139,8 @@ export function filterServices(services = [], filters = {}) {
     }
 
     if (filters.diaDaSemana?.length) {
-      const hasDay = service.agendamentos?.some(
-        (agendamento) =>
-          String(agendamento.diaSemana) === String(filters.diaDaSemana),
+      const hasDay = service.agendamentos?.some((agendamento) =>
+        matchesFilter(filters.diaDaSemana, agendamento.diaSemana),
       );
 
       if (!hasDay) {
@@ -91,8 +149,8 @@ export function filterServices(services = [], filters = {}) {
     }
 
     if (filters.turno?.length) {
-      const hasShift = service.agendamentos?.some(
-        (agendamento) => String(agendamento.turno) === String(filters.turno),
+      const hasShift = service.agendamentos?.some((agendamento) =>
+        matchesFilter(filters.turno, agendamento.turno),
       );
 
       if (!hasShift) {
@@ -100,8 +158,15 @@ export function filterServices(services = [], filters = {}) {
       }
     }
 
-    if (!matchesFilter(filters.avaliacao, service.avaliacao)) {
-      return false;
+    if (filters.avaliacao?.length) {
+      const rating = getServiceRating(service);
+      const hasMinimumRating = filters.avaliacao.some(
+        (selectedRating) => rating >= Number(selectedRating),
+      );
+
+      if (!hasMinimumRating) {
+        return false;
+      }
     }
 
     return true;

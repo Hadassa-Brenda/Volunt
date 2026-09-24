@@ -60,52 +60,52 @@ export function ServiceReviews({
 
       {canReview ? (
         <form className="review-form" onSubmit={handleSubmit}>
-        <fieldset>
-          <legend>Qual é a sua nota?</legend>
+          <fieldset>
+            <legend>Qual é a sua nota?</legend>
 
-          <div className="review-form__stars">
-            {[1, 2, 3, 4, 5].map((value) => {
-              const selected = value <= (hoveredRating || rating);
+            <div className="review-form__stars">
+              {[1, 2, 3, 4, 5].map((value) => {
+                const selected = value <= (hoveredRating || rating);
 
-              return (
-                <button
-                  key={value}
-                  type="button"
-                  className={selected ? "is-selected" : ""}
-                  aria-label={`${value} ${value === 1 ? "estrela" : "estrelas"}`}
-                  onMouseEnter={() => setHoveredRating(value)}
-                  onMouseLeave={() => setHoveredRating(0)}
-                  onClick={() => setRating(value)}
-                >
-                  <Star size={25} fill={selected ? "currentColor" : "none"} />
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    className={selected ? "is-selected" : ""}
+                    aria-label={`${value} ${value === 1 ? "estrela" : "estrelas"}`}
+                    onMouseEnter={() => setHoveredRating(value)}
+                    onMouseLeave={() => setHoveredRating(0)}
+                    onClick={() => setRating(value)}
+                  >
+                    <Star size={25} fill={selected ? "currentColor" : "none"} />
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          <label htmlFor="review-comment">Comentário</label>
+
+          <textarea
+            id="review-comment"
+            value={comment}
+            maxLength={500}
+            placeholder="Conte como foi sua experiência com este serviço..."
+            onChange={(event) => setComment(event.target.value)}
+          />
+
+          <div className="review-form__footer">
+            <span>{comment.length}/500</span>
+
+            <button
+              type="submit"
+              disabled={!rating || !comment.trim() || submitting}
+            >
+              <Send size={17} />
+
+              {submitting ? "Publicando..." : "Publicar avaliação"}
+            </button>
           </div>
-        </fieldset>
-
-        <label htmlFor="review-comment">Comentário</label>
-
-        <textarea
-          id="review-comment"
-          value={comment}
-          maxLength={500}
-          placeholder="Conte como foi sua experiência com este serviço..."
-          onChange={(event) => setComment(event.target.value)}
-        />
-
-        <div className="review-form__footer">
-          <span>{comment.length}/500</span>
-
-          <button
-            type="submit"
-            disabled={!rating || !comment.trim() || submitting}
-          >
-            <Send size={17} />
-
-            {submitting ? "Publicando..." : "Publicar avaliação"}
-          </button>
-        </div>
         </form>
       ) : (
         <p className="review-form__restricted">
