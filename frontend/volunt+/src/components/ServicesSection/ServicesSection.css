@@ -20,8 +20,9 @@
 
 .services-section__grid {
   display: grid;
+  gap: 18px;
+  width: 100%; 
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
 }
 
 .services-section__empty {

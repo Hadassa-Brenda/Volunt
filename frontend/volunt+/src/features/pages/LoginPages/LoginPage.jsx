@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./LoginPages.css";
 import "../../../styles/global.css";
 
-import { userDTO } from "../../../types/DTOs/userDTO";
+import { login as loginUser } from "./services/authService";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -18,6 +18,7 @@ export default function LoginPage() {
   });
 
   const [loginError, setLoginError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function updateField(field, value) {
     setForm((current) => ({
@@ -28,43 +29,24 @@ export default function LoginPage() {
     setLoginError("");
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
-    let storedUsers = [];
+    setIsSubmitting(true);
+    setLoginError("");
 
     try {
-      const parsedUsers = JSON.parse(
-        localStorage.getItem("volunt-users") || "[]",
+      await loginUser(form.email, form.password);
+      navigate("/");
+    } catch (error) {
+      setLoginError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "E-mail ou senha inválidos.",
       );
-
-      storedUsers = Array.isArray(parsedUsers) ? parsedUsers : [];
-    } catch {
-      storedUsers = [];
+    } finally {
+      setIsSubmitting(false);
     }
-
-    const normalizedEmail = form.email.trim().toLowerCase();
-    const users = [...storedUsers, ...userDTO];
-
-    const user = users.find(
-      (item) =>
-        item.email?.trim().toLowerCase() === normalizedEmail &&
-        item.password === form.password,
-    );
-
-    if (!user) {
-      setLoginError("E-mail ou senha inválidos.");
-      return;
-    }
-
-    const authenticatedUser = {
-      ...user,
-      email: user.email.trim(),
-    };
-
-    localStorage.setItem("volunt-user", JSON.stringify(authenticatedUser));
-
-    navigate("/");
   }
 
   return (
@@ -154,14 +136,18 @@ export default function LoginPage() {
             </div>
           </label>
 
+          <div className="login-card__options">
+            <Link to="/esqueci-minha-senha">Esqueci minha senha</Link>
+          </div>
+
           {loginError && (
             <p className="login-card__error" role="alert">
               {loginError}
             </p>
           )}
 
-          <button className="login-card__button" type="submit">
-            Entrar
+          <button className="login-card__button" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Entrando..." : "Entrar"}
           </button>
 
           <p className="login-card__footer">

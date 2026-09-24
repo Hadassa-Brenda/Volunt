@@ -2,6 +2,8 @@ import { Navigate, Routes, Route } from "react-router-dom";
 
 import HomePage from "../features/pages/HomePage/HomePage";
 import LoginPage from "../features/pages/LoginPages/LoginPage";
+import ForgotPasswordPage from "../features/pages/LoginPages/ForgotPasswordPage";
+import ResetPasswordPage from "../features/pages/LoginPages/ResetPasswordPage";
 import UserRegisterPage from "../features/pages/UserRegisterPage/UserRegisterPage";
 import DetalhesServico from "features/pages/DetalhesServico/DetalhesServico";
 import CadastrarServico from "../features/pages/CadastrarServico/CadastrarServico";
@@ -16,6 +18,9 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/esqueci-minha-senha" element={<ForgotPasswordPage />} />
+      <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
+      <Route path="/redefinir-senha/:token" element={<ResetPasswordPage />} />
       <Route path="/cadastro" element={<UserRegisterPage />} />
       <Route path="/detalhes-servico/:id" element={<DetalhesServico />} />
       <Route path="/cadastrar-servico" element={<CadastrarServico />} />

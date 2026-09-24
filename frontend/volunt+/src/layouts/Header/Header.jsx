@@ -25,29 +25,31 @@ export default function Header({ onCreateUser, onOpenLogin }) {
         {menuOpen ? <X size={23} /> : <Menu size={23} />}
       </button>
 
-      <nav className="header__nav" aria-label="Menu principal">
-        <Link to="/" className="header__nav-link" onClick={() => setMenuOpen(false)}>
-          Início
-        </Link>
-
-        <Link to="/about-volunteering" className="header__nav-link" onClick={() => setMenuOpen(false)}>
-          Sobre
-        </Link>
-
-        {!isBeneficiario && (
-          <Link to="/cadastrar-servico" className="header__nav-link" onClick={() => setMenuOpen(false)}>
-            Criar Serviço
+      {user && (
+        <nav className="header__nav" aria-label="Menu principal">
+          <Link to="/" className="header__nav-link" onClick={() => setMenuOpen(false)}>
+            Início
           </Link>
-        )}
-        <Link to="/catalogo-servicos" className="header__nav-link" onClick={() => setMenuOpen(false)}>
-          Catalógo de Serviços
-        </Link>
-        {!isBeneficiario && (
-          <Link to="/meus-servicos" className="header__nav-link" onClick={() => setMenuOpen(false)}>
-            Meus Serviços
+
+          <Link to="/about-volunteering" className="header__nav-link" onClick={() => setMenuOpen(false)}>
+            Sobre
           </Link>
-        )}
-      </nav>
+
+          {!isBeneficiario && (
+            <Link to="/cadastrar-servico" className="header__nav-link" onClick={() => setMenuOpen(false)}>
+              Criar Serviço
+            </Link>
+          )}
+          <Link to="/catalogo-servicos" className="header__nav-link" onClick={() => setMenuOpen(false)}>
+            Catalógo de Serviços
+          </Link>
+          {!isBeneficiario && (
+            <Link to="/meus-servicos" className="header__nav-link" onClick={() => setMenuOpen(false)}>
+              Meus Serviços
+            </Link>
+          )}
+        </nav>
+      )}
 
       <div className="header__actions">
         {user ? (
