@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
+import { useClerk } from "@clerk/react";
 
 import { useEffect, useMemo, useState } from "react";
 
@@ -23,6 +24,7 @@ import "./MyServicesPage.css";
 
 export default function MyServicesPage() {
   const navigate = useNavigate();
+  const { signOut } = useClerk();
 
   const [user, setUser] = useState(null);
 
@@ -148,10 +150,8 @@ export default function MyServicesPage() {
     localStorage.setItem("volunt-services", JSON.stringify(updatedServices));
   }
 
-  function handleLogout() {
-    localStorage.removeItem("volunt-user");
-
-    navigate("/");
+  async function handleLogout() {
+    await signOut({ redirectUrl: "/" });
   }
 
   function getStatusLabel(status) {

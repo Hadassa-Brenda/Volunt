@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useClerk } from "@clerk/react";
 
 import Footer from "../../../layouts/Footer/Footer";
 import Header from "../../../layouts/Header/Header";
@@ -56,6 +57,7 @@ function getOptionLabel(options, value) {
 
 export default function UserProfilePage() {
   const navigate = useNavigate();
+  const { signOut } = useClerk();
 
   const { id } = useParams();
 
@@ -160,12 +162,8 @@ export default function UserProfilePage() {
     }));
   }
 
-  function handleLogout() {
-    localStorage.removeItem("volunt-user");
-
-    setUser(null);
-
-    navigate("/");
+  async function handleLogout() {
+    await signOut({ redirectUrl: "/" });
   }
 
   function switchProfile() {

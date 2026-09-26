@@ -145,3 +145,17 @@ export function validateForm(form) {
 
   return errors;
 }
+
+export function validateIdentityForm(form) {
+  const errors = {};
+
+  ["email", "password", "confirmPassword"].forEach((field) => {
+    const error = validateField(field, form[field], form);
+
+    if (error) {
+      errors[field] = error;
+    }
+  });
+
+  return errors;
+}

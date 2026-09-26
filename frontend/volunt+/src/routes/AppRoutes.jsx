@@ -20,7 +20,6 @@ export default function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/esqueci-minha-senha" element={<ForgotPasswordPage />} />
       <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
-      <Route path="/redefinir-senha/:token" element={<ResetPasswordPage />} />
       <Route path="/cadastro" element={<UserRegisterPage />} />
       <Route path="/detalhes-servico/:id" element={<DetalhesServico />} />
       <Route path="/cadastrar-servico" element={<CadastrarServico />} />
