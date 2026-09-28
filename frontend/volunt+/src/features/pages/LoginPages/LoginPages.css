@@ -211,6 +211,29 @@
   text-decoration: none;
 }
 
+.login-card__inline-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 4px 0 22px;
+}
+
+.login-card__inline-actions button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.login-card__inline-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .login-card__button {
   width: 100%;
   min-height: 52px;

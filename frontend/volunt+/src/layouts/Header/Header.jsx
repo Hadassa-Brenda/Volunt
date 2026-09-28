@@ -1,13 +1,15 @@
-import { Menu, Plus, X } from "lucide-react";
-import "./Header.css";
-import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth, UserButton } from "@clerk/react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, Plus, X } from "lucide-react";
+
+import "./Header.css";
 
 export default function Header({ onCreateUser, onOpenLogin }) {
   const navigate = useNavigate();
+  const { isLoaded, isSignedIn } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
-  const user = JSON.parse(localStorage.getItem("volunt-user") || "null");
-  const isBeneficiario = user?.perfilUsuario === "BF";
+
   return (
     <header className={`header ${menuOpen ? "header--menu-open" : ""}`}>
       <Link to="/" className="header__brand" aria-label="Voluntá+ início">
@@ -25,7 +27,7 @@ export default function Header({ onCreateUser, onOpenLogin }) {
         {menuOpen ? <X size={23} /> : <Menu size={23} />}
       </button>
 
-      {user && (
+      {isSignedIn && (
         <nav className="header__nav" aria-label="Menu principal">
           <Link
             to="/"
@@ -43,49 +45,25 @@ export default function Header({ onCreateUser, onOpenLogin }) {
             Sobre
           </Link>
 
-          {!isBeneficiario && (
-            <Link
-              to="/cadastrar-servico"
-              className="header__nav-link"
-              onClick={() => setMenuOpen(false)}
-            >
-              Criar Serviço
-            </Link>
-          )}
           <Link
             to="/catalogo-servicos"
             className="header__nav-link"
             onClick={() => setMenuOpen(false)}
           >
-            Catalógo de Serviços
+            Catálogo de Serviços
           </Link>
-          {!isBeneficiario && (
-            <Link
-              to="/meus-servicos"
-              className="header__nav-link"
-              onClick={() => setMenuOpen(false)}
-            >
-              Meus Serviços
-            </Link>
-          )}
         </nav>
       )}
 
       <div className="header__actions">
-        {user ? (
-          <>
-            <Link
-              className="header__profile"
-              to={`/perfil/${user.id}`}
-              onClick={() => setMenuOpen(false)}
-            >
-              <span className="header__avatar">
-                {(user.fullName || user.name || "U").slice(0, 1).toUpperCase()}
-              </span>
-              <span>Minha conta</span>
-            </Link>
-          </>
-        ) : (
+        {isLoaded && isSignedIn && (
+          <div className="header__clerk-account" aria-label="Conta autenticada">
+            <span>Minha conta</span>
+            <UserButton />
+          </div>
+        )}
+
+        {isLoaded && !isSignedIn && (
           <>
             <button
               className="header__primary-button"
