@@ -22,14 +22,14 @@ it("vincula automaticamente o perfil depois que o Clerk conclui o cadastro", asy
   registerIndividual.mockResolvedValue({ id: 1 });
 
   render(
-    <MemoryRouter initialEntries={[{ pathname: "/completar-perfil", state: {
+    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={[{ pathname: "/completar-perfil", state: {
       retryRegistration: true,
       draft: { personType: "INDIVIDUAL", fullName: "Ana Silva", birthDate: "1995-05-20",
         gender: "FEMALE", role: "OFFERER" },
     } }]}>
       <Routes>
         <Route path="/completar-perfil" element={<CompleteProfilePage />} />
-        <Route path="/perfil" element={<p>Perfil criado</p>} />
+        <Route path="/" element={<p>Homepage</p>} />
       </Routes>
     </MemoryRouter>,
   );
@@ -38,5 +38,5 @@ it("vincula automaticamente o perfil depois que o Clerk conclui o cadastro", asy
     fullName: "Ana Silva", birthDate: "1995-05-20", gender: "FEMALE", initialRole: "OFFERER",
   }, "token"));
   expect(refreshUser).toHaveBeenCalledWith("token");
-  expect(await screen.findByText("Perfil criado")).toBeInTheDocument();
+  expect(await screen.findByText("Homepage")).toBeInTheDocument();
 });

@@ -929,3 +929,6 @@
     padding: 18px;
   }
 }
+
+.form-field select { width: 100%; padding: 12px; border: 1px solid #cbd5d1; border-radius: 8px; background: white; font: inherit; }
+.primary-action-button:disabled { opacity: .55; cursor: not-allowed; }

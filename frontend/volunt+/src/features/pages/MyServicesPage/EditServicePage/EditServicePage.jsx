@@ -1,3 +1,4 @@
+import { serviceValues } from "../../../../utils/serviceValues";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 
@@ -36,6 +37,7 @@ export default function EditServicePage() {
   const [errors, setErrors] = useState({});
 
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     loadService();
@@ -52,8 +54,6 @@ export default function EditServicePage() {
 
         return;
       }
-
-      const agendamento = service.agendamentos?.[0];
 
       setFormData({
         ...initialFormData,
@@ -76,11 +76,9 @@ export default function EditServicePage() {
 
         bairro: service.localizacao?.bairro || service.bairro || "",
 
-        diaSemana: [service.diaDaSemana ?? agendamento?.diaSemana].filter(
-          Boolean,
-        ),
-
-        turno: [service.turno ?? agendamento?.turno].filter(Boolean),
+        tipoLocalizacao: service.tipoLocalizacao || service.localizacao?.tipoLocalizacao || "",
+        diaSemana: [...new Set(service.agendamentos?.map((item) => item.diaSemana) || serviceValues(service.diaDaSemana))],
+        turno: [...new Set(service.agendamentos?.map((item) => item.turno) || serviceValues(service.turno))],
 
         whatsapp: service.contato?.telefone || service.whatsapp || "",
 
@@ -116,6 +114,7 @@ export default function EditServicePage() {
       ...current,
 
       [name]: type === "checkbox" ? checked : value,
+      ...(name !== "reviewConfirmed" ? { reviewConfirmed: false } : {}),
     }));
 
     setErrors((current) => ({
@@ -157,6 +156,7 @@ export default function EditServicePage() {
       }
     }
 
+    if (currentStep === 2 && formData.modalities !== "ONLINE" && !formData.tipoLocalizacao) newErrors.tipoLocalizacao = "Selecione o tipo de localização.";
     if (currentStep === 3) {
       const hasContact =
         formData.whatsapp ||
@@ -177,9 +177,7 @@ export default function EditServicePage() {
       });
     }
 
-    if (currentStep === 4) {
-      return true;
-    }
+    if (currentStep === 4 && !formData.reviewConfirmed) newErrors.reviewConfirmed = "Confirme a revisão antes de salvar.";
 
     setErrors(newErrors);
 
@@ -191,6 +189,7 @@ export default function EditServicePage() {
       return;
     }
 
+    setFormData((current) => ({ ...current, reviewConfirmed: false }));
     setCurrentStep((current) => Math.min(current + 1, steps.length));
   }
 
@@ -265,6 +264,8 @@ export default function EditServicePage() {
       return;
     }
 
+    if (saving) return;
+    setSaving(true);
     try {
       await updateService(id, {
           name: formData.name,
@@ -286,6 +287,7 @@ export default function EditServicePage() {
           cidade: formData.cidade,
 
           bairro: formData.bairro,
+          tipoLocalizacao: formData.modalities === "ONLINE" ? null : formData.tipoLocalizacao,
 
           diaDaSemana: formData.diaSemana,
 
@@ -308,7 +310,7 @@ export default function EditServicePage() {
       console.error("Erro ao salvar serviço:", error);
 
       alert("Não foi possível salvar as alterações.");
-    }
+    } finally { setSaving(false); }
   }
 
   if (loading) {
@@ -388,6 +390,7 @@ export default function EditServicePage() {
 
             {currentStep < steps.length ? (
               <button
+                key="next-step"
                 type="button"
                 className="primary-action-button"
                 onClick={nextStep}
@@ -396,9 +399,9 @@ export default function EditServicePage() {
                 <ArrowRight size={18} />
               </button>
             ) : (
-              <button type="submit" className="primary-action-button">
+              <button key="confirm-service" type="submit" className="primary-action-button" disabled={!formData.reviewConfirmed || saving}>
                 <Check size={18} />
-                Salvar alterações
+                {saving ? "Salvando..." : "Confirmar e salvar alterações"}
               </button>
             )}
           </div>

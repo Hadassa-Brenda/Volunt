@@ -1,3 +1,4 @@
+import { PASSWORD_MIN_LENGTH } from "../../LoginPages/utils/passwordPolicy";
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -106,12 +107,8 @@ export function validateField(field, value, form) {
       return "";
 
     case "password":
-      if (textValue.length < 8) {
-        return "A senha deve ter pelo menos 8 caracteres.";
-      }
-
-      if (!/[A-Za-z]/.test(textValue) || !/[0-9]/.test(textValue)) {
-        return "A senha deve ter letras e números.";
+      if ([...String(value || "")].length < PASSWORD_MIN_LENGTH) {
+        return `A senha deve ter pelo menos ${PASSWORD_MIN_LENGTH} caracteres.`;
       }
 
       return "";

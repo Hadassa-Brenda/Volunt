@@ -209,3 +209,14 @@
     padding: 16px;
   }
 }
+
+.review-confirmation {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 20px;
+  margin-top: 24px;
+  background: #f4f7f5;
+  border-radius: 12px;
+}
+.review-confirmation input { width: 20px; height: 20px; flex-shrink: 0; }

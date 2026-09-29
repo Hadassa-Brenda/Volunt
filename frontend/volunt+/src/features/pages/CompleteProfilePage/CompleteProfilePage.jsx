@@ -47,12 +47,12 @@ export default function CompleteProfilePage() {
         }, token);
       }
       await refreshUser(token);
-      navigate("/perfil", { replace: true });
+      navigate("/", { replace: true });
     } catch (failure) {
       if (failure?.response?.status === 409) {
         try {
           await refreshUser();
-          navigate("/perfil", { replace: true });
+          navigate("/", { replace: true });
           return;
         } catch { /* Mostra a falha original abaixo. */ }
       }
@@ -71,7 +71,7 @@ export default function CompleteProfilePage() {
 
   if (!isLoaded) return <p>Carregando...</p>;
   if (!isSignedIn) return <Navigate to="/login" replace />;
-  if (user) return <Navigate to="/perfil" replace />;
+  if (user) return <Navigate to="/" replace />;
 
   function submit(event) {
     event.preventDefault();

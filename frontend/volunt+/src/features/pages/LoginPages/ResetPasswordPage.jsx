@@ -1,3 +1,4 @@
+import { PASSWORD_MIN_LENGTH, PASSWORD_HINT } from "./utils/passwordPolicy";
 import { useEffect, useState } from "react";
 import { useAuth, useSignIn } from "@clerk/react";
 import { ArrowLeft, Lock, ShieldCheck } from "lucide-react";
@@ -148,10 +149,10 @@ export default function ResetPasswordPage() {
   }
 
   async function handleNewPasswordSubmit() {
-    if (form.password.length < 8) {
+    if ([...form.password].length < PASSWORD_MIN_LENGTH) {
       setStatus({
         type: "error",
-        message: "A nova senha deve ter pelo menos 8 caracteres.",
+        message: `A nova senha deve ter pelo menos ${PASSWORD_MIN_LENGTH} caracteres.`,
       });
       return;
     }
@@ -386,6 +387,7 @@ export default function ResetPasswordPage() {
                     }
                     placeholder="Digite a nova senha"
                     autoComplete="new-password"
+                    placeholder={PASSWORD_HINT}
                     disabled={isSubmitting}
                   />
                 </div>
@@ -404,6 +406,7 @@ export default function ResetPasswordPage() {
                     }
                     placeholder="Confirme a nova senha"
                     autoComplete="new-password"
+                    placeholder={PASSWORD_HINT}
                     disabled={isSubmitting}
                   />
                 </div>

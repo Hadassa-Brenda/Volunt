@@ -18,6 +18,7 @@ export function useCadastrarServico() {
   const [errors, setErrors] = useState({});
 
   const [submitted, setSubmitted] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -57,6 +58,7 @@ export function useCadastrarServico() {
     setFormData((current) => ({
       ...current,
       [name]: type === "checkbox" ? checked : value,
+      ...(name !== "reviewConfirmed" ? { reviewConfirmed: false } : {}),
     }));
 
     setErrors((current) => ({
@@ -157,6 +159,7 @@ export function useCadastrarServico() {
       const isOnline = formData.modalities === SERVICE_MODALITIES[1].value;
 
       if (!isOnline) {
+        if (!formData.tipoLocalizacao) newErrors.tipoLocalizacao = "Selecione o tipo de localização.";
         const cep = (formData.cep || "").trim();
 
         const estado = (formData.estado || "").trim();
@@ -215,13 +218,8 @@ export function useCadastrarServico() {
       });
     }
 
+    if (currentStep === steps.length && !formData.reviewConfirmed) newErrors.reviewConfirmed = "Confirme a revisão antes de salvar.";
     setErrors(newErrors);
-
-    console.log("Validação da etapa:", currentStep);
-
-    console.log("formData:", formData);
-
-    console.log("erros:", newErrors);
 
     return Object.keys(newErrors).length === 0;
   };
@@ -233,6 +231,7 @@ export function useCadastrarServico() {
       return;
     }
 
+    setFormData((current) => ({ ...current, reviewConfirmed: false }));
     setCurrentStep((step) => Math.min(step + 1, steps.length));
   };
 
@@ -348,6 +347,7 @@ export function useCadastrarServico() {
         cidade: formData.cidade || "",
 
         bairro: formData.bairro || "",
+        tipoLocalizacao: formData.modalities === "ONLINE" ? null : formData.tipoLocalizacao,
 
         whatsapp: formData.whatsapp || "",
 
@@ -385,7 +385,10 @@ export function useCadastrarServico() {
       return;
     }
 
+    if (saving) return;
+    setSaving(true);
     const novoServico = await salvarServico();
+    setSaving(false);
 
     if (!novoServico) {
       return;
@@ -419,6 +422,7 @@ export function useCadastrarServico() {
     errors,
 
     submitted,
+    saving,
 
     setSubmitted,
 

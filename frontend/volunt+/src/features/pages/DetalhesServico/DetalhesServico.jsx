@@ -1,3 +1,4 @@
+import { TIPO_LOCALIZACAO } from "../../../types/enum/TipoLocalização";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
@@ -227,6 +228,11 @@ export default function DetalhesServico() {
 
                 <InfoItem
                   icon={<Clock3 size={21} />}
+                  label="Tipo de localização"
+                  value={service.modalities === "ONLINE" ? "Online" : TIPO_LOCALIZACAO.find((item) => String(item.value) === String(service.tipoLocalizacao))?.label || "Não informado"}
+                />
+                <InfoItem
+                  icon={<Clock3 size={21} />}
                   label="Horários"
                   value={schedule}
                 />
@@ -268,7 +274,7 @@ export default function DetalhesServico() {
                     Responsável por oferecer este serviço voluntário para a
                     comunidade.
                   </p>
-                  <Link to={`/perfil/${service.idUsuario}`}>
+                  <Link to={String(storedUser?.id) === String(service.idUsuario) ? "/perfil" : `/perfil/${service.idUsuario}`}>
                     Ver perfil
                     <ExternalLink size={15} />
                   </Link>

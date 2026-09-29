@@ -29,6 +29,7 @@ export default function CadastrarServico() {
     formData,
     errors,
     submitted,
+    saving,
 
     setCurrentStep,
 
@@ -105,6 +106,7 @@ export default function CadastrarServico() {
 
                 {currentStep < steps.length ? (
                   <button
+                    key="next-step"
                     type="button"
                     className="primary-action-button"
                     onClick={nextStep}
@@ -113,9 +115,9 @@ export default function CadastrarServico() {
                     <ArrowRight size={18} />
                   </button>
                 ) : (
-                  <button type="submit" className="primary-action-button">
+                  <button key="confirm-service" type="submit" className="primary-action-button" disabled={!formData.reviewConfirmed || saving}>
                     <Check size={18} />
-                    Salvar serviço
+                    {saving ? "Salvando..." : "Confirmar e salvar serviço"}
                   </button>
                 )}
               </div>

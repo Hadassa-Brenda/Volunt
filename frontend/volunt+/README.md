@@ -95,3 +95,16 @@ O build de produção é gerado em `build/`.
 | Resposta `401` | Confirme que a chave pública e `CLERK_ISSUER_URI` pertencem à mesma instância Clerk. |
 | Erro de CORS | Confira `FRONTEND_URL` no backend e a URL/porta usados no navegador. |
 | Catálogo vazio | Confirme que há serviços cadastrados no PostgreSQL; o frontend não usa mais serviços salvos apenas no navegador. |
+
+## Ajustes de cadastro e catálogo
+
+Após criar a conta e salvar o perfil, o cadastro direciona à homepage (`/`).
+A variável `REACT_APP_PASSWORD_MIN_LENGTH` precisa corresponder ao mínimo da instância Clerk.
+O padrão é 15; alterar o frontend não altera a política do Clerk. Reinicie o frontend depois de mudar o `.env`.
+
+O serviço só é salvo após revisar os dados, marcar a confirmação e clicar em Confirmar e salvar.
+Serviços inativos ficam disponíveis em Meus serviços e saem do catálogo público.
+O tipo de localização (Casa, Instituição, Local Público ou Outro) pertence ao serviço presencial.
+O catálogo recebe gênero e idade do ofertante, sem expor sua data de nascimento.
+Os dias e turnos são opções individuais, inclusive para registros antigos.
+Avaliações são permitidas apenas a beneficiários em serviços de outras pessoas; o servidor verifica essa regra.

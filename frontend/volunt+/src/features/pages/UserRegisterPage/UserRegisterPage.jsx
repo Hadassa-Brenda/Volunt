@@ -1,3 +1,4 @@
+import { PASSWORD_HINT } from "../LoginPages/utils/passwordPolicy";
 import { useEffect, useState } from "react";
 import { useAuth, useSignUp } from "@clerk/react";
 import { useNavigate } from "react-router-dom";
@@ -91,7 +92,7 @@ export default function UserRegisterPage() {
 
   useEffect(() => {
     if (isAuthLoaded && isSignedIn && currentUser && !isCompletingRegistration) {
-      navigate("/perfil", { replace: true });
+      navigate("/", { replace: true });
     }
   }, [currentUser, isAuthLoaded, isCompletingRegistration, isSignedIn, navigate]);
 
@@ -295,7 +296,7 @@ export default function UserRegisterPage() {
       try {
         setPendingStage("Salvando seu perfil no Voluntá+");
         await createVoluntPlusUser(createdSession);
-        navigate("/perfil", { replace: true });
+        navigate("/", { replace: true });
       } catch {
         // A identidade Clerk já existe; preservamos os dados para tentar salvar
         // o perfil novamente, sem pedir outra senha ou verificação de e-mail.
@@ -752,7 +753,7 @@ export default function UserRegisterPage() {
                 placeholder="Crie sua senha"
                 autoComplete="new-password"
                 error={Boolean(passwordError)}
-                helperText={passwordError}
+                helperText={passwordError || PASSWORD_HINT}
               />
 
               <GenericTextField

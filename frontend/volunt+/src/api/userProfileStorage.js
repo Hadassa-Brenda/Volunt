@@ -25,7 +25,7 @@ export function mapBackendUserToFrontend(profile, currentUser = {}) {
   }
 
   const fullName =
-    profile.fullName ?? profile.organizationName ?? currentUser.fullName ?? "";
+    profile.organizationName || profile.fullName || currentUser.fullName || "";
   const personType = profile.personType ?? currentUser.personType;
   const currentRole = profile.currentRole;
   const birthDate = profile.birthDate ?? currentUser.birthDate;

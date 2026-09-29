@@ -1,11 +1,8 @@
+import { serviceValues } from "../utils/serviceValues";
 function expandSchedules(schedules = []) {
   return schedules.flatMap((schedule) => {
-    const days = Array.isArray(schedule.diaSemana)
-      ? schedule.diaSemana
-      : [schedule.diaSemana];
-    const shifts = Array.isArray(schedule.turno)
-      ? schedule.turno
-      : [schedule.turno];
+    const days = serviceValues(schedule.diaSemana);
+    const shifts = serviceValues(schedule.turno);
 
     return days.flatMap((day) =>
       shifts.map((shift) => ({

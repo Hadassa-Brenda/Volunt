@@ -63,17 +63,14 @@ function getOptionLabel(options, value) {
 function createProfileForm(profile, clerkName = "") {
   const isPessoaJuridica = profile?.tipoUsuario === "PJ";
   return {
-    accountName: clerkName || profile?.fullName || "",
+    accountName: isPessoaJuridica ? profile?.organizationName || "" : profile?.fullName || clerkName || "",
     perfilUsuario: profile?.perfilUsuario ?? PROFILE_TYPES[0]?.value ?? "",
     genero: profile?.genero || "",
     dataNascimento: profile?.dataNascimento
       ? profile.dataNascimento.split("T")[0]
       : "",
     organizationName: profile?.organizationName || "",
-    organizationEmail: profile?.organizationEmail || "",
     cnpj: isPessoaJuridica ? profile?.cnpj || "" : "",
-    description: profile?.description || "",
-    logoUrl: profile?.logoUrl || "",
   };
 }
 
@@ -104,16 +101,17 @@ export default function UserProfilePage() {
     !profileId || String(currentUser?.id) === String(profileId);
 
   const [publicUser, setPublicUser] = useState(null);
+  const [publicLoading, setPublicLoading] = useState(Boolean(profileId));
   useEffect(() => {
-    if (!profileId || isOwnProfile) return;
+    if (!profileId || isOwnProfile) { setPublicLoading(false); return; }
+    let cancelled = false;
+    setPublicLoading(true);
     setPublicUser(null);
     fetchPublicUserProfile(profileId)
-      .then((profile) => setPublicUser(
-        profile.currentRole === "OFFERER"
-          ? mapBackendUserToFrontend(profile)
-          : null,
-      ))
-      .catch(() => setPublicUser(null));
+      .then((profile) => { if (!cancelled) setPublicUser(profile.currentRole === "OFFERER" ? mapBackendUserToFrontend(profile) : null); })
+      .catch(() => { if (!cancelled) setPublicUser(null); })
+      .finally(() => { if (!cancelled) setPublicLoading(false); });
+    return () => { cancelled = true; };
   }, [profileId, isOwnProfile]);
   const profileUser = useMemo(() => {
     if (isOwnProfile) {
@@ -234,9 +232,6 @@ export default function UserProfilePage() {
         ? {
             organizationName: form.organizationName.trim(),
             cnpj: form.cnpj.replace(/\D/g, "") || null,
-            organizationEmail: form.organizationEmail.trim(),
-            description: form.description.trim(),
-            logoUrl: form.logoUrl.trim(),
           }
         : {
             fullName: form.accountName.trim(),
@@ -265,7 +260,7 @@ export default function UserProfilePage() {
         user,
       );
 
-      if (clerkUser?.update && form.accountName.trim() !== clerkName) {
+      if (!isPessoaJuridica && clerkUser?.update && form.accountName.trim() !== clerkName) {
         const [firstName, ...lastNameParts] = form.accountName
           .trim()
           .split(/\s+/);
@@ -305,7 +300,7 @@ export default function UserProfilePage() {
         <Header />
 
         <section className="profile-login-required">
-          {isOwnProfile && (isCurrentUserLoading || !isClerkUserLoaded) ? (
+          {(!isOwnProfile && publicLoading) || (isOwnProfile && (isCurrentUserLoading || !isClerkUserLoaded)) ? (
             <p>Carregando perfil...</p>
           ) : isOwnProfile && clerkUser ? (
             <>
@@ -366,7 +361,7 @@ export default function UserProfilePage() {
     "Usuário Voluntá+";
 
   const avatarUrl = isPessoaJuridica
-    ? user.logoUrl
+    ? null
     : isOwnProfile
       ? clerkUser?.imageUrl
       : user.avatarUrl;
@@ -568,7 +563,7 @@ export default function UserProfilePage() {
                 <ShieldCheck />
                 <h3>Conta e autenticação</h3>
                 <p>
-                  <strong>Nome da conta:</strong> {clerkName || "Não informado"}
+                  <strong>Nome da conta:</strong> {name}
                 </p>
                 <p>
                   <strong>E-mail:</strong> {clerkEmail || "Não informado"}
@@ -586,8 +581,6 @@ export default function UserProfilePage() {
               {isPessoaJuridica ? (
                 <>
                   {user.cnpj && <p><strong>CNPJ:</strong> {user.cnpj}</p>}
-                  {user.organizationEmail && <p><strong>E-mail de contato:</strong> {user.organizationEmail}</p>}
-                  {user.description && <p>{user.description}</p>}
                 </>
               ) : (
                 <>
@@ -649,12 +642,10 @@ export default function UserProfilePage() {
                   <span><strong>E-mail:</strong> {clerkEmail || "Não informado"}</span>
                   <span><strong>ID:</strong> {clerkUserId}</span>
                 </div>
-                <GenericTextField
-                  label="Nome da conta"
-                  value={form.accountName}
+                {!isPessoaJuridica && <GenericTextField
+                  label="Nome completo" value={form.accountName}
                   onChange={(value) => updateField("accountName", value)}
-                  placeholder="Nome e sobrenome"
-                />
+                />}
               </section>
 
               {isPessoaJuridica ? (
@@ -671,28 +662,7 @@ export default function UserProfilePage() {
                     onChange={(value) => updateField("cnpj", value)}
                     placeholder="00.000.000/0000-00"
                   />
-                  <GenericTextField
-                    label="E-mail de contato"
-                    type="email"
-                    value={form.organizationEmail}
-                    onChange={(value) => updateField("organizationEmail", value)}
-                    placeholder="contato@organizacao.org.br"
-                  />
-                  <GenericTextField
-                    label="Logo (URL da imagem)"
-                    value={form.logoUrl}
-                    onChange={(value) => updateField("logoUrl", value)}
-                    placeholder="https://..."
-                  />
-                  <label className="profile-edit-custom-field profile-edit-full">
-                    Descrição da organização
-                    <textarea
-                      rows="4"
-                      value={form.description}
-                      onChange={(event) => updateField("description", event.target.value)}
-                      placeholder="Conte sobre a organização e suas oportunidades."
-                    />
-                  </label>
+
                 </>
               ) : (
                 <>
