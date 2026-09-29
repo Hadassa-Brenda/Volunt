@@ -65,12 +65,8 @@ export function validateField(field, value, form) {
       return "";
 
     case "cnpj":
-      if (form.tipoUsuario !== "PJ") {
+      if (form.tipoUsuario !== "PJ" || !textValue) {
         return "";
-      }
-
-      if (!textValue) {
-        return "Informe o CNPJ da entidade.";
       }
 
       if (!isValidCnpj(value)) {

@@ -33,6 +33,7 @@ import {
 } from "./Utils/DetalhesServicoUtils";
 
 import { useService } from "hook/useService";
+import { useCurrentUser } from "../../../context/CurrentUserContext";
 
 import { SERVICE_MODALITIES } from "../../../types/enum/Modalities";
 import { DiaSemana } from "../../../types/enum/DiaSemana";
@@ -46,16 +47,9 @@ export default function DetalhesServico() {
   const navigate = useNavigate();
 
   const { service, loading, error } = useService(id);
+  const { user: storedUser } = useCurrentUser();
 
   const [reviews, setReviews] = useState([]);
-
-  let storedUser = null;
-
-  try {
-    storedUser = JSON.parse(localStorage.getItem("volunt-user") || "null");
-  } catch {
-    storedUser = null;
-  }
 
   const canReview = storedUser?.perfilUsuario === "BF";
 

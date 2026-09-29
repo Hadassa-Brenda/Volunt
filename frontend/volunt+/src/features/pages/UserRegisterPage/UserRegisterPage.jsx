@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuth, useSignUp } from "@clerk/react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import { ArrowLeft, ShieldCheck, UserPlus } from "lucide-react";
@@ -20,23 +22,65 @@ import {
   validateForm,
 } from "./Utils/userRegisterValidation";
 
+import {
+  registerIndividual,
+  registerOrganization,
+} from "../../../api/usersApi";
+import { useCurrentUser } from "../../../context/CurrentUserContext";
+
 import "./UserRegisterPage.css";
 
 import SingleSelect from "components/SingleSelect.tsx/SingleSelect";
 import GenericTextField from "components/TextField/TextField";
 import DataPicker from "components/DataPicker/DataPicker";
 
-export default function UserRegisterPage({ onSubmitUser }) {
+const IDENTITY_FIELDS = new Set(["email", "password", "confirmPassword"]);
+
+const ROLE_BY_PROFILE = {
+  PF: "OFFERER",
+  BF: "BENEFICIARY",
+};
+
+const GENDER_BY_FORM_VALUE = {
+  M: "MALE",
+  F: "FEMALE",
+  O: "OTHER",
+};
+
+function getErrorMessage(error, fallbackMessage) {
+  return error?.longMessage || error?.message || fallbackMessage;
+}
+
+export default function UserRegisterPage() {
   const navigate = useNavigate();
+  const { isLoaded: isAuthLoaded, isSignedIn } = useAuth();
+  const { signUp, errors: clerkErrors, fetchStatus } = useSignUp();
+  const { refreshUser } = useCurrentUser();
 
   const [form, setForm] = useState({
     ...INITIAL_USER_REGISTER_FORM,
   });
-
   const [errors, setErrors] = useState({});
   const [touchedFields, setTouchedFields] = useState({});
+  const [step, setStep] = useState("form");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [flowError, setFlowError] = useState("");
+  const [flowMessage, setFlowMessage] = useState("");
+  const [showClerkErrors, setShowClerkErrors] = useState(false);
+  const [isCompletingRegistration, setIsCompletingRegistration] =
+    useState(false);
+
   const isPessoaJuridica = form.tipoUsuario === "PJ";
   const isPessoaFisica = form.tipoUsuario === "PF";
+  const isVerifyingEmail = step === "verifyEmail";
+  const isSubmitting =
+    fetchStatus === "fetching" || isCompletingRegistration;
+
+  useEffect(() => {
+    if (isAuthLoaded && isSignedIn && !isCompletingRegistration) {
+      navigate("/", { replace: true });
+    }
+  }, [isAuthLoaded, isCompletingRegistration, isSignedIn, navigate]);
 
   function updateField(field, value) {
     const nextForm = {
@@ -47,6 +91,7 @@ export default function UserRegisterPage({ onSubmitUser }) {
     if (field === "tipoUsuario" && value === "PJ") {
       nextForm.gender = "";
       nextForm.dataNascimento = "";
+      nextForm.perfilUsuario = "PF";
     }
 
     if (field === "tipoUsuario" && value === "PF") {
@@ -54,6 +99,13 @@ export default function UserRegisterPage({ onSubmitUser }) {
     }
 
     setForm(nextForm);
+    setFlowError("");
+    setFlowMessage("");
+    setShowClerkErrors(false);
+
+    if (!IDENTITY_FIELDS.has(field)) {
+      return;
+    }
 
     setTouchedFields((current) => ({
       ...current,
@@ -65,13 +117,23 @@ export default function UserRegisterPage({ onSubmitUser }) {
     setErrors((current) => ({
       ...current,
       [field]: fieldError,
-      ...(field === "tipoUsuario"
-        ? { cnpj: "", gender: "", dataNascimento: "" }
+      ...(field === "password" && touchedFields.confirmPassword
+        ? {
+            confirmPassword: validateField(
+              "confirmPassword",
+              nextForm.confirmPassword,
+              nextForm,
+            ),
+          }
         : {}),
     }));
   }
 
   function handleBlur(field) {
+    if (!IDENTITY_FIELDS.has(field)) {
+      return;
+    }
+
     setTouchedFields((current) => ({
       ...current,
       [field]: true,
@@ -85,103 +147,377 @@ export default function UserRegisterPage({ onSubmitUser }) {
     }));
   }
 
-  function shouldShowError(field) {
-    return touchedFields[field] && errors[field];
+  function getFieldError(field) {
+    const localError = touchedFields[field] && errors[field];
+
+    if (localError) {
+      return localError;
+    }
+
+    if (!showClerkErrors) {
+      return "";
+    }
+
+    const clerkField = {
+      email: clerkErrors.fields.emailAddress,
+      password: clerkErrors.fields.password,
+      verificationCode: clerkErrors.fields.code,
+    }[field];
+
+    return clerkField
+      ? getErrorMessage(clerkField, "Não foi possível validar este campo.")
+      : "";
   }
 
-  function markAllFieldsAsTouched() {
-    setTouchedFields({
-      fullName: true,
-      email: true,
-      cnpj: true,
-      gender: true,
-      tipoUsuario: true,
-      perfilUsuario: true,
-      dataNascimento: true,
-      password: true,
-      confirmPassword: true,
-    });
+  function markFormFieldsAsTouched() {
+    setTouchedFields(
+      Object.keys(form).reduce(
+        (touched, field) => ({ ...touched, [field]: true }),
+        {},
+      ),
+    );
   }
 
-  function resetForm() {
-    setForm({
-      ...INITIAL_USER_REGISTER_FORM,
-    });
-
-    setErrors({});
-    setTouchedFields({});
+  function clearPasswords() {
+    setForm((current) => ({
+      ...current,
+      password: "",
+      confirmPassword: "",
+    }));
+    setTouchedFields((current) => ({
+      ...current,
+      password: false,
+      confirmPassword: false,
+    }));
+    setErrors((current) => ({
+      ...current,
+      password: "",
+      confirmPassword: "",
+    }));
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  function buildRegistrationPayload() {
+    if (isPessoaJuridica) {
+      const cnpj = form.cnpj.replace(/\D/g, "");
+      return {
+        organizationName: form.fullName.trim(),
+        cnpj: cnpj || null,
+      };
+    }
 
+    return {
+      fullName: form.fullName.trim(),
+      birthDate: form.dataNascimento,
+      gender: GENDER_BY_FORM_VALUE[form.gender],
+      initialRole: ROLE_BY_PROFILE[form.perfilUsuario],
+    };
+  }
+
+  async function createVoluntPlusUser(session) {
+    const token = await session.getToken({ skipCache: true });
+    if (!token) {
+      throw new Error(
+        "A sessão foi criada, mas não foi possível obter o token de acesso.",
+      );
+    }
+
+    const register = isPessoaJuridica
+      ? registerOrganization
+      : registerIndividual;
+
+    try {
+      await register(buildRegistrationPayload(), token);
+      await refreshUser(token);
+      return;
+    } catch (registrationError) {
+      let profileExists = false;
+      let profileAbsenceConfirmed = false;
+
+      try {
+        await refreshUser(token);
+        profileExists = true;
+      } catch (profileError) {
+        profileAbsenceConfirmed =
+          axios.isAxiosError(profileError) && profileError.response?.status === 404;
+      }
+
+      if (profileExists) {
+        return;
+      }
+
+      const registrationWasRejected =
+        axios.isAxiosError(registrationError) &&
+        registrationError.response?.status >= 400 &&
+        registrationError.response?.status < 500 &&
+        registrationError.response?.status !== 409;
+
+      if (registrationWasRejected || profileAbsenceConfirmed) {
+        if (!session.user) {
+          throw new Error(
+            "Não foi possível concluir o cadastro nem desfazer a identidade criada.",
+            { cause: registrationError },
+          );
+        }
+
+        try {
+          await session.user.delete();
+          await signUp.reset();
+          setStep("form");
+          setVerificationCode("");
+        } catch (compensationError) {
+          throw new Error(
+            "Não foi possível criar o perfil no Volunt+ nem remover a identidade criada no Clerk.",
+            { cause: compensationError },
+          );
+        }
+      }
+
+      throw new Error(
+        profileAbsenceConfirmed
+          ? "Não foi possível criar o perfil no Volunt+. A identidade Clerk criada nesta tentativa foi removida."
+          : "Não foi possível confirmar a criação do perfil no Volunt+. Tente novamente.",
+        { cause: registrationError },
+      );
+    }
+  }
+
+  async function finalizeSignUp() {
+    setIsCompletingRegistration(true);
+    try {
+      let createdSession;
+      let pendingTask;
+
+      const { error } = await signUp.finalize({
+        navigate: ({ session }) => {
+          if (session?.currentTask) {
+            pendingTask = true;
+            return;
+          }
+
+          createdSession = session;
+        },
+      });
+
+      if (error) {
+        setShowClerkErrors(true);
+        setFlowError(
+          getErrorMessage(
+            error,
+            "Não foi possível ativar sua sessão. Tente novamente.",
+          ),
+        );
+        return;
+      }
+
+      if (pendingTask) {
+        throw new Error(
+          "O Clerk solicitou uma etapa adicional antes de ativar a sessão.",
+        );
+      }
+
+      if (!createdSession) {
+        throw new Error("O Clerk não disponibilizou a sessão criada.");
+      }
+
+      await createVoluntPlusUser(createdSession);
+      navigate("/", { replace: true });
+    } finally {
+      setIsCompletingRegistration(false);
+    }
+  }
+
+  async function handleIdentitySubmit() {
     const validationErrors = validateForm(form);
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      markAllFieldsAsTouched();
-
+      markFormFieldsAsTouched();
       return;
     }
 
-    const newUser = {
-      id: Date.now(),
+    setFlowError("");
+    setFlowMessage("");
+    setShowClerkErrors(false);
 
-      fullName: form.fullName.trim(),
-
-      email: form.email.trim(),
-
-      tipoUsuario: form.tipoUsuario,
-
-      cnpj: isPessoaJuridica ? form.cnpj.replace(/\D/g, "") : null,
-
-      genero: isPessoaFisica ? form.gender : null,
-
-      perfilUsuario: form.perfilUsuario,
-
-      dataNascimento: isPessoaFisica ? form.dataNascimento || null : null,
-
+    const { error } = await signUp.password({
+      emailAddress: form.email.trim().toLowerCase(),
       password: form.password,
-    };
+    });
 
-    const storedUsers = JSON.parse(
-      localStorage.getItem("volunt-users") || "[]",
+    if (error) {
+      setShowClerkErrors(true);
+      setFlowError(
+        getErrorMessage(
+          error,
+          "Não foi possível criar sua identidade. Revise os dados e tente novamente.",
+        ),
+      );
+      return;
+    }
+
+    clearPasswords();
+
+    if (signUp.status === "complete") {
+      await finalizeSignUp();
+      return;
+    }
+
+    if (signUp.unverifiedFields.includes("email_address")) {
+      setStep("verifyEmail");
+
+      const verification = await signUp.verifications.sendEmailCode();
+
+      if (verification.error) {
+        setShowClerkErrors(true);
+        setFlowError(
+          getErrorMessage(
+            verification.error,
+            "Não foi possível enviar o código de verificação.",
+          ),
+        );
+        return;
+      }
+
+      setFlowMessage(`Enviamos um código para ${form.email.trim()}.`);
+      return;
+    }
+
+    await signUp.reset();
+    setFlowError(
+      "O Clerk solicitou dados adicionais que não fazem parte deste cadastro.",
     );
+  }
 
-    const emailAlreadyExists = storedUsers.some(
-      (user) => user.email.toLowerCase() === newUser.email.toLowerCase(),
-    );
+  async function handleVerificationSubmit() {
+    const code = verificationCode.trim();
 
-    if (emailAlreadyExists) {
+    if (!code) {
       setErrors((current) => ({
         ...current,
-        email: "Este e-mail já está cadastrado.",
+        verificationCode: "Informe o código recebido por e-mail.",
       }));
-
       setTouchedFields((current) => ({
         ...current,
-        email: true,
+        verificationCode: true,
       }));
-
       return;
     }
 
-    const updatedUsers = [...storedUsers, newUser];
+    setFlowError("");
+    setFlowMessage("");
+    setShowClerkErrors(false);
 
-    localStorage.setItem("volunt-users", JSON.stringify(updatedUsers));
+    const { error } = await signUp.verifications.verifyEmailCode({ code });
 
-    localStorage.setItem("volunt-user", JSON.stringify(newUser));
-
-    if (onSubmitUser) {
-      onSubmitUser(newUser);
+    if (error) {
+      setShowClerkErrors(true);
+      setFlowError(
+        getErrorMessage(
+          error,
+          "O código informado é inválido ou expirou. Tente novamente.",
+        ),
+      );
+      return;
     }
 
-    alert("Cadastro realizado com sucesso!");
+    if (signUp.status !== "complete") {
+      setFlowError(
+        "A verificação foi recebida, mas o Clerk ainda não concluiu o cadastro.",
+      );
+      return;
+    }
 
-    resetForm();
-
-    navigate("/");
+    await finalizeSignUp();
   }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    if (isSubmitting || !isAuthLoaded) {
+      return;
+    }
+
+    try {
+      if (isVerifyingEmail) {
+        await handleVerificationSubmit();
+      } else {
+        await handleIdentitySubmit();
+      }
+    } catch (error) {
+      setShowClerkErrors(true);
+      setFlowError(
+        getErrorMessage(
+          error,
+          "Não foi possível concluir o cadastro agora. Tente novamente.",
+        ),
+      );
+    }
+  }
+
+  async function handleResendCode() {
+    if (isSubmitting) {
+      return;
+    }
+
+    setFlowError("");
+    setFlowMessage("");
+    setShowClerkErrors(false);
+
+    try {
+      const { error } = await signUp.verifications.sendEmailCode();
+
+      if (error) {
+        setShowClerkErrors(true);
+        setFlowError(
+          getErrorMessage(error, "Não foi possível reenviar o código."),
+        );
+        return;
+      }
+
+      setFlowMessage("Um novo código foi enviado para seu e-mail.");
+    } catch (error) {
+      setFlowError(
+        getErrorMessage(error, "Não foi possível reenviar o código."),
+      );
+    }
+  }
+
+  async function handleChangeEmail() {
+    if (isSubmitting) {
+      return;
+    }
+
+    await signUp.reset();
+    setStep("form");
+    setVerificationCode("");
+    setErrors({});
+    setTouchedFields({ email: true });
+    setFlowError("");
+    setFlowMessage("");
+    setShowClerkErrors(false);
+  }
+
+  const emailError = getFieldError("email");
+  const fullNameError = getFieldError("fullName");
+  const userTypeError = getFieldError("tipoUsuario");
+  const profileTypeError = getFieldError("perfilUsuario");
+  const cnpjError = getFieldError("cnpj");
+  const genderError = getFieldError("gender");
+  const birthDateError = getFieldError("dataNascimento");
+  const passwordError = getFieldError("password");
+  const confirmPasswordError = getFieldError("confirmPassword");
+  const verificationCodeError = getFieldError("verificationCode");
+  const clerkGlobalError = showClerkErrors
+    ? clerkErrors.fields.captcha || clerkErrors.global?.[0]
+    : null;
+  const visibleFlowError =
+    flowError ||
+    (clerkGlobalError
+      ? getErrorMessage(
+          clerkGlobalError,
+          "Não foi possível concluir o cadastro.",
+        )
+      : "");
 
   return (
     <main className="user-register-page">
@@ -225,139 +561,221 @@ export default function UserRegisterPage({ onSubmitUser }) {
             </div>
           </div>
 
-          <div className="user-register-form__grid">
-            <GenericTextField
-              label="Nome completo"
-              value={form.fullName}
-              onChange={(value) => updateField("fullName", value)}
-              onBlur={() => handleBlur("fullName")}
-              placeholder="Ex: Luiz Carlos dos Santos"
-              error={Boolean(shouldShowError("fullName"))}
-              helperText={shouldShowError("fullName")}
-            />
-
-            <GenericTextField
-              label="E-mail"
-              value={form.email}
-              onChange={(value) => updateField("email", value)}
-              onBlur={() => handleBlur("email")}
-              placeholder="Ex: seuemail@gmail.com"
-              error={Boolean(shouldShowError("email"))}
-              helperText={shouldShowError("email")}
-            />
-
-            <SingleSelect
-              label="Tipo de Usuário"
-              value={form.tipoUsuario || ""}
-              onChange={(value) => updateField("tipoUsuario", value)}
-              options={TipoUsuario.map((option) => ({
-                value: option.value,
-                label: option.label,
-              }))}
-              onBlur={() => handleBlur("tipoUsuario")}
-              error={Boolean(shouldShowError("tipoUsuario"))}
-              helperText={shouldShowError("tipoUsuario")}
-            />
-
-            {isPessoaJuridica && (
+          <fieldset
+            className="user-register-form__fields"
+            disabled={isVerifyingEmail || isSubmitting}
+          >
+            <div className="user-register-form__grid">
               <GenericTextField
-                label="CNPJ"
-                value={form.cnpj}
-                onChange={(value) => updateField("cnpj", formatCnpj(value))}
-                onBlur={() => handleBlur("cnpj")}
-                placeholder="00.000.000/0000-00"
-                error={Boolean(shouldShowError("cnpj"))}
-                helperText={shouldShowError("cnpj")}
+                label={isPessoaJuridica ? "Nome da organização" : "Nome completo"}
+                value={form.fullName}
+                onChange={(value) => updateField("fullName", value)}
+                placeholder={
+                  isPessoaJuridica
+                    ? "Ex: Instituto Voluntário"
+                    : "Ex: Luiz Carlos dos Santos"
+                }
+                error={Boolean(fullNameError)}
+                helperText={fullNameError}
               />
-            )}
 
-            {isPessoaFisica && (
+              <GenericTextField
+                label="E-mail"
+                type="email"
+                value={form.email}
+                onChange={(value) => updateField("email", value)}
+                onBlur={() => handleBlur("email")}
+                placeholder="Ex: seuemail@gmail.com"
+                autoComplete="email"
+                error={Boolean(emailError)}
+                helperText={emailError}
+              />
+
               <SingleSelect
-                label="Gênero"
-                width="400px"
-                value={form.gender || ""}
-                onChange={(value) => updateField("gender", value)}
-                options={GENDER_OPTIONS.map((option) => ({
+                label="Tipo de Usuário"
+                value={form.tipoUsuario || ""}
+                onChange={(value) => updateField("tipoUsuario", value)}
+                options={TipoUsuario.map((option) => ({
                   value: option.value,
                   label: option.label,
                 }))}
-                onBlur={() => handleBlur("gender")}
-                error={Boolean(shouldShowError("gender"))}
-                helperText={shouldShowError("gender")}
+                error={Boolean(userTypeError)}
+                helperText={userTypeError}
               />
-            )}
 
-            {isPessoaFisica && (
-              <DataPicker
-                label="Data de nascimento"
-                width="400px"
-                value={form.dataNascimento}
-                onChange={(value) => updateField("dataNascimento", value)}
-                onBlur={() => handleBlur("dataNascimento")}
-                error={Boolean(shouldShowError("dataNascimento"))}
-                helperText={shouldShowError("dataNascimento")}
+              {isPessoaJuridica && (
+                <GenericTextField
+                  label="CNPJ"
+                  value={form.cnpj}
+                  onChange={(value) => updateField("cnpj", formatCnpj(value))}
+                  placeholder="00.000.000/0000-00"
+                  error={Boolean(cnpjError)}
+                  helperText={cnpjError}
+                />
+              )}
+
+              {isPessoaFisica && (
+                <SingleSelect
+                  label="Gênero"
+                  width="400px"
+                  value={form.gender || ""}
+                  onChange={(value) => updateField("gender", value)}
+                  options={GENDER_OPTIONS.map((option) => ({
+                    value: option.value,
+                    label: option.label,
+                  }))}
+                  error={Boolean(genderError)}
+                  helperText={genderError}
+                />
+              )}
+
+              {isPessoaFisica && (
+                <DataPicker
+                  label="Data de nascimento"
+                  width="400px"
+                  value={form.dataNascimento}
+                  onChange={(value) => updateField("dataNascimento", value)}
+                  error={Boolean(birthDateError)}
+                  helperText={birthDateError}
+                />
+              )}
+
+              <SingleSelect
+                label="Tipo de perfil"
+                value={form.perfilUsuario || ""}
+                onChange={(value) => updateField("perfilUsuario", value)}
+                options={PROFILE_TYPES.map((profileType) => ({
+                  value: profileType.value,
+                  label: profileType.label,
+                }))}
+                disabled={isPessoaJuridica}
+                error={Boolean(profileTypeError)}
+                helperText={profileTypeError}
               />
-            )}
+            </div>
 
-            <SingleSelect
-              label="Tipo de perfil"
-              value={form.perfilUsuario || ""}
-              onChange={(value) => updateField("perfilUsuario", value)}
-              options={PROFILE_TYPES.map((profileType) => ({
-                value: profileType.value,
-                label: profileType.label,
-              }))}
-              onBlur={() => handleBlur("perfilUsuario")}
-              error={Boolean(shouldShowError("perfilUsuario"))}
-              helperText={shouldShowError("perfilUsuario")}
-            />
-          </div>
+            <div className="user-register-form__grid">
+              <GenericTextField
+                label="Senha"
+                type="password"
+                value={form.password}
+                onChange={(value) => updateField("password", value)}
+                onBlur={() => handleBlur("password")}
+                placeholder="Mínimo 8 caracteres"
+                autoComplete="new-password"
+                error={Boolean(passwordError)}
+                helperText={passwordError}
+              />
 
-          <div className="user-register-form__grid">
-            <GenericTextField
-              label="Senha"
-              type="password"
-              value={form.password}
-              onChange={(value) => updateField("password", value)}
-              onBlur={() => handleBlur("password")}
-              placeholder="Mínimo 8 caracteres"
-              error={Boolean(shouldShowError("password"))}
-              helperText={shouldShowError("password")}
-            />
+              <GenericTextField
+                label="Confirmar senha"
+                type="password"
+                value={form.confirmPassword}
+                onChange={(value) => updateField("confirmPassword", value)}
+                onBlur={() => handleBlur("confirmPassword")}
+                placeholder="Mínimo 8 caracteres"
+                autoComplete="new-password"
+                error={Boolean(confirmPasswordError)}
+                helperText={confirmPasswordError}
+              />
+            </div>
 
-            <GenericTextField
-              label="Confirmar senha"
-              type="password"
-              value={form.confirmPassword}
-              onChange={(value) => updateField("confirmPassword", value)}
-              onBlur={() => handleBlur("confirmPassword")}
-              placeholder="Mínimo 8 caracteres"
-              error={Boolean(shouldShowError("confirmPassword"))}
-              helperText={shouldShowError("confirmPassword")}
+            <div
+              id="clerk-captcha"
+              className="user-register-form__captcha"
+              data-cl-theme="light"
+              data-cl-size="flexible"
+              data-cl-language="pt-BR"
             />
-          </div>
+          </fieldset>
+
+          {isVerifyingEmail && (
+            <section
+              className="user-register-form__verification"
+              aria-labelledby="email-verification-title"
+            >
+              <h3 id="email-verification-title">Verifique seu e-mail</h3>
+              <p>
+                Digite o código enviado pelo Clerk para <strong>{form.email}</strong>.
+              </p>
+
+              <GenericTextField
+                label="Código de verificação"
+                value={verificationCode}
+                onChange={(value) => {
+                  setVerificationCode(value);
+                  setErrors((current) => ({
+                    ...current,
+                    verificationCode: "",
+                  }));
+                  setTouchedFields((current) => ({
+                    ...current,
+                    verificationCode: true,
+                  }));
+                  setFlowError("");
+                  setShowClerkErrors(false);
+                }}
+                placeholder="Digite o código recebido"
+                autoComplete="one-time-code"
+                inputMode="numeric"
+                disabled={isSubmitting}
+                error={Boolean(verificationCodeError)}
+                helperText={verificationCodeError}
+              />
+
+              <button
+                className="user-register-form__link-button"
+                type="button"
+                onClick={handleResendCode}
+                disabled={isSubmitting}
+              >
+                Reenviar código
+              </button>
+            </section>
+          )}
+
+          {flowMessage && (
+            <p className="user-register-form__status" role="status">
+              {flowMessage}
+            </p>
+          )}
+
+          {visibleFlowError && (
+            <p className="user-register-form__flow-error" role="alert">
+              {visibleFlowError}
+            </p>
+          )}
 
           <div className="user-register-form__actions">
             <button
               className="user-register-form__secondary-button"
               type="button"
-              onClick={() => navigate("/")}
+              onClick={
+                isVerifyingEmail ? handleChangeEmail : () => navigate("/")
+              }
+              disabled={isSubmitting}
             >
-              Cancelar
+              {isVerifyingEmail ? "Alterar e-mail" : "Cancelar"}
             </button>
 
             <button
               className="user-register-form__primary-button"
               type="submit"
+              disabled={isSubmitting || !isAuthLoaded}
             >
               <UserPlus size={18} />
-              Criar conta
+              {isSubmitting
+                ? "Processando..."
+                : isVerifyingEmail
+                  ? "Confirmar código"
+                  : "Criar conta"}
             </button>
           </div>
 
           <div className="user-register-form__safe-message">
             <ShieldCheck size={17} />
-            Seus dados serão usados apenas para acesso e contato na plataforma.
+            Sua senha é processada somente pelo Clerk e não é armazenada pelo
+            Voluntá+.
           </div>
         </form>
       </section>
