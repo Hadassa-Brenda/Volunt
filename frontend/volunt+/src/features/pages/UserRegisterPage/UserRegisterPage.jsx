@@ -330,21 +330,6 @@ export default function UserRegisterPage() {
       return;
     }
 
-    const nameParts = form.fullName.trim().split(/\s+/).filter(Boolean);
-
-    if (nameParts.length && typeof signUp.update === "function") {
-      const { error: nameError } = await signUp.update({
-        firstName: nameParts[0],
-        lastName: nameParts.slice(1).join(" "),
-      });
-
-      if (nameError) {
-        setFlowMessage(
-          "Sua conta foi criada. O nome continuará disponível no perfil Voluntá+.",
-        );
-      }
-    }
-
     clearPasswords();
 
     if (signUp.status === "complete") {
