@@ -748,7 +748,7 @@ export default function UserRegisterPage() {
               className="user-register-form__captcha"
               data-cl-theme="light"
               data-cl-size="flexible"
-              data-cl-language="pt-BR"
+              data-cl-language="pt-br"
             />
               </fieldset>
 
