@@ -65,12 +65,8 @@ export function validateField(field, value, form) {
       return "";
 
     case "cnpj":
-      if (form.tipoUsuario !== "PJ") {
+      if (form.tipoUsuario !== "PJ" || !textValue) {
         return "";
-      }
-
-      if (!textValue) {
-        return "Informe o CNPJ da entidade.";
       }
 
       if (!isValidCnpj(value)) {
@@ -136,6 +132,20 @@ export function validateForm(form) {
   const errors = {};
 
   Object.keys(form).forEach((field) => {
+    const error = validateField(field, form[field], form);
+
+    if (error) {
+      errors[field] = error;
+    }
+  });
+
+  return errors;
+}
+
+export function validateIdentityForm(form) {
+  const errors = {};
+
+  ["email", "password", "confirmPassword"].forEach((field) => {
     const error = validateField(field, form[field], form);
 
     if (error) {

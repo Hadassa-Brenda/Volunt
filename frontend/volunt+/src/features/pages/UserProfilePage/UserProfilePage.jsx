@@ -16,6 +16,10 @@ import {
 } from "lucide-react";
 
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useClerk } from "@clerk/react";
+
+import { useCurrentUser } from "../../../context/CurrentUserContext";
+import { persistBackendUser } from "../../../api/userProfileStorage";
 
 import Footer from "../../../layouts/Footer/Footer";
 import Header from "../../../layouts/Header/Header";
@@ -56,25 +60,19 @@ function getOptionLabel(options, value) {
 
 export default function UserProfilePage() {
   const navigate = useNavigate();
+  const { signOut } = useClerk();
+  const { user: currentUser, changeRole } = useCurrentUser();
 
   const { id } = useParams();
 
-  const profileId = id ? Number(id) : null;
-
-  const storedUser = useMemo(() => {
-    try {
-      return JSON.parse(localStorage.getItem("volunt-user") || "null");
-    } catch {
-      return null;
-    }
-  }, []);
+  const profileId = id || null;
 
   const isOwnProfile =
-    !profileId || Number(storedUser?.id) === Number(profileId);
+    !profileId || String(currentUser?.id) === String(profileId);
 
   const profileUser = useMemo(() => {
-    if (isOwnProfile && storedUser) {
-      return storedUser;
+    if (isOwnProfile && currentUser) {
+      return currentUser;
     }
 
     try {
@@ -83,7 +81,7 @@ export default function UserProfilePage() {
       );
 
       const localUser = localUsers.find(
-        (user) => Number(user.id) === Number(profileId),
+        (user) => String(user.id) === String(profileId),
       );
 
       if (localUser) {
@@ -91,8 +89,8 @@ export default function UserProfilePage() {
       }
     } catch {}
 
-    return userDTO.find((user) => Number(user.id) === Number(profileId));
-  }, [profileId, isOwnProfile, storedUser]);
+    return userDTO.find((user) => String(user.id) === String(profileId));
+  }, [currentUser, profileId, isOwnProfile]);
 
   const [user, setUser] = useState(profileUser);
 
@@ -101,6 +99,10 @@ export default function UserProfilePage() {
   const [changingProfile, setChangingProfile] = useState(false);
 
   const [saved, setSaved] = useState(false);
+
+  const [profileError, setProfileError] = useState("");
+
+  const [isSwitchingProfile, setIsSwitchingProfile] = useState(false);
 
   const [form, setForm] = useState({
     fullName: profileUser?.fullName || "",
@@ -149,7 +151,7 @@ export default function UserProfilePage() {
     }
 
     return allServices.filter(
-      (service) => Number(service.idUsuario) === Number(user.id),
+      (service) => String(service.idUsuario) === String(user.id),
     );
   }, [allServices, user?.id, isOfertante]);
 
@@ -160,48 +162,37 @@ export default function UserProfilePage() {
     }));
   }
 
-  function handleLogout() {
-    localStorage.removeItem("volunt-user");
-
-    setUser(null);
-
-    navigate("/");
+  async function handleLogout() {
+    await signOut({ redirectUrl: "/" });
   }
 
-  function switchProfile() {
+  async function switchProfile() {
     if (!user || isPessoaJuridica) {
       return;
     }
 
-    const updatedUser = {
-      ...user,
-      perfilUsuario: user.perfilUsuario === "PF" ? "BF" : "PF",
-    };
-
-    localStorage.setItem("volunt-user", JSON.stringify(updatedUser));
-
     try {
-      const users = JSON.parse(localStorage.getItem("volunt-users") || "[]");
-      const updatedUsers = users.some(
-        (item) => Number(item.id) === Number(updatedUser.id),
-      )
-        ? users.map((item) =>
-            Number(item.id) === Number(updatedUser.id) ? updatedUser : item,
-          )
-        : [...users, updatedUser];
+      setIsSwitchingProfile(true);
+      setProfileError("");
 
-      localStorage.setItem("volunt-users", JSON.stringify(updatedUsers));
-    } catch {
-      localStorage.setItem("volunt-users", JSON.stringify([updatedUser]));
+      const role = user.perfilUsuario === "PF" ? "BENEFICIARY" : "OFFERER";
+      const updatedUser = await changeRole(role);
+
+      setUser(updatedUser);
+      setChangingProfile(false);
+      setSaved(true);
+
+      window.setTimeout(() => {
+        setSaved(false);
+      }, 2500);
+    } catch (error) {
+      setProfileError(
+        error?.response?.data?.detail ||
+          "Não foi possível trocar o perfil. Tente novamente.",
+      );
+    } finally {
+      setIsSwitchingProfile(false);
     }
-
-    setUser(updatedUser);
-    setChangingProfile(false);
-    setSaved(true);
-
-    window.setTimeout(() => {
-      setSaved(false);
-    }, 2500);
   }
 
   function saveProfile(event) {
@@ -225,25 +216,7 @@ export default function UserProfilePage() {
         : null,
     };
 
-    localStorage.setItem("volunt-user", JSON.stringify(updatedUser));
-
-    try {
-      const users = JSON.parse(localStorage.getItem("volunt-users") || "[]");
-
-      const userExists = users.some(
-        (item) => Number(item.id) === Number(updatedUser.id),
-      );
-
-      const updatedUsers = userExists
-        ? users.map((item) =>
-            Number(item.id) === Number(updatedUser.id) ? updatedUser : item,
-          )
-        : [...users, updatedUser];
-
-      localStorage.setItem("volunt-users", JSON.stringify(updatedUsers));
-    } catch {
-      localStorage.setItem("volunt-users", JSON.stringify([updatedUser]));
-    }
+    persistBackendUser(updatedUser, user);
 
     setUser(updatedUser);
 
@@ -345,7 +318,10 @@ export default function UserProfilePage() {
                 <button
                   className="profile-switch-button"
                   type="button"
-                  onClick={() => setChangingProfile(true)}
+                  onClick={() => {
+                    setProfileError("");
+                    setChangingProfile(true);
+                  }}
                 >
                   <ArrowRightLeft size={17} />
                   Trocar perfil
@@ -641,16 +617,30 @@ export default function UserProfilePage() {
                 <li>Suas avaliações continuarão vinculadas à conta.</li>
                 <li>Você poderá trocar de perfil novamente depois.</li>
               </ul>
+
+              {profileError && (
+                <p className="profile-switch-error" role="alert">
+                  {profileError}
+                </p>
+              )}
             </div>
 
             <div className="profile-edit-actions profile-edit-full">
-              <button type="button" onClick={() => setChangingProfile(false)}>
+              <button
+                type="button"
+                onClick={() => setChangingProfile(false)}
+                disabled={isSwitchingProfile}
+              >
                 Cancelar
               </button>
 
-              <button type="button" onClick={switchProfile}>
+              <button
+                type="button"
+                onClick={switchProfile}
+                disabled={isSwitchingProfile}
+              >
                 <Check size={17} />
-                Confirmar troca
+                {isSwitchingProfile ? "Trocando..." : "Confirmar troca"}
               </button>
             </div>
           </section>
