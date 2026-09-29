@@ -51,6 +51,7 @@ export default function ForgotPasswordPage() {
     setShowClerkErrors(false);
 
     try {
+      await signIn.reset();
       const creation = await signIn.create({ identifier: emailAddress });
 
       if (creation.error) {

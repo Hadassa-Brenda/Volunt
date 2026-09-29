@@ -331,6 +331,9 @@
 .profile-login-required p {
   color: var(--color-text-soft);
 }
+.profile-login-required .profile-load-error {
+  color: #a32d35;
+}
 @media (max-width: 800px) {
   .profile-cover {
     align-items: flex-start;

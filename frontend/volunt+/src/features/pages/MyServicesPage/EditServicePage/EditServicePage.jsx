@@ -263,16 +263,12 @@ export default function EditServicePage() {
       const services = storedServices ? JSON.parse(storedServices) : [];
 
       const updatedServices = services.map((service) => {
-        if (Number(service.id) !== Number(id)) {
+        if (String(service.id) !== String(id)) {
           return service;
         }
 
         return {
           ...service,
-
-          /*
-           * Informações básicas
-           */
           name: formData.name,
 
           descricao: formData.descricao,

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { useAuth, useClerk, useUser } from "@clerk/react";
+import { useAuth, useUser } from "@clerk/react";
 import { Link, useNavigate } from "react-router-dom";
 import { List, LogOut, Menu, Plus, UserRound, X } from "lucide-react";
 
 import { getVoluntUserForClerkUser } from "../../utils/userProfileStorage";
+
+import { useCurrentUser } from "../../context/CurrentUserContext";
 
 import "./Header.css";
 
@@ -11,14 +13,20 @@ export default function Header({ onCreateUser, onOpenLogin }) {
   const navigate = useNavigate();
   const { isLoaded, isSignedIn } = useAuth();
   const { user: clerkUser } = useUser();
-  const { signOut } = useClerk();
   const clerkUserId = clerkUser?.id || "";
   const clerkEmail =
     clerkUser?.primaryEmailAddress?.emailAddress ||
     clerkUser?.emailAddresses?.[0]?.emailAddress ||
     "";
+  const { user: currentUser } = useCurrentUser();
   const [menuOpen, setMenuOpen] = useState(false);
   const [voluntUser, setVoluntUser] = useState(null);
+  const profileName =
+    currentUser?.fullName ||
+    currentUser?.name ||
+    clerkUser?.fullName ||
+    clerkUser?.firstName ||
+    "U";
   const userType = String(voluntUser?.tipoUsuario || "").trim().toLowerCase();
   const userProfile = String(voluntUser?.perfilUsuario || "")
     .trim()
@@ -97,52 +105,16 @@ export default function Header({ onCreateUser, onOpenLogin }) {
 
       <div className="header__actions">
         {isLoaded && isSignedIn && (
-          <>
-            {canManageServices && (
-              <div className="header__service-actions">
-                <Link
-                  className="header__service-link"
-                  to="/cadastrar-servico"
-                  aria-label="Criar serviço"
-                  title="Criar serviço"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <Plus size={18} />
-                  <span>Criar serviço</span>
-                </Link>
-                <Link
-                  className="header__service-link"
-                  to="/meus-servicos"
-                  aria-label="Meus serviços"
-                  title="Meus serviços"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <List size={18} />
-                  <span>Meus serviços</span>
-                </Link>
-              </div>
-            )}
-          <div className="header__clerk-account">
-            <Link
-              className="header__account-link"
-              to="/perfil"
-              aria-label="Meu perfil Voluntá+"
-              onClick={() => setMenuOpen(false)}
-            >
-              <UserRound size={19} />
-              <span>Meu perfil</span>
-            </Link>
-            <button
-              className="header__signout"
-              type="button"
-              aria-label="Sair da conta"
-              onClick={() => signOut({ redirectUrl: "/" })}
-            >
-              <LogOut size={18} />
-              <span>Sair</span>
-            </button>
-          </div>
-          </>
+          <Link
+            className="header__profile"
+            to={currentUser?.id ? `/perfil/${currentUser.id}` : "/perfil"}
+            onClick={() => setMenuOpen(false)}
+          >
+            <span className="header__avatar">
+              {profileName.slice(0, 1).toUpperCase()}
+            </span>
+            <span>Minha conta</span>
+          </Link>
         )}
 
         {isLoaded && !isSignedIn && (

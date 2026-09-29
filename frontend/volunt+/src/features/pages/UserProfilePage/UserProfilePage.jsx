@@ -20,10 +20,13 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useClerk, useUser as useClerkUser } from "@clerk/react";
 
+import { useCurrentUser } from "../../../context/CurrentUserContext";
+import { persistBackendUser } from "../../../api/userProfileStorage";
+import { updateCurrentUserProfile } from "../../../api/usersApi";
+
 import Footer from "../../../layouts/Footer/Footer";
 import Header from "../../../layouts/Header/Header";
 
-import { userDTO } from "../../../types/DTOs/userDTO";
 import { getServices } from "../../../service/serviceService";
 
 import { GENDER_OPTIONS } from "../../../types/enum/Gender";
@@ -33,9 +36,7 @@ import { DiaSemana } from "../../../types/enum/DiaSemana";
 import { Turno } from "../../../types/enum/Turno";
 import {
   getVoluntUserByClerkId,
-  saveVoluntUser,
 } from "../../../utils/userProfileStorage";
-import { getClerkErrorMessage } from "../LoginPages/utils/clerkAuthUtils";
 import "../../../styles/global.css";
 import SingleSelect from "components/SingleSelect.tsx/SingleSelect";
 import GenericTextField from "components/TextField/TextField";
@@ -64,6 +65,18 @@ function getOptionLabel(options, value) {
 
 function toInputValue(value) {
   return Array.isArray(value) ? value.join(", ") : value || "";
+}
+
+function toLocationPayload(value, currentLocation) {
+  if (!currentLocation || typeof currentLocation !== "object") {
+    return value.trim();
+  }
+
+  const [cidade = "", bairro = "", estado = ""] = value
+    .split(",")
+    .map((part) => part.trim());
+
+  return { ...currentLocation, cidade, bairro, estado };
 }
 
 function getLocationValue(location) {
@@ -107,26 +120,28 @@ function createProfileForm(profile, clerkName = "") {
 export default function UserProfilePage() {
   const navigate = useNavigate();
   const { signOut } = useClerk();
-  const { user: clerkUser, isLoaded: isClerkUserLoaded } = useClerkUser();
-
-  const { id } = useParams();
-  const profileId = id || null;
+  const { isLoaded: isClerkUserLoaded, user: clerkUser } = useClerkUser();
+  const {
+    user: currentUser,
+    changeRole,
+    refreshUser,
+    loading: isCurrentUserLoading,
+    error: currentUserError,
+  } = useCurrentUser();
   const clerkUserId = clerkUser?.id || "";
   const clerkEmail =
     clerkUser?.primaryEmailAddress?.emailAddress ||
     clerkUser?.emailAddresses?.[0]?.emailAddress ||
     "";
-  const clerkName =
-    clerkUser?.fullName ||
+  const clerkName = clerkUser?.fullName ||
     [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(" ");
 
-  const storedUser = useMemo(() => {
-    try {
-      return JSON.parse(localStorage.getItem("volunt-user") || "null");
-    } catch {
-      return null;
-    }
-  }, []);
+  const { id } = useParams();
+
+  const profileId = id || null;
+
+  const isOwnProfile =
+    !profileId || String(currentUser?.id) === String(profileId);
 
   const storedUsers = useMemo(() => {
     try {
@@ -136,77 +151,18 @@ export default function UserProfilePage() {
       return [];
     }
   }, []);
-
-  const currentStoredProfile = useMemo(() => {
-    if (!clerkUserId) {
-      return null;
-    }
-
-    return (
-      getVoluntUserByClerkId(clerkUserId) ||
-      storedUsers.find(
-        (item) =>
-          clerkEmail && item.email?.toLowerCase() === clerkEmail.toLowerCase(),
-      ) ||
-      (storedUser &&
-      ((storedUser.clerkUserId && storedUser.clerkUserId === clerkUserId) ||
-        (clerkEmail &&
-          storedUser.email?.toLowerCase() === clerkEmail.toLowerCase()))
-        ? storedUser
-        : null)
-    );
-  }, [clerkEmail, clerkUserId, storedUser, storedUsers]);
-
-  const isOwnProfile =
-    !profileId ||
-    String(profileId) === String(clerkUserId) ||
-    (currentStoredProfile &&
-      String(profileId) === String(currentStoredProfile.id));
+  const localUser = storedUsers.find(
+    (item) => String(item.id) === String(profileId),
+  );
+  const storedUser = getVoluntUserByClerkId(clerkUserId);
 
   const profileUser = useMemo(() => {
     if (isOwnProfile) {
-      if (!clerkUser) {
-        return null;
-      }
-
-      return {
-        ...currentStoredProfile,
-        id: currentStoredProfile?.id || null,
-        clerkUserId,
-        fullName: clerkName || currentStoredProfile?.fullName || "",
-        email: clerkEmail || currentStoredProfile?.email || "",
-        tipoUsuario: currentStoredProfile?.tipoUsuario || "PF",
-        perfilUsuario:
-          currentStoredProfile?.tipoUsuario === "PJ"
-            ? PROFILE_TYPES[0].value
-            : currentStoredProfile?.perfilUsuario ?? PROFILE_TYPES[0]?.value,
-        organizationName:
-          currentStoredProfile?.organizationName ||
-          (currentStoredProfile?.tipoUsuario === "PJ"
-            ? currentStoredProfile.fullName
-            : ""),
-      };
+      return currentUser || storedUser;
     }
 
-    const localUser = storedUsers.find(
-      (user) => String(user.id) === String(profileId),
-    );
-
-    return (
-      localUser ||
-      userDTO.find((user) => String(user.id) === String(profileId)) ||
-      null
-    );
-  }, [
-    clerkEmail,
-    clerkName,
-    clerkUser,
-    clerkUserId,
-    currentStoredProfile,
-    isOwnProfile,
-    profileId,
-    storedUsers,
-  ]);
+    return localUser || null;
+  }, [currentUser, isOwnProfile, localUser, storedUser]);
 
   const [user, setUser] = useState(profileUser);
 
@@ -216,10 +172,18 @@ export default function UserProfilePage() {
 
   const [saved, setSaved] = useState(false);
   const [profileError, setProfileError] = useState("");
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
 
-  const [form, setForm] = useState(() =>
-    createProfileForm(profileUser, clerkName),
-  );
+  const [isSwitchingProfile, setIsSwitchingProfile] = useState(false);
+
+  const [form, setForm] = useState({
+    fullName: profileUser?.fullName || "",
+    email: profileUser?.email || "",
+    perfilUsuario: profileUser?.perfilUsuario ?? PROFILE_TYPES[0]?.value ?? "",
+    dataNascimento: profileUser?.dataNascimento
+      ? profileUser.dataNascimento.split("T")[0]
+      : "",
+  });
 
   useEffect(() => {
     setUser(profileUser);
@@ -251,7 +215,7 @@ export default function UserProfilePage() {
     }
 
     return allServices.filter(
-      (service) => Number(service.idUsuario) === Number(user.id),
+      (service) => String(service.idUsuario) === String(user.id),
     );
   }, [allServices, user?.id, isOfertante]);
 
@@ -267,90 +231,20 @@ export default function UserProfilePage() {
     await signOut({ redirectUrl: "/" });
   }
 
-  function switchProfile() {
+  async function switchProfile() {
     if (!user || isPessoaJuridica) {
       return;
     }
 
-    const updatedUser = {
-      ...user,
-      perfilUsuario: user.perfilUsuario === "PF" ? "BF" : "PF",
-    };
-
-    setUser(saveVoluntUser(updatedUser));
-    setChangingProfile(false);
-    setSaved(true);
-
-    window.setTimeout(() => {
-      setSaved(false);
-    }, 2500);
-  }
-
-  async function saveProfile(event) {
-    event.preventDefault();
-
-    if (!user) {
-      return;
-    }
-
-    setProfileError("");
-
     try {
-      const nameParts = form.accountName.trim().split(/\s+/).filter(Boolean);
+      setIsSwitchingProfile(true);
+      setProfileError("");
 
-      if (clerkUser && form.accountName.trim() !== clerkName) {
-        await clerkUser.update({
-          firstName: nameParts[0] || "",
-          lastName: nameParts.slice(1).join(" "),
-        });
-      }
+      const role = user.perfilUsuario === "PF" ? "BENEFICIARY" : "OFFERER";
+      const updatedUser = await changeRole(role);
 
-      const updatedUser = { ...user };
-      delete updatedUser.interests;
-      delete updatedUser.areasOfWork;
-      delete updatedUser.availability;
-      if (!isPessoaJuridica) {
-        delete updatedUser.cnpj;
-        delete updatedUser.organizationName;
-        delete updatedUser.organizationEmail;
-        delete updatedUser.description;
-        delete updatedUser.logoUrl;
-      } else {
-        delete updatedUser.genero;
-        delete updatedUser.dataNascimento;
-      }
-      if (!isOfertante) {
-        delete updatedUser.phone;
-      }
-
-      Object.assign(updatedUser, {
-        ...(isOfertante ? { phone: form.phone.trim() } : {}),
-        location: form.location.trim(),
-        ...(isPessoaJuridica
-          ? {
-              organizationName: form.organizationName.trim(),
-              organizationEmail: form.organizationEmail.trim(),
-              cnpj: form.cnpj.trim(),
-              description: form.description.trim(),
-              logoUrl: form.logoUrl.trim(),
-              perfilUsuario: PROFILE_TYPES[0]?.value,
-            }
-          : {
-              perfilUsuario: form.perfilUsuario,
-              genero: form.genero,
-              dataNascimento: form.dataNascimento
-                ? `${form.dataNascimento}T00:00:00.000Z`
-                : null,
-              ...(!isOfertante
-                ? { availability: form.availability.trim() }
-                : {}),
-            }),
-      });
-
-      setUser(saveVoluntUser(updatedUser));
-
-      setEditing(false);
-
+      setUser(updatedUser);
+      setChangingProfile(false);
       setSaved(true);
 
       window.setTimeout(() => {
@@ -358,11 +252,95 @@ export default function UserProfilePage() {
       }, 2500);
     } catch (error) {
       setProfileError(
-        getClerkErrorMessage(
-          error,
-          "Não foi possível atualizar o perfil. Tente novamente.",
-        ),
+        error?.response?.data?.detail ||
+          "Não foi possível trocar o perfil. Tente novamente.",
       );
+    } finally {
+      setIsSwitchingProfile(false);
+    }
+  }
+
+  async function saveProfile(event) {
+    event.preventDefault();
+
+    if (!user || isSavingProfile) {
+      return;
+    }
+
+    const genderByFormValue = { M: "MALE", F: "FEMALE", O: "OTHER" };
+    const roleByProfile = { PF: "OFFERER", BF: "BENEFICIARY" };
+    const profilePayload = {
+      ...(isPessoaJuridica
+        ? {
+            organizationName: form.organizationName.trim(),
+            cnpj: form.cnpj.replace(/\D/g, "") || null,
+            organizationEmail: form.organizationEmail.trim(),
+            description: form.description.trim(),
+            logoUrl: form.logoUrl.trim(),
+          }
+        : {
+            fullName: form.accountName.trim(),
+            birthDate: form.dataNascimento || null,
+            ...(form.genero
+              ? { gender: genderByFormValue[form.genero] }
+              : {}),
+            ...(form.availability
+              ? { availability: form.availability.trim() }
+              : {}),
+          }),
+      phone: form.phone.trim(),
+      location: toLocationPayload(form.location, user.location),
+    };
+
+    try {
+      setIsSavingProfile(true);
+      setProfileError("");
+
+      if (
+        !isPessoaJuridica &&
+        roleByProfile[form.perfilUsuario] &&
+        form.perfilUsuario !== user.perfilUsuario
+      ) {
+        await changeRole(roleByProfile[form.perfilUsuario]);
+      }
+
+      const response = await updateCurrentUserProfile(profilePayload);
+      let updatedUser = persistBackendUser(
+        { ...profilePayload, ...(response || {}) },
+        user,
+      );
+
+      if (clerkUser?.update && form.accountName.trim() !== clerkName) {
+        const [firstName, ...lastNameParts] = form.accountName
+          .trim()
+          .split(/\s+/);
+        await clerkUser.update({
+          firstName,
+          lastName: lastNameParts.join(" "),
+        });
+      }
+
+      setUser(updatedUser);
+      setEditing(false);
+      setSaved(true);
+      window.setTimeout(() => setSaved(false), 2500);
+
+      refreshUser()
+        .then((refreshedUser) => {
+          if (refreshedUser) {
+            updatedUser = refreshedUser;
+            setUser(refreshedUser);
+          }
+        })
+        .catch(() => undefined);
+    } catch (error) {
+      setProfileError(
+        error?.response?.data?.detail ||
+          error?.message ||
+          "Não foi possível salvar o perfil. Tente novamente.",
+      );
+    } finally {
+      setIsSavingProfile(false);
     }
   }
 
@@ -372,8 +350,27 @@ export default function UserProfilePage() {
         <Header />
 
         <section className="profile-login-required">
-          {isOwnProfile && !isClerkUserLoaded ? (
+          {isOwnProfile && (isCurrentUserLoading || !isClerkUserLoaded) ? (
             <p>Carregando perfil...</p>
+          ) : isOwnProfile && clerkUser ? (
+            <>
+              <UserRound size={42} />
+              <h1>{clerkName || "Seu perfil"}</h1>
+              <p>{clerkEmail}</p>
+              <p className="profile-load-error" role="alert">
+                {currentUserError?.response?.status === 401
+                  ? "Sua sessão está ativa, mas o servidor recusou o acesso aos dados do perfil."
+                  : "Não foi possível carregar os dados do perfil no servidor."}
+              </p>
+              <button
+                className="profile-primary-button"
+                type="button"
+                onClick={() => refreshUser().catch(() => undefined)}
+                disabled={isCurrentUserLoading}
+              >
+                {isCurrentUserLoading ? "Carregando..." : "Tentar novamente"}
+              </button>
+            </>
           ) : (
             <>
               <UserRound size={42} />
@@ -474,7 +471,10 @@ export default function UserProfilePage() {
                 <button
                   className="profile-switch-button"
                   type="button"
-                  onClick={() => setChangingProfile(true)}
+                  onClick={() => {
+                    setProfileError("");
+                    setChangingProfile(true);
+                  }}
                 >
                   <ArrowRightLeft size={17} />
                   Trocar perfil
@@ -852,16 +852,30 @@ export default function UserProfilePage() {
                 <li>Suas avaliações continuarão vinculadas à conta.</li>
                 <li>Você poderá trocar de perfil novamente depois.</li>
               </ul>
+
+              {profileError && (
+                <p className="profile-switch-error" role="alert">
+                  {profileError}
+                </p>
+              )}
             </div>
 
             <div className="profile-edit-actions profile-edit-full">
-              <button type="button" onClick={() => setChangingProfile(false)}>
+              <button
+                type="button"
+                onClick={() => setChangingProfile(false)}
+                disabled={isSwitchingProfile}
+              >
                 Cancelar
               </button>
 
-              <button type="button" onClick={switchProfile}>
+              <button
+                type="button"
+                onClick={switchProfile}
+                disabled={isSwitchingProfile}
+              >
                 <Check size={17} />
-                Confirmar troca
+                {isSwitchingProfile ? "Trocando..." : "Confirmar troca"}
               </button>
             </div>
           </section>

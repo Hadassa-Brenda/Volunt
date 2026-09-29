@@ -5,8 +5,10 @@ import { initialFormData, steps } from "../types/CadastrarServicoConst";
 import { servicesDTO } from "../../../../types/DTOs/serviceDTO";
 import { SERVICE_STATUS } from "../../../../types/enum/Status";
 import { SERVICE_MODALITIES } from "../../../../types/enum/Modalities";
+import { useCurrentUser } from "../../../../context/CurrentUserContext";
 
 export function useCadastrarServico() {
+  const { user, loading: currentUserLoading } = useCurrentUser();
   const [currentStep, setCurrentStep] = useState(1);
 
   const [formData, setFormData] = useState({
@@ -298,6 +300,15 @@ export function useCadastrarServico() {
 
   const salvarServico = () => {
     try {
+      if (currentUserLoading) {
+        setErrors((current) => ({
+          ...current,
+          submit: "Aguarde enquanto seu perfil é carregado.",
+        }));
+
+        return null;
+      }
+
       const storedServices = localStorage.getItem("volunt-services");
 
       let services = [];
@@ -310,11 +321,7 @@ export function useCadastrarServico() {
         }
       }
 
-      const storedUser = JSON.parse(
-        localStorage.getItem("volunt-user") || "null",
-      );
-
-      const idUsuario = storedUser?.id;
+      const idUsuario = user?.id;
 
       if (!idUsuario) {
         setErrors((current) => ({
@@ -348,7 +355,7 @@ export function useCadastrarServico() {
           ? formData.categorias[0]
           : formData.categorias,
 
-        idUsuario: Number(idUsuario),
+        idUsuario: String(idUsuario),
 
         idLocalizacao: null,
 

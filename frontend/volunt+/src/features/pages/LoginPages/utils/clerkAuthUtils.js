@@ -51,12 +51,18 @@ export function getClerkErrorMessage(error, fallbackMessage = "") {
   }
 
   const detail = error.errors?.[0] || error;
-  const codeMessage = CLERK_ERROR_MESSAGES[error.code || detail.code];
-  const message = error.longMessage || detail.longMessage || error.message;
+  const codeMessage =
+    CLERK_ERROR_MESSAGES[detail.code] || CLERK_ERROR_MESSAGES[error.code];
+  const message =
+    detail.longMessage ||
+    detail.message ||
+    error.longMessage ||
+    error.message;
 
   return (
     codeMessage ||
     translateClerkMessage(message) ||
+    message ||
     fallbackMessage ||
     "Não foi possível concluir esta etapa. Tente novamente."
   );

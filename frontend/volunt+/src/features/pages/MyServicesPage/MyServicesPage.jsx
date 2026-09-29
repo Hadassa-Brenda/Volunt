@@ -12,6 +12,7 @@ import {
 
 import { Link, useNavigate } from "react-router-dom";
 import { useClerk } from "@clerk/react";
+import { useCurrentUser } from "../../../context/CurrentUserContext";
 
 import { useEffect, useMemo, useState } from "react";
 
@@ -25,20 +26,7 @@ import "./MyServicesPage.css";
 export default function MyServicesPage() {
   const navigate = useNavigate();
   const { signOut } = useClerk();
-
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    try {
-      const storedUser = JSON.parse(
-        localStorage.getItem("volunt-user") || "null",
-      );
-
-      setUser(storedUser);
-    } catch {
-      setUser(null);
-    }
-  }, []);
+  const { user } = useCurrentUser();
 
   const name = user?.fullName || user?.name || "Usuário";
 
@@ -83,7 +71,7 @@ export default function MyServicesPage() {
     }
 
     return services.filter(
-      (service) => Number(service.idUsuario) === Number(user.id),
+      (service) => String(service.idUsuario) === String(user.id),
     );
   }, [services, user]);
 
@@ -123,7 +111,7 @@ export default function MyServicesPage() {
     }
 
     const updatedServices = services.filter(
-      (service) => Number(service.id) !== Number(serviceId),
+      (service) => String(service.id) !== String(serviceId),
     );
 
     setServices(updatedServices);
@@ -133,7 +121,7 @@ export default function MyServicesPage() {
 
   function handleToggleStatus(serviceId) {
     const updatedServices = services.map((service) => {
-      if (Number(service.id) !== Number(serviceId)) {
+      if (String(service.id) !== String(serviceId)) {
         return service;
       }
 

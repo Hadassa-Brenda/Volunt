@@ -4,6 +4,7 @@ import { ptBR } from "@clerk/localizations";
 import { createRoot } from "react-dom/client";
 
 import ClerkApiAuthBridge from "./api/ClerkApiAuthBridge";
+import { CurrentUserProvider } from "./context/CurrentUserContext";
 import App from "./features/pages/App";
 import "./styles/global.css";
 
@@ -29,7 +30,9 @@ root.render(
       afterSignOutUrl="/"
     >
       <ClerkApiAuthBridge>
-        <App />
+        <CurrentUserProvider>
+          <App />
+        </CurrentUserProvider>
       </ClerkApiAuthBridge>
     </ClerkProvider>
   </React.StrictMode>,

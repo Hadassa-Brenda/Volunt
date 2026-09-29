@@ -220,6 +220,15 @@
   background: var(--color-primary);
   color: #fff;
 }
+.profile-edit-actions button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+.profile-switch-error {
+  color: #b42318;
+  font-weight: 600;
+  margin-top: 16px;
+}
 .profile-toast {
   position: fixed;
   right: 25px;
