@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth, useSignUp } from "@clerk/react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import { ArrowLeft, ShieldCheck, UserPlus } from "lucide-react";
@@ -18,8 +19,14 @@ import "../../../styles/global.css";
 import {
   formatCnpj,
   validateField,
-  validateIdentityForm,
+  validateForm,
 } from "./Utils/userRegisterValidation";
+
+import {
+  registerIndividual,
+  registerOrganization,
+} from "../../../api/usersApi";
+import { useCurrentUser } from "../../../context/CurrentUserContext";
 
 import "./UserRegisterPage.css";
 
@@ -29,6 +36,17 @@ import DataPicker from "components/DataPicker/DataPicker";
 
 const IDENTITY_FIELDS = new Set(["email", "password", "confirmPassword"]);
 
+const ROLE_BY_PROFILE = {
+  PF: "OFFERER",
+  BF: "BENEFICIARY",
+};
+
+const GENDER_BY_FORM_VALUE = {
+  M: "MALE",
+  F: "FEMALE",
+  O: "OTHER",
+};
+
 function getErrorMessage(error, fallbackMessage) {
   return error?.longMessage || error?.message || fallbackMessage;
 }
@@ -37,6 +55,7 @@ export default function UserRegisterPage() {
   const navigate = useNavigate();
   const { isLoaded: isAuthLoaded, isSignedIn } = useAuth();
   const { signUp, errors: clerkErrors, fetchStatus } = useSignUp();
+  const { refreshUser } = useCurrentUser();
 
   const [form, setForm] = useState({
     ...INITIAL_USER_REGISTER_FORM,
@@ -48,17 +67,20 @@ export default function UserRegisterPage() {
   const [flowError, setFlowError] = useState("");
   const [flowMessage, setFlowMessage] = useState("");
   const [showClerkErrors, setShowClerkErrors] = useState(false);
+  const [isCompletingRegistration, setIsCompletingRegistration] =
+    useState(false);
 
   const isPessoaJuridica = form.tipoUsuario === "PJ";
   const isPessoaFisica = form.tipoUsuario === "PF";
   const isVerifyingEmail = step === "verifyEmail";
-  const isSubmitting = fetchStatus === "fetching";
+  const isSubmitting =
+    fetchStatus === "fetching" || isCompletingRegistration;
 
   useEffect(() => {
-    if (isAuthLoaded && isSignedIn) {
+    if (isAuthLoaded && isSignedIn && !isCompletingRegistration) {
       navigate("/", { replace: true });
     }
-  }, [isAuthLoaded, isSignedIn, navigate]);
+  }, [isAuthLoaded, isCompletingRegistration, isSignedIn, navigate]);
 
   function updateField(field, value) {
     const nextForm = {
@@ -69,6 +91,7 @@ export default function UserRegisterPage() {
     if (field === "tipoUsuario" && value === "PJ") {
       nextForm.gender = "";
       nextForm.dataNascimento = "";
+      nextForm.perfilUsuario = "PF";
     }
 
     if (field === "tipoUsuario" && value === "PF") {
@@ -146,13 +169,13 @@ export default function UserRegisterPage() {
       : "";
   }
 
-  function markIdentityFieldsAsTouched() {
-    setTouchedFields((current) => ({
-      ...current,
-      email: true,
-      password: true,
-      confirmPassword: true,
-    }));
+  function markFormFieldsAsTouched() {
+    setTouchedFields(
+      Object.keys(form).reduce(
+        (touched, field) => ({ ...touched, [field]: true }),
+        {},
+      ),
+    );
   }
 
   function clearPasswords() {
@@ -173,44 +196,142 @@ export default function UserRegisterPage() {
     }));
   }
 
-  async function finalizeSignUp() {
-    const { error } = await signUp.finalize({
-      navigate: ({ session, decorateUrl }) => {
-        if (session?.currentTask) {
-          setFlowError(
-            "O Clerk solicitou uma etapa adicional antes de ativar a sessão.",
+  function buildRegistrationPayload() {
+    if (isPessoaJuridica) {
+      const cnpj = form.cnpj.replace(/\D/g, "");
+      return {
+        organizationName: form.fullName.trim(),
+        cnpj: cnpj || null,
+      };
+    }
+
+    return {
+      fullName: form.fullName.trim(),
+      birthDate: form.dataNascimento,
+      gender: GENDER_BY_FORM_VALUE[form.gender],
+      initialRole: ROLE_BY_PROFILE[form.perfilUsuario],
+    };
+  }
+
+  async function createVoluntPlusUser(session) {
+    const token = await session.getToken({ skipCache: true });
+    if (!token) {
+      throw new Error(
+        "A sessão foi criada, mas não foi possível obter o token de acesso.",
+      );
+    }
+
+    const register = isPessoaJuridica
+      ? registerOrganization
+      : registerIndividual;
+
+    try {
+      await register(buildRegistrationPayload(), token);
+      await refreshUser(token);
+      return;
+    } catch (registrationError) {
+      let profileExists = false;
+      let profileAbsenceConfirmed = false;
+
+      try {
+        await refreshUser(token);
+        profileExists = true;
+      } catch (profileError) {
+        profileAbsenceConfirmed =
+          axios.isAxiosError(profileError) && profileError.response?.status === 404;
+      }
+
+      if (profileExists) {
+        return;
+      }
+
+      const registrationWasRejected =
+        axios.isAxiosError(registrationError) &&
+        registrationError.response?.status >= 400 &&
+        registrationError.response?.status < 500 &&
+        registrationError.response?.status !== 409;
+
+      if (registrationWasRejected || profileAbsenceConfirmed) {
+        if (!session.user) {
+          throw new Error(
+            "Não foi possível concluir o cadastro nem desfazer a identidade criada.",
+            { cause: registrationError },
           );
-          return;
         }
 
-        const destination = decorateUrl("/");
-
-        if (/^https?:\/\//.test(destination)) {
-          window.location.assign(destination);
-          return;
+        try {
+          await session.user.delete();
+          await signUp.reset();
+          setStep("form");
+          setVerificationCode("");
+        } catch (compensationError) {
+          throw new Error(
+            "Não foi possível criar o perfil no Volunt+ nem remover a identidade criada no Clerk.",
+            { cause: compensationError },
+          );
         }
+      }
 
-        navigate(destination, { replace: true });
-      },
-    });
-
-    if (error) {
-      setShowClerkErrors(true);
-      setFlowError(
-        getErrorMessage(
-          error,
-          "Não foi possível ativar sua sessão. Tente novamente.",
-        ),
+      throw new Error(
+        profileAbsenceConfirmed
+          ? "Não foi possível criar o perfil no Volunt+. A identidade Clerk criada nesta tentativa foi removida."
+          : "Não foi possível confirmar a criação do perfil no Volunt+. Tente novamente.",
+        { cause: registrationError },
       );
     }
   }
 
+  async function finalizeSignUp() {
+    setIsCompletingRegistration(true);
+    try {
+      let createdSession;
+      let pendingTask;
+
+      const { error } = await signUp.finalize({
+        navigate: ({ session }) => {
+          if (session?.currentTask) {
+            pendingTask = true;
+            return;
+          }
+
+          createdSession = session;
+        },
+      });
+
+      if (error) {
+        setShowClerkErrors(true);
+        setFlowError(
+          getErrorMessage(
+            error,
+            "Não foi possível ativar sua sessão. Tente novamente.",
+          ),
+        );
+        return;
+      }
+
+      if (pendingTask) {
+        throw new Error(
+          "O Clerk solicitou uma etapa adicional antes de ativar a sessão.",
+        );
+      }
+
+      if (!createdSession) {
+        throw new Error("O Clerk não disponibilizou a sessão criada.");
+      }
+
+      await createVoluntPlusUser(createdSession);
+      navigate("/", { replace: true });
+    } finally {
+      setIsCompletingRegistration(false);
+    }
+  }
+
   async function handleIdentitySubmit() {
-    const validationErrors = validateIdentityForm(form);
+    const validationErrors = validateForm(form);
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      markIdentityFieldsAsTouched();
+      markFormFieldsAsTouched();
       return;
     }
 
@@ -377,6 +498,12 @@ export default function UserRegisterPage() {
   }
 
   const emailError = getFieldError("email");
+  const fullNameError = getFieldError("fullName");
+  const userTypeError = getFieldError("tipoUsuario");
+  const profileTypeError = getFieldError("perfilUsuario");
+  const cnpjError = getFieldError("cnpj");
+  const genderError = getFieldError("gender");
+  const birthDateError = getFieldError("dataNascimento");
   const passwordError = getFieldError("password");
   const confirmPasswordError = getFieldError("confirmPassword");
   const verificationCodeError = getFieldError("verificationCode");
@@ -440,10 +567,16 @@ export default function UserRegisterPage() {
           >
             <div className="user-register-form__grid">
               <GenericTextField
-                label="Nome completo"
+                label={isPessoaJuridica ? "Nome da organização" : "Nome completo"}
                 value={form.fullName}
                 onChange={(value) => updateField("fullName", value)}
-                placeholder="Ex: Luiz Carlos dos Santos"
+                placeholder={
+                  isPessoaJuridica
+                    ? "Ex: Instituto Voluntário"
+                    : "Ex: Luiz Carlos dos Santos"
+                }
+                error={Boolean(fullNameError)}
+                helperText={fullNameError}
               />
 
               <GenericTextField
@@ -466,6 +599,8 @@ export default function UserRegisterPage() {
                   value: option.value,
                   label: option.label,
                 }))}
+                error={Boolean(userTypeError)}
+                helperText={userTypeError}
               />
 
               {isPessoaJuridica && (
@@ -474,6 +609,8 @@ export default function UserRegisterPage() {
                   value={form.cnpj}
                   onChange={(value) => updateField("cnpj", formatCnpj(value))}
                   placeholder="00.000.000/0000-00"
+                  error={Boolean(cnpjError)}
+                  helperText={cnpjError}
                 />
               )}
 
@@ -487,6 +624,8 @@ export default function UserRegisterPage() {
                     value: option.value,
                     label: option.label,
                   }))}
+                  error={Boolean(genderError)}
+                  helperText={genderError}
                 />
               )}
 
@@ -496,6 +635,8 @@ export default function UserRegisterPage() {
                   width="400px"
                   value={form.dataNascimento}
                   onChange={(value) => updateField("dataNascimento", value)}
+                  error={Boolean(birthDateError)}
+                  helperText={birthDateError}
                 />
               )}
 
@@ -507,6 +648,9 @@ export default function UserRegisterPage() {
                   value: profileType.value,
                   label: profileType.label,
                 }))}
+                disabled={isPessoaJuridica}
+                error={Boolean(profileTypeError)}
+                helperText={profileTypeError}
               />
             </div>
 

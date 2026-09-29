@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { useAuth, UserButton } from "@clerk/react";
+import { useAuth } from "@clerk/react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, Plus, X } from "lucide-react";
+
+import { useCurrentUser } from "../../context/CurrentUserContext";
 
 import "./Header.css";
 
 export default function Header({ onCreateUser, onOpenLogin }) {
   const navigate = useNavigate();
   const { isLoaded, isSignedIn } = useAuth();
+  const { user: currentUser } = useCurrentUser();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -56,11 +59,19 @@ export default function Header({ onCreateUser, onOpenLogin }) {
       )}
 
       <div className="header__actions">
-        {isLoaded && isSignedIn && (
-          <div className="header__clerk-account" aria-label="Conta autenticada">
+        {isLoaded && isSignedIn && currentUser?.id && (
+          <Link
+            className="header__profile"
+            to={`/perfil/${currentUser.id}`}
+            onClick={() => setMenuOpen(false)}
+          >
+            <span className="header__avatar">
+              {(currentUser.fullName || currentUser.name || "U")
+                .slice(0, 1)
+                .toUpperCase()}
+            </span>
             <span>Minha conta</span>
-            <UserButton />
-          </div>
+          </Link>
         )}
 
         {isLoaded && !isSignedIn && (
