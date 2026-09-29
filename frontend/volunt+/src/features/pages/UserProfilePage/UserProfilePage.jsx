@@ -108,7 +108,11 @@ export default function UserProfilePage() {
     if (!profileId || isOwnProfile) return;
     setPublicUser(null);
     fetchPublicUserProfile(profileId)
-      .then((profile) => setPublicUser(mapBackendUserToFrontend(profile)))
+      .then((profile) => setPublicUser(
+        profile.currentRole === "OFFERER"
+          ? mapBackendUserToFrontend(profile)
+          : null,
+      ))
       .catch(() => setPublicUser(null));
   }, [profileId, isOwnProfile]);
   const profileUser = useMemo(() => {
