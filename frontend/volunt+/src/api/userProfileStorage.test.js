@@ -51,4 +51,11 @@ describe("userProfileStorage", () => {
     });
     expect(JSON.parse(localStorage.getItem("volunt-user"))).toEqual(mappedUser);
   });
+
+  it("não inventa um papel de ofertante para perfis sem papel no servidor", () => {
+    expect(mapBackendUserToFrontend(
+      { id: 7, fullName: "Ana" },
+      { perfilUsuario: "PF", currentRole: "OFFERER" },
+    ).perfilUsuario).toBeNull();
+  });
 });

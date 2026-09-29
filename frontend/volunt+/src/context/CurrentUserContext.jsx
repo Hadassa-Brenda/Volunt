@@ -15,7 +15,6 @@ import {
 } from "../api/usersApi";
 import {
   clearStoredCurrentUser,
-  loadStoredCurrentUser,
   persistBackendUser,
 } from "../api/userProfileStorage";
 
@@ -25,7 +24,7 @@ const CurrentUserContext = createContext(null);
 
 export function CurrentUserProvider({ children }) {
   const { getToken, isLoaded, isSignedIn, userId } = useAuth();
-  const [user, setUser] = useState(() => loadStoredCurrentUser());
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const operationIdRef = useRef(0);
@@ -44,10 +43,7 @@ export function CurrentUserProvider({ children }) {
         }
 
         const profile = await fetchCurrentUserProfile(token);
-        const mappedUser = persistBackendUser(
-          profile,
-          loadStoredCurrentUser() ?? {},
-        );
+        const mappedUser = persistBackendUser(profile, {});
 
         if (operationId === operationIdRef.current) {
           setUser(mappedUser);
@@ -58,10 +54,8 @@ export function CurrentUserProvider({ children }) {
         if (operationId === operationIdRef.current) {
           const status = refreshError?.response?.status;
 
-          if (status === 404) {
-            clearStoredCurrentUser();
-            setUser(null);
-          }
+          clearStoredCurrentUser();
+          setUser(null);
 
           setError(refreshError);
         }
@@ -90,7 +84,7 @@ export function CurrentUserProvider({ children }) {
         const changedProfile = await changeCurrentUserRole(role);
         const updatedUser = persistBackendUser(
           changedProfile,
-          loadStoredCurrentUser() ?? user ?? {},
+          user ?? {},
         );
 
         if (operationId === operationIdRef.current) {

@@ -36,6 +36,11 @@ export async function fetchCurrentUserProfile(token) {
   return response.data;
 }
 
+export async function fetchPublicUserProfile(id) {
+  const response = await publicApi.get(`/v1/users/${encodeURIComponent(id)}`);
+  return response.data;
+}
+
 export async function changeCurrentUserRole(role) {
   const response = await authenticatedApi.patch("/v1/users/me/role", { role });
 

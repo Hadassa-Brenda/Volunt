@@ -8,6 +8,8 @@ import Footer from "../../../../layouts/Footer/Footer";
 import Button from "../../../../components/Button/Button";
 
 import { getServiceById } from "../../../../service/serviceService";
+import { updateService } from "../../../../api/servicesApi";
+import { useCurrentUser } from "../../../../context/CurrentUserContext";
 
 import {
   initialFormData,
@@ -25,6 +27,7 @@ import "../../../../styles/global.css";
 export default function EditServicePage() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { user } = useCurrentUser();
 
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -38,12 +41,12 @@ export default function EditServicePage() {
     loadService();
   }, [id]);
 
-  function loadService() {
+  async function loadService() {
     try {
-      const service = getServiceById(id);
+      const service = await getServiceById(id);
 
-      if (!service) {
-        alert("Serviço não encontrado.");
+      if (!service || String(service.ownerId) !== String(user?.id)) {
+        alert("Serviço não encontrado ou sem permissão para editar.");
 
         navigate("/meus-servicos");
 
@@ -250,7 +253,7 @@ export default function EditServicePage() {
     }));
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     if (!validateCurrentStep()) {
@@ -258,17 +261,7 @@ export default function EditServicePage() {
     }
 
     try {
-      const storedServices = localStorage.getItem("volunt-services");
-
-      const services = storedServices ? JSON.parse(storedServices) : [];
-
-      const updatedServices = services.map((service) => {
-        if (String(service.id) !== String(id)) {
-          return service;
-        }
-
-        return {
-          ...service,
+      await updateService(id, {
           name: formData.name,
 
           descricao: formData.descricao,
@@ -279,9 +272,7 @@ export default function EditServicePage() {
 
           modalities: formData.modalities,
 
-          status: service.status,
-
-          providerImage: formData.imagePreview || service.providerImage,
+          providerImage: formData.imagePreview,
 
           cep: formData.cep,
 
@@ -303,13 +294,7 @@ export default function EditServicePage() {
 
           site: formData.site,
 
-          freeService: formData.freeService,
-
-          acceptTerms: formData.acceptTerms,
-        };
       });
-
-      localStorage.setItem("volunt-services", JSON.stringify(updatedServices));
 
       alert("Serviço atualizado com sucesso!");
 

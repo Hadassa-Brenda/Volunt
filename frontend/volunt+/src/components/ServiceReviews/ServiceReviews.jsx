@@ -29,13 +29,16 @@ export function ServiceReviews({
 
     if (!rating || !comment.trim()) return;
 
-    await onSubmitReview?.({
-      nota: rating,
-      comentario: comment.trim(),
-    });
-
-    setRating(0);
-    setComment("");
+    try {
+      await onSubmitReview?.({
+        nota: rating,
+        comentario: comment.trim(),
+      });
+      setRating(0);
+      setComment("");
+    } catch {
+      // O formulário mantém o texto e a nota para uma nova tentativa.
+    }
   };
 
   return (

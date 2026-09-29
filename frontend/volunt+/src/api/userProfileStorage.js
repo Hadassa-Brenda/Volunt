@@ -27,7 +27,7 @@ export function mapBackendUserToFrontend(profile, currentUser = {}) {
   const fullName =
     profile.fullName ?? profile.organizationName ?? currentUser.fullName ?? "";
   const personType = profile.personType ?? currentUser.personType;
-  const currentRole = profile.currentRole ?? currentUser.currentRole;
+  const currentRole = profile.currentRole;
   const birthDate = profile.birthDate ?? currentUser.birthDate;
   const gender = profile.gender ?? currentUser.gender;
 
@@ -35,12 +35,13 @@ export function mapBackendUserToFrontend(profile, currentUser = {}) {
     ...currentUser,
     ...profile,
     id: profile.id ?? profile.userId ?? currentUser.id,
+    currentRole: currentRole ?? null,
     fullName,
     name: fullName,
     tipoUsuario:
       PERSON_TYPE_TO_FRONTEND[personType] ?? currentUser.tipoUsuario ?? "PF",
     perfilUsuario:
-      ROLE_TO_FRONTEND[currentRole] ?? currentUser.perfilUsuario ?? "PF",
+      ROLE_TO_FRONTEND[currentRole] ?? null,
     dataNascimento: birthDate ?? currentUser.dataNascimento ?? null,
     gender: GENDER_TO_FRONTEND[gender] ?? currentUser.gender ?? null,
     genero:

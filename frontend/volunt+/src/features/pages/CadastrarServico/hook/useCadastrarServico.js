@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { initialFormData, steps } from "../types/CadastrarServicoConst";
 
-import { servicesDTO } from "../../../../types/DTOs/serviceDTO";
+import { createService } from "../../../../api/servicesApi";
 import { SERVICE_STATUS } from "../../../../types/enum/Status";
 import { SERVICE_MODALITIES } from "../../../../types/enum/Modalities";
 import { useCurrentUser } from "../../../../context/CurrentUserContext";
@@ -298,7 +298,7 @@ export function useCadastrarServico() {
     }));
   };
 
-  const salvarServico = () => {
+  const salvarServico = async () => {
     try {
       if (currentUserLoading) {
         setErrors((current) => ({
@@ -307,18 +307,6 @@ export function useCadastrarServico() {
         }));
 
         return null;
-      }
-
-      const storedServices = localStorage.getItem("volunt-services");
-
-      let services = [];
-
-      if (storedServices) {
-        const parsedServices = JSON.parse(storedServices);
-
-        if (Array.isArray(parsedServices)) {
-          services = parsedServices;
-        }
       }
 
       const idUsuario = user?.id;
@@ -334,17 +322,7 @@ export function useCadastrarServico() {
         return null;
       }
 
-      const ids = [
-        ...services.map((service) => Number(service.id) || 0),
-
-        ...servicesDTO.map((service) => Number(service.id) || 0),
-      ];
-
-      const nextId = Math.max(...ids, 0) + 1;
-
       const novoServico = {
-        id: nextId,
-
         name: formData.name,
 
         descricao: formData.descricao,
@@ -355,10 +333,6 @@ export function useCadastrarServico() {
           ? formData.categorias[0]
           : formData.categorias,
 
-        idUsuario: String(idUsuario),
-
-        idLocalizacao: null,
-
         status: SERVICE_STATUS[0].value,
 
         providerImage: formData.imagePreview || "",
@@ -366,10 +340,6 @@ export function useCadastrarServico() {
         diaDaSemana: formData.diaSemana,
 
         turno: formData.turno,
-
-        avaliacao: 0,
-
-        publicationDate: new Date().toISOString(),
 
         cep: formData.cep || "",
 
@@ -388,15 +358,7 @@ export function useCadastrarServico() {
         site: formData.site || "",
       };
 
-      const updatedServices = [...services, novoServico];
-
-      localStorage.setItem("volunt-services", JSON.stringify(updatedServices));
-
-      console.log("Serviço salvo com sucesso:", novoServico);
-
-      console.log("Usuário responsável:", idUsuario);
-
-      return novoServico;
+      return await createService(novoServico);
     } catch (error) {
       console.error("Erro ao salvar serviço:", error);
 
@@ -409,7 +371,7 @@ export function useCadastrarServico() {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const isValid = validateStep();
@@ -418,7 +380,7 @@ export function useCadastrarServico() {
       return;
     }
 
-    const novoServico = salvarServico();
+    const novoServico = await salvarServico();
 
     if (!novoServico) {
       return;

@@ -18,7 +18,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import Button from "../../../components/Button/Button";
 
-import { servicesDTO } from "../../../types/DTOs/serviceDTO";
+import { deleteService, fetchMyServices, updateService } from "../../../api/servicesApi";
 import { SERVICE_STATUS } from "../../../types/enum/Status";
 
 import "./MyServicesPage.css";
@@ -33,34 +33,9 @@ export default function MyServicesPage() {
   const [services, setServices] = useState([]);
 
   useEffect(() => {
-    try {
-      const storedServices = localStorage.getItem("volunt-services");
-
-      if (storedServices) {
-        const parsedServices = JSON.parse(storedServices);
-
-        if (Array.isArray(parsedServices)) {
-          setServices(
-            parsedServices.map((service) => ({
-              ...service,
-              status:
-                service.status === 0
-                  ? SERVICE_STATUS[0].value
-                  : service.status === 1
-                    ? SERVICE_STATUS[1].value
-                    : service.status || SERVICE_STATUS[0].value,
-            })),
-          );
-          return;
-        }
-      }
-
-      localStorage.setItem("volunt-services", JSON.stringify(servicesDTO));
-
-      setServices(servicesDTO);
-    } catch {
-      setServices(servicesDTO);
-    }
+    fetchMyServices().then(setServices).catch((error) => {
+      console.error("Erro ao carregar meus serviços:", error);
+    });
   }, []);
 
   const [activeTab, setActiveTab] = useState("todos");
@@ -71,7 +46,7 @@ export default function MyServicesPage() {
     }
 
     return services.filter(
-      (service) => String(service.idUsuario) === String(user.id),
+      (service) => String(service.ownerId) === String(user.id),
     );
   }, [services, user]);
 
@@ -101,7 +76,7 @@ export default function MyServicesPage() {
     return myServices;
   }, [myServices, activeTab]);
 
-  function handleDelete(serviceId) {
+  async function handleDelete(serviceId) {
     const confirmed = window.confirm(
       "Tem certeza que deseja excluir este serviço?",
     );
@@ -110,32 +85,25 @@ export default function MyServicesPage() {
       return;
     }
 
-    const updatedServices = services.filter(
-      (service) => String(service.id) !== String(serviceId),
-    );
-
-    setServices(updatedServices);
-
-    localStorage.setItem("volunt-services", JSON.stringify(updatedServices));
+    try {
+      await deleteService(serviceId);
+      setServices((current) => current.filter((service) => String(service.id) !== String(serviceId)));
+    } catch (error) {
+      alert("Não foi possível excluir o serviço.");
+    }
   }
 
-  function handleToggleStatus(serviceId) {
-    const updatedServices = services.map((service) => {
-      if (String(service.id) !== String(serviceId)) {
-        return service;
-      }
-
-      return {
-        ...service,
-        status:
-          service.status === SERVICE_STATUS[0].value
-            ? SERVICE_STATUS[1].value
-            : SERVICE_STATUS[0].value,
-      };
-    });
-
-    setServices(updatedServices);
-    localStorage.setItem("volunt-services", JSON.stringify(updatedServices));
+  async function handleToggleStatus(serviceId) {
+    const service = services.find((item) => String(item.id) === String(serviceId));
+    if (!service) return;
+    const status = service.status === SERVICE_STATUS[0].value
+      ? SERVICE_STATUS[1].value : SERVICE_STATUS[0].value;
+    try {
+      const updated = await updateService(serviceId, { status });
+      setServices((current) => current.map((item) => String(item.id) === String(serviceId) ? updated : item));
+    } catch (error) {
+      alert("Não foi possível alterar o status do serviço.");
+    }
   }
 
   async function handleLogout() {

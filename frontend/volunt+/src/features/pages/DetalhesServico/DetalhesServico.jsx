@@ -34,6 +34,7 @@ import {
 
 import { useService } from "hook/useService";
 import { useCurrentUser } from "../../../context/CurrentUserContext";
+import { createReview } from "../../../api/servicesApi";
 
 import { SERVICE_MODALITIES } from "../../../types/enum/Modalities";
 import { DiaSemana } from "../../../types/enum/DiaSemana";
@@ -50,8 +51,9 @@ export default function DetalhesServico() {
   const { user: storedUser } = useCurrentUser();
 
   const [reviews, setReviews] = useState([]);
+  const [reviewError, setReviewError] = useState("");
 
-  const canReview = storedUser?.perfilUsuario === "BF";
+  const canReview = storedUser?.currentRole === "BENEFICIARY";
 
   useEffect(() => {
     setReviews(service?.avaliacoes ?? []);
@@ -275,38 +277,21 @@ export default function DetalhesServico() {
               reviews={reviews}
               canReview={canReview}
               onSubmitReview={async (review) => {
-                const newReview = {
-                  id: Date.now(),
-                  idServico: service.id,
-                  idUsuario: storedUser.id,
-                  usuario: storedUser,
-                  dataAvaliacao: new Date().toISOString(),
-                  dataCriacao: new Date().toISOString(),
-                  ...review,
-                };
-
-                let storedReviews = [];
-
                 try {
-                  const parsedReviews = JSON.parse(
-                    localStorage.getItem("volunt-avaliacoes") || "[]",
-                  );
-
-                  storedReviews = Array.isArray(parsedReviews)
-                    ? parsedReviews
-                    : [];
-                } catch {
-                  storedReviews = [];
+                  setReviewError("");
+                  const created = await createReview(service.id, review);
+                  setReviews((current) => [...current, {
+                    ...created, idServico: created.serviceId,
+                    idUsuario: created.authorId, usuario: storedUser,
+                    dataAvaliacao: created.dataCriacao,
+                  }]);
+                } catch (error) {
+                  setReviewError("Não foi possível publicar a avaliação. Tente novamente.");
+                  throw error;
                 }
-
-                localStorage.setItem(
-                  "volunt-avaliacoes",
-                  JSON.stringify([...storedReviews, newReview]),
-                );
-
-                setReviews((currentReviews) => [...currentReviews, newReview]);
               }}
             />
+            {reviewError && <p role="alert">{reviewError}</p>}
           </div>
           <aside className="service-contact-card">
             <h2>Informações de contato</h2>

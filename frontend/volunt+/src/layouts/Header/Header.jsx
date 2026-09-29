@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth, useUser } from "@clerk/react";
 import { Link, useNavigate } from "react-router-dom";
-import { List, LogOut, Menu, Plus, UserRound, X } from "lucide-react";
-
-import { getVoluntUserForClerkUser } from "../../utils/userProfileStorage";
+import { Menu, Plus, X } from "lucide-react";
 
 import { useCurrentUser } from "../../context/CurrentUserContext";
 
@@ -13,49 +11,15 @@ export default function Header({ onCreateUser, onOpenLogin }) {
   const navigate = useNavigate();
   const { isLoaded, isSignedIn } = useAuth();
   const { user: clerkUser } = useUser();
-  const clerkUserId = clerkUser?.id || "";
-  const clerkEmail =
-    clerkUser?.primaryEmailAddress?.emailAddress ||
-    clerkUser?.emailAddresses?.[0]?.emailAddress ||
-    "";
-  const { user: currentUser } = useCurrentUser();
+  const { user: currentUser, loading } = useCurrentUser();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [voluntUser, setVoluntUser] = useState(null);
   const profileName =
     currentUser?.fullName ||
     currentUser?.name ||
     clerkUser?.fullName ||
     clerkUser?.firstName ||
     "U";
-  const userType = String(voluntUser?.tipoUsuario || "").trim().toLowerCase();
-  const userProfile = String(voluntUser?.perfilUsuario || "")
-    .trim()
-    .toLowerCase();
-  const canManageServices =
-    ["pj", "pessoa jurídica", "pessoa juridica"].includes(userType) ||
-    ["pf", "ofertante"].includes(userProfile);
-
-  useEffect(() => {
-    function updateVoluntUser() {
-      setVoluntUser(
-        isSignedIn
-          ? getVoluntUserForClerkUser({
-              id: clerkUserId,
-              primaryEmailAddress: { emailAddress: clerkEmail },
-            })
-          : null,
-      );
-    }
-
-    updateVoluntUser();
-    window.addEventListener("storage", updateVoluntUser);
-    window.addEventListener("volunt-user-profile-updated", updateVoluntUser);
-
-    return () => {
-      window.removeEventListener("storage", updateVoluntUser);
-      window.removeEventListener("volunt-user-profile-updated", updateVoluntUser);
-    };
-  }, [clerkEmail, clerkUserId, isSignedIn]);
+  const canManageServices = currentUser?.currentRole === "OFFERER";
 
   return (
     <header className={`header ${menuOpen ? "header--menu-open" : ""}`}>
@@ -74,7 +38,7 @@ export default function Header({ onCreateUser, onOpenLogin }) {
         {menuOpen ? <X size={23} /> : <Menu size={23} />}
       </button>
 
-      {isSignedIn && (
+      {isLoaded && (
         <nav className="header__nav" aria-label="Menu principal">
           <Link
             to="/"
@@ -99,6 +63,17 @@ export default function Header({ onCreateUser, onOpenLogin }) {
           >
             Catálogo de Serviços
           </Link>
+
+          {isSignedIn && !loading && canManageServices && (
+            <>
+              <Link to="/meus-servicos" className="header__nav-link" onClick={() => setMenuOpen(false)}>
+                Meus serviços
+              </Link>
+              <Link to="/cadastrar-servico" className="header__nav-link" onClick={() => setMenuOpen(false)}>
+                Criar serviço
+              </Link>
+            </>
+          )}
 
         </nav>
       )}

@@ -21,8 +21,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useClerk, useUser as useClerkUser } from "@clerk/react";
 
 import { useCurrentUser } from "../../../context/CurrentUserContext";
-import { persistBackendUser } from "../../../api/userProfileStorage";
-import { updateCurrentUserProfile } from "../../../api/usersApi";
+import { mapBackendUserToFrontend, persistBackendUser } from "../../../api/userProfileStorage";
+import { fetchPublicUserProfile, updateCurrentUserProfile } from "../../../api/usersApi";
 
 import Footer from "../../../layouts/Footer/Footer";
 import Header from "../../../layouts/Header/Header";
@@ -34,9 +34,6 @@ import { TipoUsuario } from "../../../types/enum/TipoUsuario";
 import { PROFILE_TYPES } from "../../../types/enum/ProfileTypes";
 import { DiaSemana } from "../../../types/enum/DiaSemana";
 import { Turno } from "../../../types/enum/Turno";
-import {
-  getVoluntUserByClerkId,
-} from "../../../utils/userProfileStorage";
 import "../../../styles/global.css";
 import SingleSelect from "components/SingleSelect.tsx/SingleSelect";
 import GenericTextField from "components/TextField/TextField";
@@ -143,26 +140,21 @@ export default function UserProfilePage() {
   const isOwnProfile =
     !profileId || String(currentUser?.id) === String(profileId);
 
-  const storedUsers = useMemo(() => {
-    try {
-      const users = JSON.parse(localStorage.getItem("volunt-users") || "[]");
-      return Array.isArray(users) ? users : [];
-    } catch {
-      return [];
-    }
-  }, []);
-  const localUser = storedUsers.find(
-    (item) => String(item.id) === String(profileId),
-  );
-  const storedUser = getVoluntUserByClerkId(clerkUserId);
-
+  const [publicUser, setPublicUser] = useState(null);
+  useEffect(() => {
+    if (!profileId || isOwnProfile) return;
+    setPublicUser(null);
+    fetchPublicUserProfile(profileId)
+      .then((profile) => setPublicUser(mapBackendUserToFrontend(profile)))
+      .catch(() => setPublicUser(null));
+  }, [profileId, isOwnProfile]);
   const profileUser = useMemo(() => {
     if (isOwnProfile) {
-      return currentUser || storedUser;
+      return currentUser;
     }
 
-    return localUser || null;
-  }, [currentUser, isOwnProfile, localUser, storedUser]);
+    return publicUser;
+  }, [currentUser, isOwnProfile, publicUser]);
 
   const [user, setUser] = useState(profileUser);
 
@@ -205,8 +197,9 @@ export default function UserProfilePage() {
     label: option.label,
   }));
 
-  const allServices = useMemo(() => {
-    return getServices();
+  const [allServices, setAllServices] = useState([]);
+  useEffect(() => {
+    getServices().then(setAllServices).catch(() => setAllServices([]));
   }, []);
 
   const publishedServices = useMemo(() => {
@@ -370,6 +363,9 @@ export default function UserProfilePage() {
               >
                 {isCurrentUserLoading ? "Carregando..." : "Tentar novamente"}
               </button>
+              {currentUserError?.response?.status === 404 && (
+                <Link className="profile-primary-button" to="/completar-perfil">Completar perfil</Link>
+              )}
             </>
           ) : (
             <>
