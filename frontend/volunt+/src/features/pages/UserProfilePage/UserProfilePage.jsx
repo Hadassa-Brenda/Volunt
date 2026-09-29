@@ -60,36 +60,6 @@ function getOptionLabel(options, value) {
   return option?.label || String(normalizedValue);
 }
 
-function toInputValue(value) {
-  return Array.isArray(value) ? value.join(", ") : value || "";
-}
-
-function toLocationPayload(value, currentLocation) {
-  if (!currentLocation || typeof currentLocation !== "object") {
-    return value.trim();
-  }
-
-  const [cidade = "", bairro = "", estado = ""] = value
-    .split(",")
-    .map((part) => part.trim());
-
-  return { ...currentLocation, cidade, bairro, estado };
-}
-
-function getLocationValue(location) {
-  if (typeof location === "string") {
-    return location;
-  }
-
-  if (!location || typeof location !== "object") {
-    return "";
-  }
-
-  return [location.bairro, location.cidade, location.estado]
-    .filter(Boolean)
-    .join(", ");
-}
-
 function createProfileForm(profile, clerkName = "") {
   const isPessoaJuridica = profile?.tipoUsuario === "PJ";
   const isOfertante = isPessoaJuridica || profile?.perfilUsuario === "PF";
@@ -102,10 +72,6 @@ function createProfileForm(profile, clerkName = "") {
       ? profile.dataNascimento.split("T")[0]
       : "",
     phone: isOfertante ? profile?.phone || "" : "",
-    location: getLocationValue(profile?.location),
-    availability: !isPessoaJuridica && !isOfertante
-      ? toInputValue(profile?.availability)
-      : "",
     organizationName: profile?.organizationName || "",
     organizationEmail: profile?.organizationEmail || "",
     cnpj: isPessoaJuridica ? profile?.cnpj || "" : "",
@@ -277,12 +243,8 @@ export default function UserProfilePage() {
             ...(form.genero
               ? { gender: genderByFormValue[form.genero] }
               : {}),
-            ...(form.availability
-              ? { availability: form.availability.trim() }
-              : {}),
           }),
       phone: form.phone.trim(),
-      location: toLocationPayload(form.location, user.location),
     };
 
     try {
@@ -623,24 +585,18 @@ export default function UserProfilePage() {
 
               {isPessoaJuridica ? (
                 <>
-                  <p><strong>CNPJ:</strong> {user.cnpj || "Não informado"}</p>
-                  <p><strong>Telefone:</strong> {user.phone || "Não informado"}</p>
-                  <p><strong>Localização:</strong> {getLocationValue(user.location) || "Não informada"}</p>
-                  <p><strong>E-mail de contato:</strong> {user.organizationEmail || "Não informado"}</p>
+                  {user.cnpj && <p><strong>CNPJ:</strong> {user.cnpj}</p>}
+                  {user.phone && <p><strong>Telefone:</strong> {user.phone}</p>}
+                  {user.organizationEmail && <p><strong>E-mail de contato:</strong> {user.organizationEmail}</p>}
                   {user.description && <p>{user.description}</p>}
                 </>
               ) : (
                 <>
                   <p><strong>Tipo:</strong> {tipoUsuarioLabel}</p>
                   <p><strong>Perfil:</strong> {perfilUsuarioLabel}</p>
-                  <p><strong>Gênero:</strong> {generoLabel}</p>
-                  <p><strong>Data de nascimento:</strong> {formattedBirthDate}</p>
-                  <p><strong>Localização:</strong> {getLocationValue(user.location) || "Não informada"}</p>
-                  {isOfertante ? (
-                    <p><strong>Telefone:</strong> {user.phone || "Não informado"}</p>
-                  ) : (
-                    <p><strong>Disponibilidade:</strong> {user.availability || "Não informada"}</p>
-                  )}
+                  {user.genero && <p><strong>Gênero:</strong> {generoLabel}</p>}
+                  {user.dataNascimento && <p><strong>Data de nascimento:</strong> {formattedBirthDate}</p>}
+                  {isOfertante && user.phone && <p><strong>Telefone:</strong> {user.phone}</p>}
                 </>
               )}
             </section>
@@ -762,14 +718,6 @@ export default function UserProfilePage() {
                     value={form.dataNascimento}
                     onChange={(value) => updateField("dataNascimento", value)}
                   />
-                  {!isOfertante && (
-                    <GenericTextField
-                      label="Disponibilidade"
-                      value={form.availability}
-                      onChange={(value) => updateField("availability", value)}
-                      placeholder="Dias e horários disponíveis"
-                    />
-                  )}
                 </>
               )}
 
@@ -781,12 +729,6 @@ export default function UserProfilePage() {
                   placeholder="(00) 00000-0000"
                 />
               )}
-              <GenericTextField
-                label="Localização"
-                value={form.location}
-                onChange={(value) => updateField("location", value)}
-                placeholder="Cidade, bairro e estado"
-              />
               {profileError && (
                 <p className="profile-edit-error profile-edit-full" role="alert">
                   {profileError}

@@ -53,7 +53,8 @@ export default function DetalhesServico() {
   const [reviews, setReviews] = useState([]);
   const [reviewError, setReviewError] = useState("");
 
-  const canReview = storedUser?.currentRole === "BENEFICIARY";
+  const canReview = storedUser?.currentRole === "BENEFICIARY" &&
+    String(storedUser?.id) !== String(service?.idUsuario);
 
   useEffect(() => {
     setReviews(service?.avaliacoes ?? []);
@@ -88,6 +89,7 @@ export default function DetalhesServico() {
   const instagram = service.contato?.instagram;
   const website = service.contato?.site;
   const email = service.usuario?.email;
+  const providerName = service.usuario?.organizationName || service.usuario?.fullName || "Perfil indisponível";
 
   const image =
     service.providerImage ||
@@ -170,7 +172,7 @@ export default function DetalhesServico() {
               <div>
                 <span>Oferecido por</span>
 
-                <strong>{service.usuario?.fullName ?? "Não informado"}</strong>
+                <strong>{providerName}</strong>
 
                 <small>
                   {service.usuario?.tipoUsuario ?? "Projeto voluntário"}
@@ -255,7 +257,7 @@ export default function DetalhesServico() {
 
                 <div className="provider-card-content">
                   <div>
-                    <h3>{service.usuario?.fullName ?? "Não informado"}</h3>
+                    <h3>{providerName}</h3>
 
                     <span>
                       {service.usuario?.tipoUsuario ?? "Projeto voluntário"}

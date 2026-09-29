@@ -47,9 +47,9 @@ export default function CadastrarServico() {
     <main className="create-service-page">
       <Header />
 
-      <div style={{ padding: "10px" }}>
+      <div className="create-service-back-row">
         <Button
-          className="back-button"
+          className="create-service-back-button"
           onClick={() => navigate(-1)}
           icon={<ArrowLeft size={18} />}
         >

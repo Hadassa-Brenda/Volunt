@@ -374,6 +374,11 @@ export function useCadastrarServico() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (currentStep < steps.length) {
+      nextStep();
+      return;
+    }
+
     const isValid = validateStep();
 
     if (!isValid) {

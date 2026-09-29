@@ -1,6 +1,7 @@
 import { fetchServices, fetchServiceById, fetchReviews } from "../api/servicesApi";
 import { mapServices } from "../mappers/serviceMapper";
 import { CategoriaDTO } from "../types/DTOs/categoriaDTO";
+import { fetchPublicUserProfile } from "../api/usersApi";
 
 function mapRemoteServices(services) {
   return mapServices({
@@ -24,8 +25,16 @@ export async function getServiceById(id) {
     fetchReviews(id),
   ]);
 
+  const owner = service.ownerId
+    ? await fetchPublicUserProfile(service.ownerId).catch(() => null)
+    : null;
+
   return mapRemoteServices([{
     ...service,
+    usuario: owner ? {
+      ...owner,
+      fullName: owner.organizationName || owner.fullName,
+    } : undefined,
     avaliacoes: reviews.map((review) => ({
       ...review,
       idServico: review.serviceId,

@@ -256,6 +256,11 @@ export default function EditServicePage() {
   async function handleSubmit(event) {
     event.preventDefault();
 
+    if (currentStep < steps.length) {
+      nextStep();
+      return;
+    }
+
     if (!validateCurrentStep()) {
       return;
     }

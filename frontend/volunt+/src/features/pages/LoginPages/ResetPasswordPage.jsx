@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth, useSignIn } from "@clerk/react";
 import { ArrowLeft, Lock, ShieldCheck } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import "./LoginPages.css";
 
 import {
   finalizeClerkSession,
@@ -327,11 +328,11 @@ export default function ResetPasswordPage() {
   }[step];
 
   return (
-    <main className="login-page">
+    <main className="login-page login-page--recovery">
       <section className="login-page__left">
-        <header className="user-register-page__topbar">
+        <header className="login-page__topbar">
           <button
-            className="back-button"
+            className="login-page__back-button"
             type="button"
             onClick={handleReturnToLogin}
           >

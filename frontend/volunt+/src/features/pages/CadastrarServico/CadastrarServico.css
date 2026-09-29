@@ -6,6 +6,18 @@
   color: #111936;
 }
 
+.create-service-back-row {
+  width: min(1400px, calc(100% - 48px));
+  margin: 24px auto 0;
+}
+
+.create-service-back-button {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .create-service-container {
   width: min(1400px, calc(100% - 48px));
   margin: 0 auto;

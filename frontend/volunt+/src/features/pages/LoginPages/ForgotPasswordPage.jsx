@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth, useSignIn } from "@clerk/react";
 import { ArrowLeft, Mail } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import "./LoginPages.css";
 
 import {
   getClerkErrorMessage,
@@ -100,11 +101,11 @@ export default function ForgotPasswordPage() {
   const visibleError = status || identifierError || globalError;
 
   return (
-    <main className="login-page">
+    <main className="login-page login-page--recovery">
       <section className="login-page__left">
-        <header className="user-register-page__topbar">
+        <header className="login-page__topbar">
           <button
-            className="back-button"
+            className="login-page__back-button"
             type="button"
             onClick={handleReturnToLogin}
           >
