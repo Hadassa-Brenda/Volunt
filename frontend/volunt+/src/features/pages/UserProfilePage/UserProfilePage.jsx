@@ -62,8 +62,6 @@ function getOptionLabel(options, value) {
 
 function createProfileForm(profile, clerkName = "") {
   const isPessoaJuridica = profile?.tipoUsuario === "PJ";
-  const isOfertante = isPessoaJuridica || profile?.perfilUsuario === "PF";
-
   return {
     accountName: clerkName || profile?.fullName || "",
     perfilUsuario: profile?.perfilUsuario ?? PROFILE_TYPES[0]?.value ?? "",
@@ -71,7 +69,6 @@ function createProfileForm(profile, clerkName = "") {
     dataNascimento: profile?.dataNascimento
       ? profile.dataNascimento.split("T")[0]
       : "",
-    phone: isOfertante ? profile?.phone || "" : "",
     organizationName: profile?.organizationName || "",
     organizationEmail: profile?.organizationEmail || "",
     cnpj: isPessoaJuridica ? profile?.cnpj || "" : "",
@@ -244,7 +241,6 @@ export default function UserProfilePage() {
               ? { gender: genderByFormValue[form.genero] }
               : {}),
           }),
-      phone: form.phone.trim(),
     };
 
     try {
@@ -586,7 +582,6 @@ export default function UserProfilePage() {
               {isPessoaJuridica ? (
                 <>
                   {user.cnpj && <p><strong>CNPJ:</strong> {user.cnpj}</p>}
-                  {user.phone && <p><strong>Telefone:</strong> {user.phone}</p>}
                   {user.organizationEmail && <p><strong>E-mail de contato:</strong> {user.organizationEmail}</p>}
                   {user.description && <p>{user.description}</p>}
                 </>
@@ -596,7 +591,6 @@ export default function UserProfilePage() {
                   <p><strong>Perfil:</strong> {perfilUsuarioLabel}</p>
                   {user.genero && <p><strong>Gênero:</strong> {generoLabel}</p>}
                   {user.dataNascimento && <p><strong>Data de nascimento:</strong> {formattedBirthDate}</p>}
-                  {isOfertante && user.phone && <p><strong>Telefone:</strong> {user.phone}</p>}
                 </>
               )}
             </section>
@@ -721,14 +715,6 @@ export default function UserProfilePage() {
                 </>
               )}
 
-              {isOfertante && (
-                <GenericTextField
-                  label="Telefone de contato"
-                  value={form.phone}
-                  onChange={(value) => updateField("phone", value)}
-                  placeholder="(00) 00000-0000"
-                />
-              )}
               {profileError && (
                 <p className="profile-edit-error profile-edit-full" role="alert">
                   {profileError}
