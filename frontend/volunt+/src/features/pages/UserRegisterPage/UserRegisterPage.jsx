@@ -69,12 +69,25 @@ export default function UserRegisterPage() {
   const [showClerkErrors, setShowClerkErrors] = useState(false);
   const [isCompletingRegistration, setIsCompletingRegistration] =
     useState(false);
+  const [pendingStage, setPendingStage] = useState("");
+  const [isTakingLong, setIsTakingLong] = useState(false);
 
   const isPessoaJuridica = form.tipoUsuario === "PJ";
   const isPessoaFisica = form.tipoUsuario === "PF";
   const isVerifyingEmail = step === "verifyEmail";
   const isSubmitting =
     fetchStatus === "fetching" || isCompletingRegistration;
+
+  useEffect(() => {
+    if (!isSubmitting) {
+      setIsTakingLong(false);
+      return;
+    }
+
+    setIsTakingLong(false);
+    const timer = window.setTimeout(() => setIsTakingLong(true), 15000);
+    return () => window.clearTimeout(timer);
+  }, [isSubmitting, pendingStage]);
 
   useEffect(() => {
     if (isAuthLoaded && isSignedIn && currentUser && !isCompletingRegistration) {
@@ -241,6 +254,7 @@ export default function UserRegisterPage() {
   }
 
   async function finalizeSignUp() {
+    setPendingStage("Ativando sua sessão no Clerk");
     setIsCompletingRegistration(true);
     try {
       let createdSession;
@@ -279,6 +293,7 @@ export default function UserRegisterPage() {
       }
 
       try {
+        setPendingStage("Salvando seu perfil no Voluntá+");
         await createVoluntPlusUser(createdSession);
         navigate("/perfil", { replace: true });
       } catch {
@@ -340,6 +355,7 @@ export default function UserRegisterPage() {
 
     if (signUp.unverifiedFields.includes("email_address")) {
       setStep("verifyEmail");
+      setPendingStage("Enviando o código por e-mail");
 
       const verification = await signUp.verifications.sendEmailCode();
 
@@ -411,6 +427,7 @@ export default function UserRegisterPage() {
       return;
     }
 
+    setPendingStage(isVerifyingEmail ? "Verificando o código no Clerk" : "Criando a conta no Clerk");
     try {
       if (isVerifyingEmail) {
         await handleVerificationSubmit();
@@ -425,6 +442,8 @@ export default function UserRegisterPage() {
           "Não foi possível concluir o cadastro agora. Tente novamente.",
         ),
       );
+    } finally {
+      setPendingStage("");
     }
   }
 
@@ -575,6 +594,12 @@ export default function UserRegisterPage() {
               {visibleFlowError && (
                 <p className="user-register-form__flow-error" role="alert">
                   {visibleFlowError}
+                </p>
+              )}
+
+              {isTakingLong && (
+                <p className="user-register-form__flow-error" role="status">
+                  {pendingStage || "Aguardando o Clerk"} está demorando. Confira a conexão e as requisições na aba Network do navegador.
                 </p>
               )}
 
@@ -761,6 +786,12 @@ export default function UserRegisterPage() {
               {visibleFlowError && (
                 <p className="user-register-form__flow-error" role="alert">
                   {visibleFlowError}
+                </p>
+              )}
+
+              {isTakingLong && (
+                <p className="user-register-form__flow-error" role="status">
+                  {pendingStage || "Aguardando o Clerk"} está demorando. Confira a conexão e as requisições na aba Network do navegador.
                 </p>
               )}
 
