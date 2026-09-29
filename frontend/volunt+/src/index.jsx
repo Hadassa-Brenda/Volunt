@@ -1,5 +1,6 @@
 import React from "react";
 import { ClerkProvider } from "@clerk/react";
+import { ptBR } from "@clerk/localizations";
 import { createRoot } from "react-dom/client";
 
 import ClerkApiAuthBridge from "./api/ClerkApiAuthBridge";
@@ -22,6 +23,7 @@ root.render(
   <React.StrictMode>
     <ClerkProvider
       publishableKey={clerkPublishableKey}
+      localization={ptBR}
       signInUrl="/login"
       signUpUrl="/cadastro"
       afterSignOutUrl="/"

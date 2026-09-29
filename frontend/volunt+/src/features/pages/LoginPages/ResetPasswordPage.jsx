@@ -168,12 +168,12 @@ export default function ResetPasswordPage() {
       signOutOfOtherSessions: true,
     });
 
-    setForm({ password: "", confirmPassword: "" });
-
     if (error) {
       setError(error, "Não foi possível redefinir a senha.");
       return;
     }
+
+    setForm({ password: "", confirmPassword: "" });
 
     if (signIn.status === "complete") {
       await finalizeReset();
@@ -191,7 +191,7 @@ export default function ResetPasswordPage() {
     setStatus({
       type: "error",
       message:
-        "A senha foi atualizada, mas o Clerk solicitou uma etapa não suportada.",
+        "O Clerk não confirmou a atualização da senha. Revise os requisitos e tente novamente.",
     });
   }
 

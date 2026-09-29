@@ -1,14 +1,53 @@
-import { useState } from "react";
-import { useAuth, UserButton } from "@clerk/react";
+import { useEffect, useState } from "react";
+import { useAuth, useClerk, useUser } from "@clerk/react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, Plus, X } from "lucide-react";
+import { List, LogOut, Menu, Plus, UserRound, X } from "lucide-react";
+
+import { getVoluntUserForClerkUser } from "../../utils/userProfileStorage";
 
 import "./Header.css";
 
 export default function Header({ onCreateUser, onOpenLogin }) {
   const navigate = useNavigate();
   const { isLoaded, isSignedIn } = useAuth();
+  const { user: clerkUser } = useUser();
+  const { signOut } = useClerk();
+  const clerkUserId = clerkUser?.id || "";
+  const clerkEmail =
+    clerkUser?.primaryEmailAddress?.emailAddress ||
+    clerkUser?.emailAddresses?.[0]?.emailAddress ||
+    "";
   const [menuOpen, setMenuOpen] = useState(false);
+  const [voluntUser, setVoluntUser] = useState(null);
+  const userType = String(voluntUser?.tipoUsuario || "").trim().toLowerCase();
+  const userProfile = String(voluntUser?.perfilUsuario || "")
+    .trim()
+    .toLowerCase();
+  const canManageServices =
+    ["pj", "pessoa jurídica", "pessoa juridica"].includes(userType) ||
+    ["pf", "ofertante"].includes(userProfile);
+
+  useEffect(() => {
+    function updateVoluntUser() {
+      setVoluntUser(
+        isSignedIn
+          ? getVoluntUserForClerkUser({
+              id: clerkUserId,
+              primaryEmailAddress: { emailAddress: clerkEmail },
+            })
+          : null,
+      );
+    }
+
+    updateVoluntUser();
+    window.addEventListener("storage", updateVoluntUser);
+    window.addEventListener("volunt-user-profile-updated", updateVoluntUser);
+
+    return () => {
+      window.removeEventListener("storage", updateVoluntUser);
+      window.removeEventListener("volunt-user-profile-updated", updateVoluntUser);
+    };
+  }, [clerkEmail, clerkUserId, isSignedIn]);
 
   return (
     <header className={`header ${menuOpen ? "header--menu-open" : ""}`}>
@@ -52,15 +91,58 @@ export default function Header({ onCreateUser, onOpenLogin }) {
           >
             Catálogo de Serviços
           </Link>
+
         </nav>
       )}
 
       <div className="header__actions">
         {isLoaded && isSignedIn && (
-          <div className="header__clerk-account" aria-label="Conta autenticada">
-            <span>Minha conta</span>
-            <UserButton />
+          <>
+            {canManageServices && (
+              <div className="header__service-actions">
+                <Link
+                  className="header__service-link"
+                  to="/cadastrar-servico"
+                  aria-label="Criar serviço"
+                  title="Criar serviço"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <Plus size={18} />
+                  <span>Criar serviço</span>
+                </Link>
+                <Link
+                  className="header__service-link"
+                  to="/meus-servicos"
+                  aria-label="Meus serviços"
+                  title="Meus serviços"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <List size={18} />
+                  <span>Meus serviços</span>
+                </Link>
+              </div>
+            )}
+          <div className="header__clerk-account">
+            <Link
+              className="header__account-link"
+              to="/perfil"
+              aria-label="Meu perfil Voluntá+"
+              onClick={() => setMenuOpen(false)}
+            >
+              <UserRound size={19} />
+              <span>Meu perfil</span>
+            </Link>
+            <button
+              className="header__signout"
+              type="button"
+              aria-label="Sair da conta"
+              onClick={() => signOut({ redirectUrl: "/" })}
+            >
+              <LogOut size={18} />
+              <span>Sair</span>
+            </button>
           </div>
+          </>
         )}
 
         {isLoaded && !isSignedIn && (

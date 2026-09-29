@@ -3,9 +3,11 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRightLeft,
+  Building2,
   CalendarDays,
   Check,
   Edit3,
+  Heart,
   LogOut,
   Mail,
   MapPin,
@@ -16,7 +18,7 @@ import {
 } from "lucide-react";
 
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useClerk } from "@clerk/react";
+import { useClerk, useUser as useClerkUser } from "@clerk/react";
 
 import Footer from "../../../layouts/Footer/Footer";
 import Header from "../../../layouts/Header/Header";
@@ -29,7 +31,12 @@ import { TipoUsuario } from "../../../types/enum/TipoUsuario";
 import { PROFILE_TYPES } from "../../../types/enum/ProfileTypes";
 import { DiaSemana } from "../../../types/enum/DiaSemana";
 import { Turno } from "../../../types/enum/Turno";
-
+import {
+  getVoluntUserByClerkId,
+  saveVoluntUser,
+} from "../../../utils/userProfileStorage";
+import { getClerkErrorMessage } from "../LoginPages/utils/clerkAuthUtils";
+import "../../../styles/global.css";
 import SingleSelect from "components/SingleSelect.tsx/SingleSelect";
 import GenericTextField from "components/TextField/TextField";
 import DataPicker from "components/DataPicker/DataPicker";
@@ -55,13 +62,63 @@ function getOptionLabel(options, value) {
   return option?.label || String(normalizedValue);
 }
 
+function toInputValue(value) {
+  return Array.isArray(value) ? value.join(", ") : value || "";
+}
+
+function getLocationValue(location) {
+  if (typeof location === "string") {
+    return location;
+  }
+
+  if (!location || typeof location !== "object") {
+    return "";
+  }
+
+  return [location.bairro, location.cidade, location.estado]
+    .filter(Boolean)
+    .join(", ");
+}
+
+function createProfileForm(profile, clerkName = "") {
+  const isPessoaJuridica = profile?.tipoUsuario === "PJ";
+  const isOfertante = isPessoaJuridica || profile?.perfilUsuario === "PF";
+
+  return {
+    accountName: clerkName || profile?.fullName || "",
+    perfilUsuario: profile?.perfilUsuario ?? PROFILE_TYPES[0]?.value ?? "",
+    genero: profile?.genero || "",
+    dataNascimento: profile?.dataNascimento
+      ? profile.dataNascimento.split("T")[0]
+      : "",
+    phone: isOfertante ? profile?.phone || "" : "",
+    location: getLocationValue(profile?.location),
+    availability: !isPessoaJuridica && !isOfertante
+      ? toInputValue(profile?.availability)
+      : "",
+    organizationName: profile?.organizationName || "",
+    organizationEmail: profile?.organizationEmail || "",
+    cnpj: isPessoaJuridica ? profile?.cnpj || "" : "",
+    description: profile?.description || "",
+    logoUrl: profile?.logoUrl || "",
+  };
+}
+
 export default function UserProfilePage() {
   const navigate = useNavigate();
   const { signOut } = useClerk();
+  const { user: clerkUser, isLoaded: isClerkUserLoaded } = useClerkUser();
 
   const { id } = useParams();
-
-  const profileId = id ? Number(id) : null;
+  const profileId = id || null;
+  const clerkUserId = clerkUser?.id || "";
+  const clerkEmail =
+    clerkUser?.primaryEmailAddress?.emailAddress ||
+    clerkUser?.emailAddresses?.[0]?.emailAddress ||
+    "";
+  const clerkName =
+    clerkUser?.fullName ||
+    [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(" ");
 
   const storedUser = useMemo(() => {
     try {
@@ -71,30 +128,85 @@ export default function UserProfilePage() {
     }
   }, []);
 
-  const isOwnProfile =
-    !profileId || Number(storedUser?.id) === Number(profileId);
+  const storedUsers = useMemo(() => {
+    try {
+      const users = JSON.parse(localStorage.getItem("volunt-users") || "[]");
+      return Array.isArray(users) ? users : [];
+    } catch {
+      return [];
+    }
+  }, []);
 
-  const profileUser = useMemo(() => {
-    if (isOwnProfile && storedUser) {
-      return storedUser;
+  const currentStoredProfile = useMemo(() => {
+    if (!clerkUserId) {
+      return null;
     }
 
-    try {
-      const localUsers = JSON.parse(
-        localStorage.getItem("volunt-users") || "[]",
-      );
+    return (
+      getVoluntUserByClerkId(clerkUserId) ||
+      storedUsers.find(
+        (item) =>
+          clerkEmail && item.email?.toLowerCase() === clerkEmail.toLowerCase(),
+      ) ||
+      (storedUser &&
+      ((storedUser.clerkUserId && storedUser.clerkUserId === clerkUserId) ||
+        (clerkEmail &&
+          storedUser.email?.toLowerCase() === clerkEmail.toLowerCase()))
+        ? storedUser
+        : null)
+    );
+  }, [clerkEmail, clerkUserId, storedUser, storedUsers]);
 
-      const localUser = localUsers.find(
-        (user) => Number(user.id) === Number(profileId),
-      );
+  const isOwnProfile =
+    !profileId ||
+    String(profileId) === String(clerkUserId) ||
+    (currentStoredProfile &&
+      String(profileId) === String(currentStoredProfile.id));
 
-      if (localUser) {
-        return localUser;
+  const profileUser = useMemo(() => {
+    if (isOwnProfile) {
+      if (!clerkUser) {
+        return null;
       }
-    } catch {}
 
-    return userDTO.find((user) => Number(user.id) === Number(profileId));
-  }, [profileId, isOwnProfile, storedUser]);
+      return {
+        ...currentStoredProfile,
+        id: currentStoredProfile?.id || null,
+        clerkUserId,
+        fullName: clerkName || currentStoredProfile?.fullName || "",
+        email: clerkEmail || currentStoredProfile?.email || "",
+        tipoUsuario: currentStoredProfile?.tipoUsuario || "PF",
+        perfilUsuario:
+          currentStoredProfile?.tipoUsuario === "PJ"
+            ? PROFILE_TYPES[0].value
+            : currentStoredProfile?.perfilUsuario ?? PROFILE_TYPES[0]?.value,
+        organizationName:
+          currentStoredProfile?.organizationName ||
+          (currentStoredProfile?.tipoUsuario === "PJ"
+            ? currentStoredProfile.fullName
+            : ""),
+      };
+    }
+
+    const localUser = storedUsers.find(
+      (user) => String(user.id) === String(profileId),
+    );
+
+    return (
+      localUser ||
+      userDTO.find((user) => String(user.id) === String(profileId)) ||
+      null
+    );
+  }, [
+    clerkEmail,
+    clerkName,
+    clerkUser,
+    clerkUserId,
+    currentStoredProfile,
+    isOwnProfile,
+    profileId,
+    storedUsers,
+  ]);
 
   const [user, setUser] = useState(profileUser);
 
@@ -103,15 +215,11 @@ export default function UserProfilePage() {
   const [changingProfile, setChangingProfile] = useState(false);
 
   const [saved, setSaved] = useState(false);
+  const [profileError, setProfileError] = useState("");
 
-  const [form, setForm] = useState({
-    fullName: profileUser?.fullName || "",
-    email: profileUser?.email || "",
-    perfilUsuario: profileUser?.perfilUsuario ?? PROFILE_TYPES[0]?.value ?? "",
-    dataNascimento: profileUser?.dataNascimento
-      ? profileUser.dataNascimento.split("T")[0]
-      : "",
-  });
+  const [form, setForm] = useState(() =>
+    createProfileForm(profileUser, clerkName),
+  );
 
   useEffect(() => {
     setUser(profileUser);
@@ -122,19 +230,11 @@ export default function UserProfilePage() {
       return;
     }
 
-    setForm({
-      fullName: profileUser.fullName || "",
-      email: profileUser.email || "",
-      perfilUsuario: profileUser.perfilUsuario ?? PROFILE_TYPES[0]?.value ?? "",
-      dataNascimento: profileUser.dataNascimento
-        ? profileUser.dataNascimento.split("T")[0]
-        : "",
-    });
-  }, [profileUser]);
-
-  const isOfertante = user?.perfilUsuario === "PF";
+    setForm(createProfileForm(profileUser, clerkName));
+  }, [clerkName, profileUser]);
 
   const isPessoaJuridica = user?.tipoUsuario === "PJ";
+  const isOfertante = isPessoaJuridica || user?.perfilUsuario === "PF";
 
   const profileOptions = PROFILE_TYPES.map((option) => ({
     value: option.value,
@@ -160,6 +260,7 @@ export default function UserProfilePage() {
       ...current,
       [field]: value,
     }));
+    setProfileError("");
   }
 
   async function handleLogout() {
@@ -176,24 +277,7 @@ export default function UserProfilePage() {
       perfilUsuario: user.perfilUsuario === "PF" ? "BF" : "PF",
     };
 
-    localStorage.setItem("volunt-user", JSON.stringify(updatedUser));
-
-    try {
-      const users = JSON.parse(localStorage.getItem("volunt-users") || "[]");
-      const updatedUsers = users.some(
-        (item) => Number(item.id) === Number(updatedUser.id),
-      )
-        ? users.map((item) =>
-            Number(item.id) === Number(updatedUser.id) ? updatedUser : item,
-          )
-        : [...users, updatedUser];
-
-      localStorage.setItem("volunt-users", JSON.stringify(updatedUsers));
-    } catch {
-      localStorage.setItem("volunt-users", JSON.stringify([updatedUser]));
-    }
-
-    setUser(updatedUser);
+    setUser(saveVoluntUser(updatedUser));
     setChangingProfile(false);
     setSaved(true);
 
@@ -202,56 +286,84 @@ export default function UserProfilePage() {
     }, 2500);
   }
 
-  function saveProfile(event) {
+  async function saveProfile(event) {
     event.preventDefault();
 
     if (!user) {
       return;
     }
 
-    const updatedUser = {
-      ...user,
-
-      fullName: form.fullName,
-
-      email: form.email,
-
-      perfilUsuario: user.tipoUsuario === "PJ" ? "PF" : form.perfilUsuario,
-
-      dataNascimento: form.dataNascimento
-        ? `${form.dataNascimento}T00:00:00.000Z`
-        : null,
-    };
-
-    localStorage.setItem("volunt-user", JSON.stringify(updatedUser));
+    setProfileError("");
 
     try {
-      const users = JSON.parse(localStorage.getItem("volunt-users") || "[]");
+      const nameParts = form.accountName.trim().split(/\s+/).filter(Boolean);
 
-      const userExists = users.some(
-        (item) => Number(item.id) === Number(updatedUser.id),
+      if (clerkUser && form.accountName.trim() !== clerkName) {
+        await clerkUser.update({
+          firstName: nameParts[0] || "",
+          lastName: nameParts.slice(1).join(" "),
+        });
+      }
+
+      const updatedUser = { ...user };
+      delete updatedUser.interests;
+      delete updatedUser.areasOfWork;
+      delete updatedUser.availability;
+      if (!isPessoaJuridica) {
+        delete updatedUser.cnpj;
+        delete updatedUser.organizationName;
+        delete updatedUser.organizationEmail;
+        delete updatedUser.description;
+        delete updatedUser.logoUrl;
+      } else {
+        delete updatedUser.genero;
+        delete updatedUser.dataNascimento;
+      }
+      if (!isOfertante) {
+        delete updatedUser.phone;
+      }
+
+      Object.assign(updatedUser, {
+        ...(isOfertante ? { phone: form.phone.trim() } : {}),
+        location: form.location.trim(),
+        ...(isPessoaJuridica
+          ? {
+              organizationName: form.organizationName.trim(),
+              organizationEmail: form.organizationEmail.trim(),
+              cnpj: form.cnpj.trim(),
+              description: form.description.trim(),
+              logoUrl: form.logoUrl.trim(),
+              perfilUsuario: PROFILE_TYPES[0]?.value,
+            }
+          : {
+              perfilUsuario: form.perfilUsuario,
+              genero: form.genero,
+              dataNascimento: form.dataNascimento
+                ? `${form.dataNascimento}T00:00:00.000Z`
+                : null,
+              ...(!isOfertante
+                ? { availability: form.availability.trim() }
+                : {}),
+            }),
+      });
+
+      setUser(saveVoluntUser(updatedUser));
+
+      setEditing(false);
+
+      setSaved(true);
+
+      window.setTimeout(() => {
+        setSaved(false);
+      }, 2500);
+    } catch (error) {
+      setProfileError(
+        getClerkErrorMessage(
+          error,
+          "Não foi possível atualizar o perfil. Tente novamente.",
+        ),
       );
-
-      const updatedUsers = userExists
-        ? users.map((item) =>
-            Number(item.id) === Number(updatedUser.id) ? updatedUser : item,
-          )
-        : [...users, updatedUser];
-
-      localStorage.setItem("volunt-users", JSON.stringify(updatedUsers));
-    } catch {
-      localStorage.setItem("volunt-users", JSON.stringify([updatedUser]));
     }
-
-    setUser(updatedUser);
-
-    setEditing(false);
-
-    setSaved(true);
-
-    window.setTimeout(() => {
-      setSaved(false);
-    }, 2500);
   }
 
   if (!user) {
@@ -260,15 +372,21 @@ export default function UserProfilePage() {
         <Header />
 
         <section className="profile-login-required">
-          <UserRound size={42} />
+          {isOwnProfile && !isClerkUserLoaded ? (
+            <p>Carregando perfil...</p>
+          ) : (
+            <>
+              <UserRound size={42} />
 
-          <h1>Usuário não encontrado</h1>
+              <h1>Usuário não encontrado</h1>
 
-          <p>Não foi possível encontrar este perfil.</p>
+              <p>Não foi possível encontrar este perfil.</p>
 
-          <Link className="profile-primary-button" to="/">
-            Voltar para o início
-          </Link>
+              <Link className="profile-primary-button" to="/">
+                Voltar para o início
+              </Link>
+            </>
+          )}
         </section>
 
         <Footer />
@@ -288,7 +406,15 @@ export default function UserProfilePage() {
     GENDER_OPTIONS.find((item) => item.value === user.genero)?.label ??
     "Não informado";
 
-  const name = user.fullName || "Usuário Voluntá+";
+  const name =
+    (isPessoaJuridica ? user.organizationName : user.fullName) ||
+    "Usuário Voluntá+";
+
+  const avatarUrl = isPessoaJuridica
+    ? user.logoUrl
+    : isOwnProfile
+      ? clerkUser?.imageUrl
+      : user.avatarUrl;
 
   const formattedBirthDate = user.dataNascimento
     ? user.dataNascimento.split("T")[0].split("-").reverse().join("/")
@@ -296,20 +422,25 @@ export default function UserProfilePage() {
 
   return (
     <main className="profile-page">
-      <Header />
+      <Header/>
 
       <div className="profile-container">
         <button
-          className="back-button"
-          type="button"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft size={18} />
-          Voltar
-        </button>
-
+            className="user-register-page__back-button"
+            type="button"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft size={18} />
+            Voltar
+          </button>
         <section className="profile-cover">
-          <div className="profile-avatar">{name.slice(0, 2).toUpperCase()}</div>
+          <div className="profile-avatar">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={isPessoaJuridica ? `Logo de ${name}` : `Foto de ${name}`} />
+            ) : (
+              name.slice(0, 2).toUpperCase()
+            )}
+          </div>
 
           <div className="profile-identity">
             <span>{perfilUsuarioLabel}</span>
@@ -474,26 +605,48 @@ export default function UserProfilePage() {
           )}
 
           <aside className="profile-side">
+            {isOwnProfile && clerkUser && (
+              <section className="profile-account-section">
+                <ShieldCheck />
+                <h3>Conta e autenticação</h3>
+                <p>
+                  <strong>Nome da conta:</strong> {clerkName || "Não informado"}
+                </p>
+                <p>
+                  <strong>E-mail:</strong> {clerkEmail || "Não informado"}
+                </p>
+                <small>Gerenciada com segurança pelo Clerk.</small>
+              </section>
+            )}
+
             <section>
-              <ShieldCheck />
+              {isPessoaJuridica ? <Building2 /> : <Heart />}
+              <h3>
+                Perfil Voluntá+ · {isPessoaJuridica ? "Organização" : "Pessoa Física"}
+              </h3>
 
-              <h3>Informações do perfil</h3>
-
-              <p>
-                <strong>Tipo:</strong> {tipoUsuarioLabel}
-              </p>
-
-              <p>
-                <strong>Perfil:</strong> {perfilUsuarioLabel}
-              </p>
-
-              <p>
-                <strong>Gênero:</strong> {generoLabel}
-              </p>
-
-              <p>
-                <strong>Data de nascimento:</strong> {formattedBirthDate}
-              </p>
+              {isPessoaJuridica ? (
+                <>
+                  <p><strong>CNPJ:</strong> {user.cnpj || "Não informado"}</p>
+                  <p><strong>Telefone:</strong> {user.phone || "Não informado"}</p>
+                  <p><strong>Localização:</strong> {getLocationValue(user.location) || "Não informada"}</p>
+                  <p><strong>E-mail de contato:</strong> {user.organizationEmail || "Não informado"}</p>
+                  {user.description && <p>{user.description}</p>}
+                </>
+              ) : (
+                <>
+                  <p><strong>Tipo:</strong> {tipoUsuarioLabel}</p>
+                  <p><strong>Perfil:</strong> {perfilUsuarioLabel}</p>
+                  <p><strong>Gênero:</strong> {generoLabel}</p>
+                  <p><strong>Data de nascimento:</strong> {formattedBirthDate}</p>
+                  <p><strong>Localização:</strong> {getLocationValue(user.location) || "Não informada"}</p>
+                  {isOfertante ? (
+                    <p><strong>Telefone:</strong> {user.phone || "Não informado"}</p>
+                  ) : (
+                    <p><strong>Disponibilidade:</strong> {user.availability || "Não informada"}</p>
+                  )}
+                </>
+              )}
             </section>
           </aside>
         </div>
@@ -539,49 +692,109 @@ export default function UserProfilePage() {
             </header>
 
             <form onSubmit={saveProfile}>
-              <GenericTextField
-                width="300px"
-                label="Nome completo"
-                value={form.fullName}
-                onChange={(value) => updateField("fullName", value)}
-                placeholder="Ex: Luiz Carlos dos Santos"
-              />
-
-              <GenericTextField
-                width="300px"
-                label="E-mail"
-                value={form.email}
-                onChange={(value) => updateField("email", value)}
-                placeholder="Ex: seuemail@gmail.com"
-              />
-
-              <SingleSelect
-                label="Tipo de perfil"
-                width="310px"
-                value={form.perfilUsuario}
-                onChange={(value) => updateField("perfilUsuario", value)}
-                options={profileOptions}
-                disabled={isPessoaJuridica}
-              />
-
-              {isPessoaJuridica && (
-                <div className="profile-notification-container">
-                  <div className="profile-info-message">
-                    <span>
-                      Contas de Pessoa Jurídica podem atuar somente como
-                      ofertante. Para atuar como beneficiário, será necessário
-                      criar uma nova conta como Pessoa Física.
-                    </span>
-                  </div>
+              <section className="profile-edit-section profile-edit-full">
+                <h3>Conta e autenticação</h3>
+                <p>Esses dados são mantidos pelo Clerk.</p>
+                <div className="profile-edit-account-data">
+                  <span><strong>E-mail:</strong> {clerkEmail || "Não informado"}</span>
+                  <span><strong>ID:</strong> {clerkUserId}</span>
                 </div>
-              )}
-              {!isPessoaJuridica && (
-                <DataPicker
-                  label="Data de nascimento"
-                  width="310px"
-                  value={form.dataNascimento}
-                  onChange={(value) => updateField("dataNascimento", value)}
+                <GenericTextField
+                  label="Nome da conta"
+                  value={form.accountName}
+                  onChange={(value) => updateField("accountName", value)}
+                  placeholder="Nome e sobrenome"
                 />
+              </section>
+
+              {isPessoaJuridica ? (
+                <>
+                  <GenericTextField
+                    label="Nome da organização"
+                    value={form.organizationName}
+                    onChange={(value) => updateField("organizationName", value)}
+                    placeholder="Nome público da organização"
+                  />
+                  <GenericTextField
+                    label="CNPJ"
+                    value={form.cnpj}
+                    onChange={(value) => updateField("cnpj", value)}
+                    placeholder="00.000.000/0000-00"
+                  />
+                  <GenericTextField
+                    label="E-mail de contato"
+                    type="email"
+                    value={form.organizationEmail}
+                    onChange={(value) => updateField("organizationEmail", value)}
+                    placeholder="contato@organizacao.org.br"
+                  />
+                  <GenericTextField
+                    label="Logo (URL da imagem)"
+                    value={form.logoUrl}
+                    onChange={(value) => updateField("logoUrl", value)}
+                    placeholder="https://..."
+                  />
+                  <label className="profile-edit-custom-field profile-edit-full">
+                    Descrição da organização
+                    <textarea
+                      rows="4"
+                      value={form.description}
+                      onChange={(event) => updateField("description", event.target.value)}
+                      placeholder="Conte sobre a organização e suas oportunidades."
+                    />
+                  </label>
+                </>
+              ) : (
+                <>
+                  <SingleSelect
+                    label="Tipo de perfil"
+                    value={form.perfilUsuario}
+                    onChange={(value) => updateField("perfilUsuario", value)}
+                    options={profileOptions}
+                  />
+                  <SingleSelect
+                    label="Gênero"
+                    value={form.genero}
+                    onChange={(value) => updateField("genero", value)}
+                    options={GENDER_OPTIONS.map((option) => ({
+                      value: option.value,
+                      label: option.label,
+                    }))}
+                  />
+                  <DataPicker
+                    label="Data de nascimento"
+                    value={form.dataNascimento}
+                    onChange={(value) => updateField("dataNascimento", value)}
+                  />
+                  {!isOfertante && (
+                    <GenericTextField
+                      label="Disponibilidade"
+                      value={form.availability}
+                      onChange={(value) => updateField("availability", value)}
+                      placeholder="Dias e horários disponíveis"
+                    />
+                  )}
+                </>
+              )}
+
+              {isOfertante && (
+                <GenericTextField
+                  label="Telefone de contato"
+                  value={form.phone}
+                  onChange={(value) => updateField("phone", value)}
+                  placeholder="(00) 00000-0000"
+                />
+              )}
+              <GenericTextField
+                label="Localização"
+                value={form.location}
+                onChange={(value) => updateField("location", value)}
+                placeholder="Cidade, bairro e estado"
+              />
+              {profileError && (
+                <p className="profile-edit-error profile-edit-full" role="alert">
+                  {profileError}
+                </p>
               )}
               <div className="profile-edit-actions profile-edit-full">
                 <button type="button" onClick={() => setEditing(false)}>

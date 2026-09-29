@@ -6,6 +6,7 @@
     "node": ">=20.9.0"
   },
   "dependencies": {
+    "@clerk/localizations": "^4.20.0",
     "@clerk/react": "^6.15.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",

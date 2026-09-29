@@ -1,5 +1,65 @@
-export function getClerkErrorMessage(error, fallbackMessage) {
-  return error?.longMessage || error?.message || fallbackMessage;
+const CLERK_ERROR_MESSAGES = {
+  form_password_incorrect: "A senha informada está incorreta.",
+  form_password_length_too_short: "A senha é muito curta. Use pelo menos 8 caracteres.",
+  form_password_pwned: "Escolha uma senha diferente para proteger sua conta.",
+  form_identifier_exists: "Este e-mail já está cadastrado.",
+  form_identifier_not_found: "Não encontramos uma conta com este e-mail.",
+  form_email_address_invalid: "Informe um endereço de e-mail válido.",
+  form_code_incorrect: "O código informado está incorreto.",
+  verification_code_incorrect: "O código informado está incorreto.",
+  verification_failed: "Não foi possível confirmar o código. Confira e tente novamente.",
+  verification_expired: "Este código expirou. Solicite um novo código.",
+  verification_code_expired: "Este código expirou. Solicite um novo código.",
+};
+
+function translateClerkMessage(message) {
+  if (!message) {
+    return "";
+  }
+
+  if (/[áàâãéêíóôõúüç]|\bnão\b|\be-mail\b|\bsenha\b|\bcódigo\b/i.test(message)) {
+    return message;
+  }
+
+  const normalized = message.toLowerCase();
+
+  if (/password.*(incorrect|invalid|wrong)|(incorrect|invalid|wrong).*password/.test(normalized)) {
+    return "A senha informada está incorreta.";
+  }
+  if (/password.*(short|characters)|(short|characters).*password/.test(normalized)) {
+    return "A senha é muito curta. Use pelo menos 8 caracteres.";
+  }
+  if (/email.*invalid|invalid.*email|email address.*valid/.test(normalized)) {
+    return "Informe um endereço de e-mail válido.";
+  }
+  if (/email|identifier|account/.test(normalized) && /(already|exists|taken|in use)/.test(normalized)) {
+    return "Este e-mail já está cadastrado.";
+  }
+  if (/code.*(incorrect|invalid|wrong)|(incorrect|invalid|wrong).*code/.test(normalized)) {
+    return "O código informado está incorreto.";
+  }
+  if (/code.*expired|expired.*code|verification.*expired/.test(normalized)) {
+    return "Este código expirou. Solicite um novo código.";
+  }
+
+  return "";
+}
+
+export function getClerkErrorMessage(error, fallbackMessage = "") {
+  if (!error) {
+    return fallbackMessage;
+  }
+
+  const detail = error.errors?.[0] || error;
+  const codeMessage = CLERK_ERROR_MESSAGES[error.code || detail.code];
+  const message = error.longMessage || detail.longMessage || error.message;
+
+  return (
+    codeMessage ||
+    translateClerkMessage(message) ||
+    fallbackMessage ||
+    "Não foi possível concluir esta etapa. Tente novamente."
+  );
 }
 
 export function getClerkFieldMessage(errors, field) {

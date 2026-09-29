@@ -12,6 +12,7 @@ import {
 import { GENDER_OPTIONS } from "../../../types/enum/Gender";
 import { TipoUsuario } from "types/enum/TipoUsuario";
 import { PROFILE_TYPES } from "types/enum/ProfileTypes";
+import { getClerkErrorMessage } from "../LoginPages/utils/clerkAuthUtils";
 
 import "../../../styles/global.css";
 
@@ -26,11 +27,12 @@ import "./UserRegisterPage.css";
 import SingleSelect from "components/SingleSelect.tsx/SingleSelect";
 import GenericTextField from "components/TextField/TextField";
 import DataPicker from "components/DataPicker/DataPicker";
+import { saveVoluntUser } from "../../../utils/userProfileStorage";
 
 const IDENTITY_FIELDS = new Set(["email", "password", "confirmPassword"]);
 
 function getErrorMessage(error, fallbackMessage) {
-  return error?.longMessage || error?.message || fallbackMessage;
+  return getClerkErrorMessage(error, fallbackMessage);
 }
 
 export default function UserRegisterPage() {
@@ -67,6 +69,7 @@ export default function UserRegisterPage() {
     };
 
     if (field === "tipoUsuario" && value === "PJ") {
+      nextForm.perfilUsuario = PROFILE_TYPES[0].value;
       nextForm.gender = "";
       nextForm.dataNascimento = "";
     }
@@ -183,6 +186,32 @@ export default function UserRegisterPage() {
           return;
         }
 
+        const clerkUserId = session?.userId || signUp.createdUserId;
+
+        if (clerkUserId) {
+          saveVoluntUser({
+            clerkUserId,
+            fullName: form.fullName.trim(),
+            email: form.email.trim().toLowerCase(),
+            tipoUsuario: form.tipoUsuario,
+            perfilUsuario: form.perfilUsuario,
+            cnpj: form.cnpj,
+            genero: form.gender,
+            dataNascimento: form.dataNascimento
+              ? `${form.dataNascimento}T00:00:00.000Z`
+              : null,
+            organizationName: isPessoaJuridica ? form.fullName.trim() : "",
+            organizationEmail: "",
+            phone: "",
+            location: "",
+            interests: [],
+            areasOfWork: [],
+            availability: [],
+            description: "",
+            logoUrl: "",
+          });
+        }
+
         const destination = decorateUrl("/");
 
         if (/^https?:\/\//.test(destination)) {
@@ -234,6 +263,21 @@ export default function UserRegisterPage() {
       return;
     }
 
+    const nameParts = form.fullName.trim().split(/\s+/).filter(Boolean);
+
+    if (nameParts.length && typeof signUp.update === "function") {
+      const { error: nameError } = await signUp.update({
+        firstName: nameParts[0],
+        lastName: nameParts.slice(1).join(" "),
+      });
+
+      if (nameError) {
+        setFlowMessage(
+          "Sua conta foi criada. O nome continuará disponível no perfil Voluntá+.",
+        );
+      }
+    }
+
     clearPasswords();
 
     if (signUp.status === "complete") {
@@ -256,8 +300,6 @@ export default function UserRegisterPage() {
         );
         return;
       }
-
-      setFlowMessage(`Enviamos um código para ${form.email.trim()}.`);
       return;
     }
 
@@ -418,8 +460,97 @@ export default function UserRegisterPage() {
       </header>
 
       <section className="user-register-page__content">
-        <form className="user-register-form" onSubmit={handleSubmit} noValidate>
-          <div className="user-register-form__title">
+        <form
+          className={`user-register-form${isVerifyingEmail ? " user-register-form--verification" : ""}`}
+          onSubmit={handleSubmit}
+          noValidate
+        >
+          {isVerifyingEmail ? (
+            <section
+              className="user-register-form__verification-view"
+              aria-labelledby="email-verification-title"
+            >
+              <div className="user-register-form__verification-icon">
+                <ShieldCheck size={28} />
+              </div>
+              <span className="user-register-form__verification-eyebrow">
+                CONFIRMAÇÃO DE CONTA
+              </span>
+              <h2 id="email-verification-title">Verifique seu e-mail</h2>
+              <p>Enviamos um código de confirmação para o seu e-mail:</p>
+              <strong className="user-register-form__verification-email">
+                {form.email}
+              </strong>
+              <p>Digite o código de 6 dígitos para continuar.</p>
+
+              <GenericTextField
+                label="Código de verificação"
+                value={verificationCode}
+                onChange={(value) => {
+                  setVerificationCode(value.replace(/\D/g, "").slice(0, 6));
+                  setErrors((current) => ({
+                    ...current,
+                    verificationCode: "",
+                  }));
+                  setTouchedFields((current) => ({
+                    ...current,
+                    verificationCode: true,
+                  }));
+                  setFlowError("");
+                  setShowClerkErrors(false);
+                }}
+                placeholder="______"
+                autoComplete="one-time-code"
+                inputMode="numeric"
+                disabled={isSubmitting}
+                error={Boolean(verificationCodeError)}
+                helperText={verificationCodeError}
+                width="320px"
+              />
+
+              {flowMessage && (
+                <p className="user-register-form__status" role="status">
+                  {flowMessage}
+                </p>
+              )}
+              {visibleFlowError && (
+                <p className="user-register-form__flow-error" role="alert">
+                  {visibleFlowError}
+                </p>
+              )}
+
+              <div className="user-register-form__verification-actions">
+                <button
+                  className="user-register-form__link-button"
+                  type="button"
+                  onClick={handleResendCode}
+                  disabled={isSubmitting}
+                >
+                  Não recebeu o código? Reenviar código
+                </button>
+                <div className="user-register-form__actions">
+                  <button
+                    className="user-register-form__secondary-button"
+                    type="button"
+                    onClick={handleChangeEmail}
+                    disabled={isSubmitting}
+                  >
+                    Alterar e-mail
+                  </button>
+                  <button
+                    className="user-register-form__primary-button"
+                    type="submit"
+                    disabled={isSubmitting || !isAuthLoaded}
+                  >
+                    <UserPlus size={18} />
+                    {isSubmitting ? "Verificando..." : "Confirmar código"}
+                  </button>
+                </div>
+              </div>
+            </section>
+          ) : (
+            <>
+              <div className="user-register-form__title">
             <div>
               <UserPlus size={26} />
             </div>
@@ -432,9 +563,9 @@ export default function UserRegisterPage() {
                 ações sociais e participar da comunidade.
               </p>
             </div>
-          </div>
+              </div>
 
-          <fieldset
+              <fieldset
             className="user-register-form__fields"
             disabled={isVerifyingEmail || isSubmitting}
           >
@@ -499,15 +630,22 @@ export default function UserRegisterPage() {
                 />
               )}
 
-              <SingleSelect
-                label="Tipo de perfil"
-                value={form.perfilUsuario || ""}
-                onChange={(value) => updateField("perfilUsuario", value)}
-                options={PROFILE_TYPES.map((profileType) => ({
-                  value: profileType.value,
-                  label: profileType.label,
-                }))}
-              />
+              {isPessoaJuridica ? (
+                <div className="user-register-form__profile-note">
+                  <strong>Perfil da organização</strong>
+                  <span>Ofertante de oportunidades de voluntariado</span>
+                </div>
+              ) : (
+                <SingleSelect
+                  label="Tipo de perfil"
+                  value={form.perfilUsuario || ""}
+                  onChange={(value) => updateField("perfilUsuario", value)}
+                  options={PROFILE_TYPES.map((profileType) => ({
+                    value: profileType.value,
+                    label: profileType.label,
+                  }))}
+                />
+              )}
             </div>
 
             <div className="user-register-form__grid">
@@ -543,96 +681,47 @@ export default function UserRegisterPage() {
               data-cl-size="flexible"
               data-cl-language="pt-BR"
             />
-          </fieldset>
+              </fieldset>
 
-          {isVerifyingEmail && (
-            <section
-              className="user-register-form__verification"
-              aria-labelledby="email-verification-title"
-            >
-              <h3 id="email-verification-title">Verifique seu e-mail</h3>
-              <p>
-                Digite o código enviado pelo Clerk para <strong>{form.email}</strong>.
-              </p>
+              {flowMessage && (
+                <p className="user-register-form__status" role="status">
+                  {flowMessage}
+                </p>
+              )}
 
-              <GenericTextField
-                label="Código de verificação"
-                value={verificationCode}
-                onChange={(value) => {
-                  setVerificationCode(value);
-                  setErrors((current) => ({
-                    ...current,
-                    verificationCode: "",
-                  }));
-                  setTouchedFields((current) => ({
-                    ...current,
-                    verificationCode: true,
-                  }));
-                  setFlowError("");
-                  setShowClerkErrors(false);
-                }}
-                placeholder="Digite o código recebido"
-                autoComplete="one-time-code"
-                inputMode="numeric"
-                disabled={isSubmitting}
-                error={Boolean(verificationCodeError)}
-                helperText={verificationCodeError}
-              />
+              {visibleFlowError && (
+                <p className="user-register-form__flow-error" role="alert">
+                  {visibleFlowError}
+                </p>
+              )}
 
-              <button
-                className="user-register-form__link-button"
-                type="button"
-                onClick={handleResendCode}
-                disabled={isSubmitting}
-              >
-                Reenviar código
-              </button>
-            </section>
+              <div className="user-register-form__actions">
+                <button
+                  className="user-register-form__secondary-button"
+                  type="button"
+                  onClick={() => navigate("/")}
+                  disabled={isSubmitting}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  className="user-register-form__primary-button"
+                  type="submit"
+                  disabled={isSubmitting || !isAuthLoaded}
+                >
+                  <UserPlus size={18} />
+                  {isSubmitting ? "Processando..." : "Criar conta"}
+                </button>
+              </div>
+
+              <div className="user-register-form__safe-message">
+                <ShieldCheck size={17} />
+                Sua senha é processada somente pelo Clerk e não é armazenada
+                pelo Voluntá+.
+              </div>
+            </>
           )}
-
-          {flowMessage && (
-            <p className="user-register-form__status" role="status">
-              {flowMessage}
-            </p>
-          )}
-
-          {visibleFlowError && (
-            <p className="user-register-form__flow-error" role="alert">
-              {visibleFlowError}
-            </p>
-          )}
-
-          <div className="user-register-form__actions">
-            <button
-              className="user-register-form__secondary-button"
-              type="button"
-              onClick={
-                isVerifyingEmail ? handleChangeEmail : () => navigate("/")
-              }
-              disabled={isSubmitting}
-            >
-              {isVerifyingEmail ? "Alterar e-mail" : "Cancelar"}
-            </button>
-
-            <button
-              className="user-register-form__primary-button"
-              type="submit"
-              disabled={isSubmitting || !isAuthLoaded}
-            >
-              <UserPlus size={18} />
-              {isSubmitting
-                ? "Processando..."
-                : isVerifyingEmail
-                  ? "Confirmar código"
-                  : "Criar conta"}
-            </button>
-          </div>
-
-          <div className="user-register-form__safe-message">
-            <ShieldCheck size={17} />
-            Sua senha é processada somente pelo Clerk e não é armazenada pelo
-            Voluntá+.
-          </div>
         </form>
       </section>
     </main>
