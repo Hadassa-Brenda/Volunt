@@ -307,6 +307,7 @@ export default function UserRegisterPage() {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       markFormFieldsAsTouched();
+      setFlowError("Revise os campos destacados antes de criar sua conta.");
       return;
     }
 
