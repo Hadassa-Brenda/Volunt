@@ -749,7 +749,7 @@ export default function UserRegisterPage() {
                 value={form.password}
                 onChange={(value) => updateField("password", value)}
                 onBlur={() => handleBlur("password")}
-                placeholder="Mínimo 8 caracteres"
+                placeholder="Crie sua senha"
                 autoComplete="new-password"
                 error={Boolean(passwordError)}
                 helperText={passwordError}
@@ -761,7 +761,7 @@ export default function UserRegisterPage() {
                 value={form.confirmPassword}
                 onChange={(value) => updateField("confirmPassword", value)}
                 onBlur={() => handleBlur("confirmPassword")}
-                placeholder="Mínimo 8 caracteres"
+                placeholder="Digite a senha novamente"
                 autoComplete="new-password"
                 error={Boolean(confirmPasswordError)}
                 helperText={confirmPasswordError}

@@ -1,6 +1,5 @@
 const CLERK_ERROR_MESSAGES = {
   form_password_incorrect: "A senha informada está incorreta.",
-  form_password_length_too_short: "A senha é muito curta. Use pelo menos 8 caracteres.",
   form_password_pwned: "Escolha uma senha diferente para proteger sua conta.",
   form_identifier_exists: "Este e-mail já está cadastrado.",
   form_identifier_not_found: "Não encontramos uma conta com este e-mail.",
@@ -27,7 +26,10 @@ function translateClerkMessage(message) {
     return "A senha informada está incorreta.";
   }
   if (/password.*(short|characters)|(short|characters).*password/.test(normalized)) {
-    return "A senha é muito curta. Use pelo menos 8 caracteres.";
+    const minimum = message.match(/(\d+)\s+characters?/i)?.[1];
+    return minimum
+      ? `A senha deve ter pelo menos ${minimum} caracteres.`
+      : "A senha é muito curta para os requisitos desta conta.";
   }
   if (/email.*invalid|invalid.*email|email address.*valid/.test(normalized)) {
     return "Informe um endereço de e-mail válido.";
@@ -55,9 +57,15 @@ export function getClerkErrorMessage(error, fallbackMessage = "") {
     CLERK_ERROR_MESSAGES[detail.code] || CLERK_ERROR_MESSAGES[error.code];
   const message =
     detail.longMessage ||
+    detail.long_message ||
     detail.message ||
     error.longMessage ||
+    error.long_message ||
     error.message;
+
+  if (detail.code === "form_password_length_too_short" || error.code === "form_password_length_too_short") {
+    return translateClerkMessage(message) || "A senha é muito curta para os requisitos desta conta.";
+  }
 
   return (
     codeMessage ||
