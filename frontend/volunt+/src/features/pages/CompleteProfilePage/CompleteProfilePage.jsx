@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth, useUser } from "@clerk/react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 
 import { registerIndividual, registerOrganization } from "../../../api/usersApi";
 import { useCurrentUser } from "../../../context/CurrentUserContext";
@@ -11,25 +11,25 @@ export default function CompleteProfilePage() {
   const { user: clerkUser } = useUser();
   const { user, refreshUser } = useCurrentUser();
   const navigate = useNavigate();
-  const [form, setForm] = useState({
+  const location = useLocation();
+  const autoAttemptedRef = useRef(false);
+  const inFlightRef = useRef(false);
+  const [form, setForm] = useState(() => ({
     personType: "INDIVIDUAL", role: "BENEFICIARY", fullName: "",
     birthDate: "", gender: "", organizationName: "", cnpj: "",
-  });
+    ...(location.state?.draft || {}),
+  }));
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-
-  if (!isLoaded) return <p>Carregando...</p>;
-  if (!isSignedIn) return <Navigate to="/login" replace />;
-  if (user) return <Navigate to="/perfil" replace />;
 
   function update(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
     setError("");
   }
 
-  async function submit(event) {
-    event.preventDefault();
-    if (saving) return;
+  const saveProfile = useCallback(async () => {
+    if (inFlightRef.current) return;
+    inFlightRef.current = true;
     setSaving(true);
     setError("");
     try {
@@ -58,8 +58,24 @@ export default function CompleteProfilePage() {
       }
       setError(failure?.response?.data?.detail || failure.message || "Não foi possível salvar seu perfil.");
     } finally {
+      inFlightRef.current = false;
       setSaving(false);
     }
+  }, [form, getToken, navigate, refreshUser]);
+
+  useEffect(() => {
+    if (!location.state?.retryRegistration || !isLoaded || !isSignedIn || user || autoAttemptedRef.current) return;
+    autoAttemptedRef.current = true;
+    saveProfile();
+  }, [isLoaded, isSignedIn, location.state, saveProfile, user]);
+
+  if (!isLoaded) return <p>Carregando...</p>;
+  if (!isSignedIn) return <Navigate to="/login" replace />;
+  if (user) return <Navigate to="/perfil" replace />;
+
+  function submit(event) {
+    event.preventDefault();
+    saveProfile();
   }
 
   return (

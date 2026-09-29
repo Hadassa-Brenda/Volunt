@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useAuth, useSignUp } from "@clerk/react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import { ArrowLeft, ShieldCheck, UserPlus } from "lucide-react";
@@ -34,7 +33,6 @@ import "./UserRegisterPage.css";
 import SingleSelect from "components/SingleSelect.tsx/SingleSelect";
 import GenericTextField from "components/TextField/TextField";
 import DataPicker from "components/DataPicker/DataPicker";
-import { saveVoluntUser } from "../../../utils/userProfileStorage";
 
 const IDENTITY_FIELDS = new Set(["email", "password", "confirmPassword"]);
 
@@ -57,7 +55,7 @@ export default function UserRegisterPage() {
   const navigate = useNavigate();
   const { isLoaded: isAuthLoaded, isSignedIn } = useAuth();
   const { signUp, errors: clerkErrors, fetchStatus } = useSignUp();
-  const { refreshUser } = useCurrentUser();
+  const { user: currentUser, refreshUser } = useCurrentUser();
 
   const [form, setForm] = useState({
     ...INITIAL_USER_REGISTER_FORM,
@@ -79,10 +77,10 @@ export default function UserRegisterPage() {
     fetchStatus === "fetching" || isCompletingRegistration;
 
   useEffect(() => {
-    if (isAuthLoaded && isSignedIn && !isCompletingRegistration) {
-      navigate("/", { replace: true });
+    if (isAuthLoaded && isSignedIn && currentUser && !isCompletingRegistration) {
+      navigate("/perfil", { replace: true });
     }
-  }, [isAuthLoaded, isCompletingRegistration, isSignedIn, navigate]);
+  }, [currentUser, isAuthLoaded, isCompletingRegistration, isSignedIn, navigate]);
 
   function updateField(field, value) {
     const nextForm = {
@@ -230,58 +228,16 @@ export default function UserRegisterPage() {
 
     try {
       await register(buildRegistrationPayload(), token);
-      await refreshUser(token);
-      return;
     } catch (registrationError) {
-      let profileExists = false;
-      let profileAbsenceConfirmed = false;
-
+      // Uma resposta perdida ou 409 pode significar que o cadastro foi salvo.
       try {
         await refreshUser(token);
-        profileExists = true;
-      } catch (profileError) {
-        profileAbsenceConfirmed =
-          axios.isAxiosError(profileError) && profileError.response?.status === 404;
-      }
-
-      if (profileExists) {
         return;
+      } catch {
+        throw registrationError;
       }
-
-      const registrationWasRejected =
-        axios.isAxiosError(registrationError) &&
-        registrationError.response?.status >= 400 &&
-        registrationError.response?.status < 500 &&
-        registrationError.response?.status !== 409;
-
-      if (registrationWasRejected || profileAbsenceConfirmed) {
-        if (!session.user) {
-          throw new Error(
-            "Não foi possível concluir o cadastro nem desfazer a identidade criada.",
-            { cause: registrationError },
-          );
-        }
-
-        try {
-          await session.user.delete();
-          await signUp.reset();
-          setStep("form");
-          setVerificationCode("");
-        } catch (compensationError) {
-          throw new Error(
-            "Não foi possível criar o perfil no Volunt+ nem remover a identidade criada no Clerk.",
-            { cause: compensationError },
-          );
-        }
-      }
-
-      throw new Error(
-        profileAbsenceConfirmed
-          ? "Não foi possível criar o perfil no Volunt+. A identidade Clerk criada nesta tentativa foi removida."
-          : "Não foi possível confirmar a criação do perfil no Volunt+. Tente novamente.",
-        { cause: registrationError },
-      );
     }
+    await refreshUser(token);
   }
 
   async function finalizeSignUp() {
@@ -322,8 +278,24 @@ export default function UserRegisterPage() {
         throw new Error("O Clerk não disponibilizou a sessão criada.");
       }
 
-      await createVoluntPlusUser(createdSession);
-      navigate("/", { replace: true });
+      try {
+        await createVoluntPlusUser(createdSession);
+        navigate("/perfil", { replace: true });
+      } catch {
+        // A identidade Clerk já existe; preservamos os dados para tentar salvar
+        // o perfil novamente, sem pedir outra senha ou verificação de e-mail.
+        navigate("/completar-perfil", {
+          replace: true,
+          state: {
+            retryRegistration: true,
+            draft: isPessoaJuridica
+              ? { personType: "ORGANIZATION", organizationName: form.fullName.trim(), cnpj: form.cnpj }
+              : { personType: "INDIVIDUAL", fullName: form.fullName.trim(),
+                  birthDate: form.dataNascimento, gender: GENDER_BY_FORM_VALUE[form.gender],
+                  role: ROLE_BY_PROFILE[form.perfilUsuario] },
+          },
+        });
+      }
     } finally {
       setIsCompletingRegistration(false);
     }
