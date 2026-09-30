@@ -100,7 +100,7 @@ O build de produção é gerado em `build/`.
 
 Após criar a conta e salvar o perfil, o cadastro direciona à homepage (`/`).
 A variável `REACT_APP_PASSWORD_MIN_LENGTH` precisa corresponder ao mínimo da instância Clerk.
-O padrão é 15; alterar o frontend não altera a política do Clerk. Reinicie o frontend depois de mudar o `.env`.
+O padrão é 8; alterar o frontend não altera a política do Clerk. Reinicie o frontend depois de mudar o `.env`.
 
 O serviço só é salvo após revisar os dados, marcar a confirmação e clicar em Confirmar e salvar.
 Serviços inativos ficam disponíveis em Meus serviços e saem do catálogo público.
