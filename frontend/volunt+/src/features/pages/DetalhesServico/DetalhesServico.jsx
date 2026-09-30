@@ -1,3 +1,4 @@
+import { formatServiceSchedule } from "../../../utils/serviceSchedule";
 import { TIPO_LOCALIZACAO } from "../../../types/enum/TipoLocalização";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -38,8 +39,6 @@ import { useCurrentUser } from "../../../context/CurrentUserContext";
 import { createReview } from "../../../api/servicesApi";
 
 import { SERVICE_MODALITIES } from "../../../types/enum/Modalities";
-import { DiaSemana } from "../../../types/enum/DiaSemana";
-import { Turno } from "../../../types/enum/Turno";
 
 import "./DetalhesServico.css";
 import "../../../styles/global.css";
@@ -96,23 +95,7 @@ export default function DetalhesServico() {
     service.providerImage ||
     `https://picsum.photos/600/400?random=${serviceId}`;
 
-  const schedule = service.agendamentos?.length
-    ? service.agendamentos
-        .map((agendamento) => {
-          const dayLabel =
-            DiaSemana.find(
-              (item) => String(item.value) === String(agendamento.diaSemana),
-            )?.label ?? String(agendamento.diaSemana);
-
-          const shiftLabel =
-            Turno.find(
-              (item) => String(item.value) === String(agendamento.turno),
-            )?.label ?? String(agendamento.turno);
-
-          return `${dayLabel} - ${shiftLabel}`;
-        })
-        .join(", ")
-    : "Combine diretamente com o responsável";
+  const schedule = formatServiceSchedule(service.agendamentos);
 
   return (
     <main className="service-details-page">

@@ -566,9 +566,9 @@
 }
 
 .review-service-content > p {
-  display: -webkit-box;
-
-  overflow: hidden;
+  display: block;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 
   margin: 0 0 17px;
 
@@ -577,8 +577,7 @@
   font-size: 0.8rem;
   line-height: 1.6;
 
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
+
 }
 
 .review-service-information {
@@ -649,6 +648,8 @@
 }
 
 .review-section-content {
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
   display: grid;
   gap: 13px;
 
